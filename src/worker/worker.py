@@ -133,21 +133,6 @@ class Blink_thread(threading.Thread):
         logging.info("start  blinking")
 
         os.system("bash blink_sudo.bash")
-        '''
-        # Set the PWR LED to GPIO mode (set 'off' by default).
-        os.system("echo gpio | sudo tee /sys/class/leds/led1/trigger")
-
-        # (Optional) Turn on (1) or off (0) the PWR LED.
-
-        for n in range(30):
-            os.system("echo 0 | sudo tee /sys/class/leds/led1/brightness")
-            time.sleep(500)
-            os.system("echo 1 | sudo tee /sys/class/leds/led1/brightness")
-            time.sleep(500)
-
-        # Revert the PWR LED back to 'under-voltage detect' mode.
-        os.system("echo input | sudo tee /sys/class/leds/led1/trigger")
-        '''
 
 
 
