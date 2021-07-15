@@ -154,7 +154,38 @@ class Video_recording_control(QMainWindow):
         self.raspberry_status = {}
         rasp_count = 0
 
-        for rb in sorted([RASPBERRY_MAC_ADDR[x] for x in RASPBERRY_MAC_ADDR]):
+
+        # buttons for all raspberries
+        hlayout_all_buttons = QHBoxLayout()
+        hlayout_all_buttons.addWidget(QPushButton("Status from all", clicked=partial(self.status_all, output=True)))
+        hlayout_all_buttons.addWidget(QPushButton("Sync time all", clicked=self.sync_all))
+        hlayout_all_buttons.addWidget(QPushButton("video list from all", clicked=self.video_list_from_all))
+        hlayout_all_buttons.addWidget(QPushButton("Download video from all", clicked=self.download_all_video_from_all))
+        #hlayout_all_buttons.addWidget(QPushButton("Update all server", clicked=self.update_all))
+        hlayout_all_buttons.addWidget(QPushButton("Send command to all", clicked=self.send_command_all))
+        hlayout_all_buttons.addWidget(QPushButton("Clear all output", clicked=self.clear_all_output))
+        hlayout_all_buttons.addWidget(QPushButton("Reboot all", clicked=self.reboot_all))
+        hlayout_all_buttons.addWidget(QPushButton("Shutdown all", clicked=self.shutdown_all))
+        hlayout_all_buttons.addWidget(QPushButton("Scan network", clicked=partial(self.scan_network, output=True)))        
+        layout.addLayout(hlayout_all_buttons)
+
+        # add navigation buttons
+        hlayout_navigation_buttons = QHBoxLayout()
+        hlayout_navigation_buttons.addWidget(QPushButton("<-", clicked=self.go_left))
+        hlayout_navigation_buttons.addWidget(QPushButton("->", clicked=self.go_right))
+        self.message_box = QLabel('...')
+        hlayout_navigation_buttons.addWidget(self.message_box)
+        hlayout_navigation_buttons.addItem(QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
+
+        layout.addLayout(hlayout_navigation_buttons)
+
+
+
+        self.scan_network(output=True)
+
+        
+        for rb in sorted(self.RASPBERRY_IP.keys()):
+
             self.download_process[rb] = QProcess()
             rasp_count += 1
 
@@ -334,36 +365,14 @@ class Video_recording_control(QMainWindow):
             l.addLayout(right_layout)
             hlayout1.addLayout(l)
 
-            if rasp_count % GUI_COLUMNS_NUMBER == 0 or rasp_count == len(RASPBERRY_MAC_ADDR):
+            if rasp_count % GUI_COLUMNS_NUMBER == 0 or rasp_count == len(self.RASPBERRY_IP):
                 q1.setLayout(hlayout1)
                 self.tw.addTab(q1, rb)
                 hlayout1 = QHBoxLayout()
                 q1 = QWidget()
 
 
-        # buttons for all raspberries
-        hlayout_all_buttons = QHBoxLayout()
-        hlayout_all_buttons.addWidget(QPushButton("Status from all", clicked=partial(self.status_all, output=True)))
-        hlayout_all_buttons.addWidget(QPushButton("Sync time all", clicked=self.sync_all))
-        hlayout_all_buttons.addWidget(QPushButton("video list from all", clicked=self.video_list_from_all))
-        hlayout_all_buttons.addWidget(QPushButton("Download video from all", clicked=self.download_all_video_from_all))
-        #hlayout_all_buttons.addWidget(QPushButton("Update all server", clicked=self.update_all))
-        hlayout_all_buttons.addWidget(QPushButton("Send command to all", clicked=self.send_command_all))
-        hlayout_all_buttons.addWidget(QPushButton("Clear all output", clicked=self.clear_all_output))
-        hlayout_all_buttons.addWidget(QPushButton("Reboot all", clicked=self.reboot_all))
-        hlayout_all_buttons.addWidget(QPushButton("Shutdown all", clicked=self.shutdown_all))
-        hlayout_all_buttons.addWidget(QPushButton("Scan network", clicked=partial(self.scan_network, output=True)))        
-        layout.addLayout(hlayout_all_buttons)
-
-        # add navigation buttons
-        hlayout_navigation_buttons = QHBoxLayout()
-        hlayout_navigation_buttons.addWidget(QPushButton("<-", clicked=self.go_left))
-        hlayout_navigation_buttons.addWidget(QPushButton("->", clicked=self.go_right))
-        self.message_box = QLabel('...')
-        hlayout_navigation_buttons.addWidget(self.message_box)
-        hlayout_navigation_buttons.addItem(QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
-
-        layout.addLayout(hlayout_navigation_buttons)
+        self.status_all(output=True)
 
         # add tab widget
         layout.addWidget(self.tw)
@@ -378,7 +387,7 @@ class Video_recording_control(QMainWindow):
         self.show()
         app.processEvents()
 
-        self.scan_network(output=True)
+        # self.scan_network(output=True)
 
         self.status_timer = QTimer()
         self.status_timer.timeout.connect(lambda: self.status_all(output=False))
@@ -409,7 +418,28 @@ class Video_recording_control(QMainWindow):
                 try:
                     logging.info(f"{ip_addr}: server available")
                     r_dict = eval(r.text)
+
+                    # check hostname
+                    remote_hostname = r_dict.get('hostname', '')
+
+                    self.RASPBERRY_IP[remote_hostname] = ip_addr
+
+                    # set raspberry time date
+                    date, hour = date_iso().split(" ")
+                    try:
+                        r3 = requests.get(f"http://{ip_addr}:{SERVER_PORT}/sync_time/{date}/{hour}")
+                        if r3.status_code == 200:
+                            logging.info(f"{ip_addr}: sync time OK {date} {hour}")
+                        else:
+                            logging.info(f"{ip_addr}: sync time failed")    
+                    except Exception:
+                        logging.info(f"{ip_addr}: sync time failed")
+
+
+                    '''
                     mac_addr = r_dict.get("MAC_addr", "")
+
+                    
                     if mac_addr in RASPBERRY_MAC_ADDR:
                         self.RASPBERRY_IP[RASPBERRY_MAC_ADDR[mac_addr]] = ip_addr
                         # check hostname
@@ -431,6 +461,7 @@ class Video_recording_control(QMainWindow):
                                 logging.info(f"{ip_addr}: sync time failed")    
                         except Exception:
                             logging.info(f"{ip_addr}: sync time failed")
+                    '''
                 except:
                     logging.debug(f"{ip_addr}: not available")
         except:
@@ -466,7 +497,9 @@ class Video_recording_control(QMainWindow):
         app.processEvents()
         self.scan_raspberries()
         self.message_box.setText(f"Scanning done: {len(self.RASPBERRY_IP)} client(s) found")
-        self.status_all(output=output)
+        #self.status_all(output=output)
+
+        print(self.RASPBERRY_IP)
 
 
     def show_ip_list(self):
@@ -578,7 +611,7 @@ class Video_recording_control(QMainWindow):
         """
         request a list of video to all raspberries
         """
-        for rb in sorted([RASPBERRY_MAC_ADDR[x] for x in RASPBERRY_MAC_ADDR]):
+        for rb in sorted(self.RASPBERRY_IP.keys()):
             self.video_list(rb)
 
 
@@ -621,7 +654,7 @@ class Video_recording_control(QMainWindow):
         if not ok:
             return
 
-        for rb in sorted([RASPBERRY_MAC_ADDR[x] for x in RASPBERRY_MAC_ADDR]):
+        for rb in sorted(self.RASPBERRY_IP.keys()):
             if self.raspberry_status[rb]:
                 self.rb_msg(rb, f"sent command: {text}")
                 try:
@@ -667,7 +700,7 @@ class Video_recording_control(QMainWindow):
         if not ok or text != "yes":
             return
 
-        for rb in sorted([RASPBERRY_MAC_ADDR[x] for x in RASPBERRY_MAC_ADDR]):
+        for rb in sorted(self.RASPBERRY_IP.keys()):
             if self.raspberry_status[rb]:
                 try:
                     r = requests.get(f"http://{self.RASPBERRY_IP[rb]}:{SERVER_PORT}/reboot")
@@ -704,7 +737,7 @@ class Video_recording_control(QMainWindow):
         if not ok or text != "yes":
             return
 
-        for rb in sorted([RASPBERRY_MAC_ADDR[x] for x in RASPBERRY_MAC_ADDR]):
+        for rb in sorted(self.RASPBERRY_IP.keys()):
             if self.raspberry_status[rb]:
                 try:
                     r = requests.get(f"http://{self.RASPBERRY_IP[rb]}:{SERVER_PORT}/shutdown")
@@ -840,7 +873,7 @@ class Video_recording_control(QMainWindow):
         self.status_list[rb].setStyleSheet(f"background: {color};")
         self.record_button[rb].setStyleSheet(f"background: {color};" if self.status_dict[rb].get("video_recording", False) else "")
         self.video_streaming_btn[rb].setStyleSheet(f"background: {color};" if self.status_dict[rb].get("video_streaming_active", False) else "")
-        self.tw.setTabIcon(sorted(RASPBERRY_MAC_ADDR.values()).index(rb), QIcon(f"{color}.png"))
+        self.tw.setTabIcon(sorted(self.RASPBERRY_IP.keys()).index(rb), QIcon(f"{color}.png"))
 
 
 
@@ -849,12 +882,12 @@ class Video_recording_control(QMainWindow):
         ask status to all raspberries
         """
         if output:
-            for rb in sorted([RASPBERRY_MAC_ADDR[x] for x in RASPBERRY_MAC_ADDR]):
+            for rb in sorted(self.RASPBERRY_IP.keys()):
                 self.status_list[rb].setStyleSheet("")
 
         self.status_dict = {}
         threads = []
-        for rb in sorted([RASPBERRY_MAC_ADDR[x] for x in RASPBERRY_MAC_ADDR]):
+        for rb in sorted(self.RASPBERRY_IP.keys()):
             if output: self.rb_msg(rb, "status requested")
             threads.append(threading.Thread(target=self.status2, args=(rb,)))
             threads[-1].start()
@@ -886,7 +919,7 @@ class Video_recording_control(QMainWindow):
         """
         synchronize all raspberries
         """
-        for rb in sorted([RASPBERRY_MAC_ADDR[x] for x in RASPBERRY_MAC_ADDR]):
+        for rb in sorted(self.RASPBERRY_IP.keys()):
             self.sync_time(rb)
 
 
@@ -1005,7 +1038,7 @@ class Video_recording_control(QMainWindow):
         if not ok or text != "yes":
             return
 
-        for rb in sorted([RASPBERRY_MAC_ADDR[x] for x in RASPBERRY_MAC_ADDR]):
+        for rb in sorted(self.RASPBERRY_IP.keys()):
             if self.raspberry_status[rb]:
                 self.rb_msg(rb, "Server update requested")
                 r = os.system(f"scp server.py pi@{self.RASPBERRY_IP[rb]}:{CLIENT_PROJECT_DIRECTORY}")
@@ -1104,7 +1137,7 @@ class Video_recording_control(QMainWindow):
             download_dir = VIDEO_ARCHIVE
 
 
-        for rb in sorted([RASPBERRY_MAC_ADDR[x] for x in RASPBERRY_MAC_ADDR]):
+        for rb in sorted(self.RASPBERRY_IP.keys()):
             if self.raspberry_status[rb]:
                 self.download_all_video(rb, download_dir)
 
