@@ -37,7 +37,7 @@ from PIL.ImageQt import ImageQt
 
 
 
-from config_coordinator import *
+from config_coordinator_local import *
 
 __version__ = "5"
 __version_date__ = "2021-03-17"
@@ -141,19 +141,81 @@ class Video_recording_control(QMainWindow):
 
         self.setGeometry(0, 0, 1300, 768)
 
-        layout = QVBoxLayout()
-        hlayout1 = QHBoxLayout()
-
-        stylesheet = """QTabBar::tab:selected {background: lightgray;} QTabWidget>QWidget>QWidget{background: lightgray;}"""
-        self.tw = QTabWidget()
-        self.tw.setStyleSheet(stylesheet)
-
-        q1 = QWidget()
-
         self.raspberry_status = {}
-        rasp_count = 0
+        self.status_all(output=True)
+
+        '''
+        layout = QVBoxLayout()
 
 
+        #stylesheet = """QTabBar::tab:selected {background: lightgray;} QTabWidget>QWidget>QWidget{background: lightgray;}"""
+        #self.tw = QTabWidget()
+        #self.tw.setStyleSheet(stylesheet)
+        self.tw = self.create_raspberry_tabs()
+
+
+
+        layout.addLayout(self.create_all_buttons())
+
+        layout.addLayout(self.create_navigation_buttons())
+
+        # self.status_all(output=True)
+
+        # add tab widget
+        layout.addWidget(self.tw)
+
+        main_widget = QWidget(self)
+        main_widget.setLayout(layout)
+
+        self.setCentralWidget(main_widget)
+        '''
+
+        self.create_interface()
+
+        self.create_menu()
+
+        self.show()
+        app.processEvents()
+
+        # self.scan_network(output=True)
+
+        self.status_timer = QTimer()
+        self.status_timer.timeout.connect(lambda: self.status_all(output=False))
+        self.status_timer.setInterval(REFRESH_INTERVAL * 1000)
+        self.status_timer.start()
+
+
+    def create_menu(self):
+        self.exitAct = QAction("E&xit", self, shortcut="Ctrl+Q", triggered=self.close)
+        self.ip_list = QAction("Show raspberries IP", self, triggered=self.show_ip_list)
+
+        self.fileMenu = QMenu("&File", self)
+        self.fileMenu.addAction(self.exitAct)
+        self.menuBar().addMenu(self.fileMenu)
+
+        self.tools_menu = QMenu("&Tools", self)
+        self.tools_menu.addAction(self.ip_list)
+        self.menuBar().addMenu(self.tools_menu)
+
+
+    def create_interface(self):
+        layout = QVBoxLayout()
+        layout.addLayout(self.create_all_buttons())
+        layout.addLayout(self.create_navigation_buttons())
+
+        self.tw = self.create_raspberry_tabs()
+        layout.addWidget(self.tw)
+
+        main_widget = QWidget(self)
+        main_widget.setLayout(layout)
+
+        self.setCentralWidget(main_widget)
+
+
+
+
+
+    def create_all_buttons(self):
         # buttons for all raspberries
         hlayout_all_buttons = QHBoxLayout()
         hlayout_all_buttons.addWidget(QPushButton("Status from all", clicked=partial(self.status_all, output=True)))
@@ -166,8 +228,10 @@ class Video_recording_control(QMainWindow):
         hlayout_all_buttons.addWidget(QPushButton("Reboot all", clicked=self.reboot_all))
         hlayout_all_buttons.addWidget(QPushButton("Shutdown all", clicked=self.shutdown_all))
         hlayout_all_buttons.addWidget(QPushButton("Scan network", clicked=partial(self.scan_network, output=True)))
-        layout.addLayout(hlayout_all_buttons)
 
+        return hlayout_all_buttons
+
+    def create_navigation_buttons(self):
         # add navigation buttons
         hlayout_navigation_buttons = QHBoxLayout()
         hlayout_navigation_buttons.addWidget(QPushButton("<-", clicked=self.go_left))
@@ -176,13 +240,18 @@ class Video_recording_control(QMainWindow):
         hlayout_navigation_buttons.addWidget(self.message_box)
         hlayout_navigation_buttons.addItem(QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
 
-        layout.addLayout(hlayout_navigation_buttons)
+        return hlayout_navigation_buttons
 
 
+    def create_raspberry_tabs(self):
 
-        self.scan_network(output=True)
+        stylesheet = """QTabBar::tab:selected {background: lightgray;} QTabWidget>QWidget>QWidget{background: lightgray;}"""
+        tw = QTabWidget()
+        tw.setStyleSheet(stylesheet)
 
-
+        hlayout1 = QHBoxLayout()
+        q1 = QWidget()
+        rasp_count = 0
         for rb in sorted(self.RASPBERRY_IP.keys()):
 
             self.download_process[rb] = QProcess()
@@ -330,7 +399,7 @@ class Video_recording_control(QMainWindow):
 
             right_layout.addLayout(l2)
 
-            l2.addWidget(QLabel("Prefix"))
+            l2.addWidget(QLabel("Video file name prefix"))
             self.prefix[rb] = QLineEdit("")
             l2.addWidget(self.prefix[rb])
 
@@ -366,45 +435,11 @@ class Video_recording_control(QMainWindow):
 
             if rasp_count % GUI_COLUMNS_NUMBER == 0 or rasp_count == len(self.RASPBERRY_IP):
                 q1.setLayout(hlayout1)
-                self.tw.addTab(q1, rb)
+                tw.addTab(q1, rb)
                 hlayout1 = QHBoxLayout()
                 q1 = QWidget()
 
-
-        self.status_all(output=True)
-
-        # add tab widget
-        layout.addWidget(self.tw)
-
-        main_widget = QWidget(self)
-        main_widget.setLayout(layout)
-
-        self.setCentralWidget(main_widget)
-
-        self.create_menu()
-
-        self.show()
-        app.processEvents()
-
-        # self.scan_network(output=True)
-
-        self.status_timer = QTimer()
-        self.status_timer.timeout.connect(lambda: self.status_all(output=False))
-        self.status_timer.setInterval(REFRESH_INTERVAL * 1000)
-        self.status_timer.start()
-
-
-    def create_menu(self):
-        self.exitAct = QAction("E&xit", self, shortcut="Ctrl+Q", triggered=self.close)
-        self.ip_list = QAction("Show raspberries IP", self, triggered=self.show_ip_list)
-
-        self.fileMenu = QMenu("&File", self)
-        self.fileMenu.addAction(self.exitAct)
-        self.menuBar().addMenu(self.fileMenu)
-
-        self.tools_menu = QMenu("&Tools", self)
-        self.tools_menu.addAction(self.ip_list)
-        self.menuBar().addMenu(self.tools_menu)
+        return tw
 
 
     def connect(self, ip_addr):
@@ -467,19 +502,21 @@ class Video_recording_control(QMainWindow):
             logging.debug(f"{ip_addr}: not available")
 
 
-    def scan_raspberries(self):
+    def scan_raspberries(self, ip_addr, interval):
         '''
-        scan network same network for rapsberry  clients
+        scan network {ip_range} for raspberry clients
         '''
-        current_ip = get_wlan_ip_address()
+        #current_ip = get_wlan_ip_address()
 
         # current_ip = get_ip()
 
-        current_ip = '130.192.200.127'
+        # current_ip = '130.192.200.127'
 
-        logging.info(f"current WLAN IP address: {current_ip}")
-        ip_mask = ".".join(current_ip.split(".")[0:3])
-        ip_list = [f"{ip_mask}.{x}" for x in range(WLAN_INTERVAL[0], WLAN_INTERVAL[1] + 1)]
+        # logging.info(f"current WLAN IP address: {current_ip}")
+
+
+        ip_mask = ".".join(ip_addr.split(".")[0:3])
+        ip_list = [f"{ip_mask}.{x}" for x in range(interval[0], interval[1] + 1)]
         self.RASPBERRY_IP = {}
         threads = []
         logging.info("testing subnet")
@@ -495,15 +532,26 @@ class Video_recording_control(QMainWindow):
 
     def scan_network(self, output):
         """
-
+        scan all network defined in IP_RANGES
         """
         self.message_box.setText("Scanning network...")
         app.processEvents()
-        self.scan_raspberries()
-        self.message_box.setText(f"Scanning done: {len(self.RASPBERRY_IP)} client(s) found")
+
+        for ip_range in IP_RANGES:
+
+            ip_addr, interval = ip_range[0], ip_range[1]
+            self.scan_raspberries(ip_addr, interval)
+
+            self.message_box.setText(f"Scanning done: {len(self.RASPBERRY_IP)} client(s) found on {ip_range}")
+
+
+
+        print("self.RASPBERRY_IP", self.RASPBERRY_IP)
+
+        self.create_raspberry_tabs()
+
         self.status_all(output=output)
 
-        print(self.RASPBERRY_IP)
 
 
     def show_ip_list(self):
@@ -885,6 +933,9 @@ class Video_recording_control(QMainWindow):
         """
         ask status to all raspberries
         """
+
+        print(self.status_list)
+
         if output:
             for rb in sorted(self.RASPBERRY_IP.keys()):
                 self.status_list[rb].setStyleSheet("")
