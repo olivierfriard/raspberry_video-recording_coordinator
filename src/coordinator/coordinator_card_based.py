@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QMainWindow,
                              QLineEdit, QMessageBox, QFileDialog,
                              QInputDialog, QStackedWidget,
                              QAction, QMenu)
-from PyQt5.QtGui import QPixmap, QColor, QIcon
+from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtCore import QProcess, QTimer, Qt, QUrl
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
@@ -33,7 +33,6 @@ import socket
 import fcntl
 import struct
 import base64
-from PIL import Image
 from PIL.ImageQt import ImageQt
 
 
@@ -126,10 +125,10 @@ def get_wifi_ssid():
 
 
 class Video_recording_control(QMainWindow):
-    
+
     RASPBERRY_IP = {}
     raspberry_msg = {}
-    (status_list, text_list, download_button, record_button, 
+    (status_list, text_list, download_button, record_button,
     image_label, stack_list, combo_list, media_list, combo_list, video_streaming_btn) = {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
     (start_time, duration, interval, video_mode,
      video_quality, fps, prefix, resolution, download_process) = {}, {}, {}, {}, {}, {}, {}, {}, {}
@@ -166,7 +165,7 @@ class Video_recording_control(QMainWindow):
         hlayout_all_buttons.addWidget(QPushButton("Clear all output", clicked=self.clear_all_output))
         hlayout_all_buttons.addWidget(QPushButton("Reboot all", clicked=self.reboot_all))
         hlayout_all_buttons.addWidget(QPushButton("Shutdown all", clicked=self.shutdown_all))
-        hlayout_all_buttons.addWidget(QPushButton("Scan network", clicked=partial(self.scan_network, output=True)))        
+        hlayout_all_buttons.addWidget(QPushButton("Scan network", clicked=partial(self.scan_network, output=True)))
         layout.addLayout(hlayout_all_buttons)
 
         # add navigation buttons
@@ -183,7 +182,7 @@ class Video_recording_control(QMainWindow):
 
         self.scan_network(output=True)
 
-        
+
         for rb in sorted(self.RASPBERRY_IP.keys()):
 
             self.download_process[rb] = QProcess()
@@ -410,7 +409,7 @@ class Video_recording_control(QMainWindow):
 
     def connect(self, ip_addr):
         '''
-        try to connect to http://{ip_addr}/status 
+        try to connect to http://{ip_addr}/status
         '''
         try:
             r = requests.get(f"http://{ip_addr}:{SERVER_PORT}/status", timeout=TIME_OUT)
@@ -431,7 +430,7 @@ class Video_recording_control(QMainWindow):
                         if r3.status_code == 200:
                             logging.info(f"{ip_addr}: sync time OK {date} {hour}")
                         else:
-                            logging.info(f"{ip_addr}: sync time failed")    
+                            logging.info(f"{ip_addr}: sync time failed")
                     except Exception:
                         logging.info(f"{ip_addr}: sync time failed")
 
@@ -439,7 +438,7 @@ class Video_recording_control(QMainWindow):
                     '''
                     mac_addr = r_dict.get("MAC_addr", "")
 
-                    
+
                     if mac_addr in RASPBERRY_MAC_ADDR:
                         self.RASPBERRY_IP[RASPBERRY_MAC_ADDR[mac_addr]] = ip_addr
                         # check hostname
@@ -458,7 +457,7 @@ class Video_recording_control(QMainWindow):
                             if r3.status_code == 200:
                                 logging.info(f"{ip_addr}: sync time OK {date} {hour}")
                             else:
-                                logging.info(f"{ip_addr}: sync time failed")    
+                                logging.info(f"{ip_addr}: sync time failed")
                         except Exception:
                             logging.info(f"{ip_addr}: sync time failed")
                     '''
@@ -473,7 +472,12 @@ class Video_recording_control(QMainWindow):
         scan network same network for rapsberry  clients
         '''
         current_ip = get_wlan_ip_address()
-        logging.info(f"current IP address: {current_ip}")
+
+        # current_ip = get_ip()
+
+        current_ip = '130.192.200.127'
+
+        logging.info(f"current WLAN IP address: {current_ip}")
         ip_mask = ".".join(current_ip.split(".")[0:3])
         ip_list = [f"{ip_mask}.{x}" for x in range(WLAN_INTERVAL[0], WLAN_INTERVAL[1] + 1)]
         self.RASPBERRY_IP = {}
@@ -491,7 +495,7 @@ class Video_recording_control(QMainWindow):
 
     def scan_network(self, output):
         """
-        
+
         """
         self.message_box.setText("Scanning network...")
         app.processEvents()
@@ -547,7 +551,7 @@ class Video_recording_control(QMainWindow):
 
     def combo_index_changed(self, rb, idx):
         '''
-        switch view for client output 
+        switch view for client output
         '''
         self.stack_list[rb].setCurrentIndex(idx)
 
@@ -814,7 +818,7 @@ class Video_recording_control(QMainWindow):
 
         self.status_list[rb].setStyleSheet(f"background: {color};")
         self.raspberry_status[rb] = (color != "red")
-        
+
         self.tw.setTabIcon(sorted(RASPBERRY_MAC_ADDR.values()).index(rb), QIcon(f"{color}.png"))
 
         if color == "red" and output:
@@ -1057,7 +1061,7 @@ class Video_recording_control(QMainWindow):
             download_dir = VIDEO_ARCHIVE
 
         if not pathlib.Path(download_dir).is_dir():
-            QMessageBox.critical(None, "Raspberry controller", 
+            QMessageBox.critical(None, "Raspberry controller",
                                  f"Destination not found!<br>{VIDEO_ARCHIVE}<br><br>Choose another directory",
                                  QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
 
@@ -1121,7 +1125,7 @@ class Video_recording_control(QMainWindow):
             return
 
         if not pathlib.Path(VIDEO_ARCHIVE).is_dir():
-            QMessageBox.critical(None, "Raspberry - Video recording", 
+            QMessageBox.critical(None, "Raspberry - Video recording",
                                  f"Destination not found!<br>{VIDEO_ARCHIVE}<br><br>Choose another directory",
                                  QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
 

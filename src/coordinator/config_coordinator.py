@@ -8,7 +8,7 @@ RASPBERRY_MAC_ADDR = {
 TIME_OUT = 10
 SERVER_PORT = 5000
 DEBUG = True
-WLAN_INTERVAL = [2, 32]
+WLAN_INTERVAL = [128, 254]
 
 # path for receiving video from raspberries
 VIDEO_ARCHIVE  = "/data/tmp"
