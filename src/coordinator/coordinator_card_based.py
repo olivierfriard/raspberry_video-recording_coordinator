@@ -501,7 +501,7 @@ class Video_recording_control(QMainWindow):
         app.processEvents()
         self.scan_raspberries()
         self.message_box.setText(f"Scanning done: {len(self.RASPBERRY_IP)} client(s) found")
-        #self.status_all(output=output)
+        self.status_all(output=output)
 
         print(self.RASPBERRY_IP)
 
