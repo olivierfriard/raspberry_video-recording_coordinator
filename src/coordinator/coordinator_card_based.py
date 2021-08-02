@@ -6,7 +6,7 @@ TODO:
 CLIENT_PROJECT_DIRECTORY: ask to raspberry
 """
 
-from PyQt5.QtWidgets import (QApplication, QWidget, QMainWindow,
+from PyQt5.QtWidgets import (QApplication, QListWidget, QWidget, QMainWindow,
                              QVBoxLayout, QHBoxLayout, QTabWidget,
                              QTextEdit, QPushButton, QLabel, QComboBox,
                              QSpinBox, QSpacerItem, QSizePolicy,
@@ -200,11 +200,26 @@ class Video_recording_control(QMainWindow):
 
     def create_interface(self):
         layout = QVBoxLayout()
+
         layout.addLayout(self.create_all_buttons())
+
         layout.addLayout(self.create_navigation_buttons())
 
+        '''
         self.tw = self.create_raspberry_tabs()
         layout.addWidget(self.tw)
+        '''
+
+        self.tw = QTabWidget()
+
+        self.q1 = self.create_raspberry_commands()
+
+        self.tw.addTab(self.q1, "Raspberry Pi commands")
+
+        self.tw.addTab(QWidget(), "2")
+
+        layout.addWidget(self.tw)
+
 
         main_widget = QWidget(self)
         main_widget.setLayout(layout)
@@ -214,8 +229,10 @@ class Video_recording_control(QMainWindow):
 
 
 
-
     def create_all_buttons(self):
+        """
+        Create buttons to send commands to all Raspberries Pi
+        """
         # buttons for all raspberries
         hlayout_all_buttons = QHBoxLayout()
         hlayout_all_buttons.addWidget(QPushButton("Status from all", clicked=partial(self.status_all, output=True)))
@@ -231,7 +248,11 @@ class Video_recording_control(QMainWindow):
 
         return hlayout_all_buttons
 
+
     def create_navigation_buttons(self):
+        """
+        Create buttons for selection of Raspberry Pi
+        """
         # add navigation buttons
         hlayout_navigation_buttons = QHBoxLayout()
         hlayout_navigation_buttons.addWidget(QPushButton("<-", clicked=self.go_left))
@@ -241,6 +262,199 @@ class Video_recording_control(QMainWindow):
         hlayout_navigation_buttons.addItem(QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
 
         return hlayout_navigation_buttons
+
+
+    def create_raspberry_commands(self):
+
+        hlayout1 = QHBoxLayout()
+        q1 = QWidget()
+
+        # self.download_process[rb] = QProcess()
+
+        l = QHBoxLayout()
+
+        left_left_layout = QVBoxLayout()
+        self.rasp_list = QListWidget()
+        left_left_layout.addWidget(self.rasp_list)
+
+        left_layout = QVBoxLayout()
+
+        combo = QComboBox(self)
+        combo.addItem("view command output")
+        combo.addItem("view picture")
+        combo.addItem("video streaming")
+        combo.currentIndexChanged[int].connect(self.combo_index_changed)
+        self.combo_list = combo
+        left_layout.addWidget(self.combo_list)
+
+        self.stack_list = QStackedWidget()
+
+        self.stack1 = QWidget()
+        # command output
+        stack1_layout = QHBoxLayout()
+        self.text_list = QTextEdit()
+        self.text_list.setLineWrapMode(QTextEdit.NoWrap)
+        self.text_list.setFontFamily("Monospace")
+        stack1_layout.addWidget(self.text_list)
+        self.stack1.setLayout(stack1_layout)
+
+        # image viewer
+        self.stack2 = QWidget()
+        stack2_layout = QHBoxLayout()
+        stack2_layout.setContentsMargins(0, 0, 0, 0)
+        self.image_label = QLabel()
+        self.image_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.image_label.setAlignment(Qt.AlignCenter)
+        self.image_label.setStyleSheet("QLabel {background-color: black;}")
+
+        stack2_layout.addWidget(self.image_label)
+        self.stack2.setLayout(stack2_layout)
+
+        self.stack_list.addWidget(self.stack1)
+        self.stack_list.addWidget(self.stack2)
+
+        # video streaming viewer
+        self.stack3 = QWidget()
+        stack3_layout = QHBoxLayout()
+        stack3_layout.setContentsMargins(0, 0, 0, 0)
+
+        mediaPlayer = QMediaPlayer(None, QMediaPlayer.VideoSurface)
+        self.media_list = mediaPlayer
+        videoWidget = QVideoWidget()
+
+        # Create a widget for window contents
+        wid = QWidget(self)
+        layout_video = QHBoxLayout()
+        layout_video.setContentsMargins(0, 0, 0, 0)
+        layout_video.addWidget(videoWidget)
+
+        # Set widget to contain window contents
+        wid.setLayout(layout_video)
+
+        self.media_list.setVideoOutput(videoWidget)
+        stack3_layout.addWidget(wid)
+
+        self.stack3.setLayout(stack3_layout)
+
+        self.stack_list.addWidget(self.stack1)
+        self.stack_list.addWidget(self.stack2)
+        self.stack_list.addWidget(self.stack3)
+
+        left_layout.addWidget(self.stack_list)
+        self.stack_list.setCurrentIndex(0)
+
+        right_layout = QVBoxLayout()
+
+        l2 = QHBoxLayout()
+
+        self.status_list = QPushButton("Status", clicked=partial(self.status_one, output=True))
+        l2.addWidget(self.status_list)
+
+        l2.addWidget(QPushButton("Sync time", clicked=self.sync_time))
+        l2.addWidget(QPushButton("Get log", clicked=self.get_log))
+        l2.addWidget(QPushButton("Clear output", clicked=self.clear_output))
+        l2.addWidget(QPushButton("Blink", clicked=self.blink))
+        l2.addWidget(QPushButton("Send key", clicked=self.send_public_key))
+
+        right_layout.addLayout(l2)
+
+        right_layout.addWidget(QLabel("<b>Picture</b>"))
+        l2 = QHBoxLayout()
+        l2.addWidget(QLabel("Resolution"))
+        self.resolution = QComboBox()
+        for resol in RESOLUTIONS:
+            self.resolution.addItem(resol)
+        self.resolution.setCurrentIndex(DEFAULT_RESOLUTION)
+        l2.addWidget(self.resolution)
+        right_layout.addLayout(l2)
+        right_layout.addWidget(QPushButton("Take one picture", clicked=self.one_picture))
+
+
+        right_layout.addWidget(QLabel("<b>Video</b>"))
+        l2 = QHBoxLayout()
+        self.video_streaming_btn = QPushButton("Start video streaming", clicked=partial(self.video_streaming, "start"))
+        l2.addWidget(self.video_streaming_btn)
+        l2.addWidget(QPushButton("Stop video streaming", clicked=partial(self.video_streaming, "stop")))
+        self.record_button = QPushButton("Start video recording", clicked=self.start_video_recording)
+        l2.addWidget(self.record_button)
+        l2.addWidget(QPushButton("Stop video recording", clicked=self.stop_video_recording))
+        right_layout.addLayout(l2)
+
+        l2 = QHBoxLayout()
+        l2.addWidget(QLabel("Video mode"))
+        self.video_mode = QComboBox()
+        for resol in VIDEO_MODES:
+            self.video_mode.addItem(resol)
+        self.video_mode.setCurrentIndex(DEFAULT_VIDEO_MODE)
+        l2.addWidget(self.video_mode)
+
+        l2.addWidget(QLabel("Video quality Mbp/s"))
+        self.video_quality = QSpinBox()
+        self.video_quality.setMinimum(1)
+        self.video_quality.setMaximum(10)
+        self.video_quality.setValue(DEFAULT_VIDEO_QUALITY)
+        l2.addWidget(self.video_quality)
+
+        l2.addWidget(QLabel("FPS"))
+        self.fps = QSpinBox()
+        self.fps.setMinimum(1)
+        self.fps.setMaximum(30)
+        self.fps.setValue(DEFAULT_FPS)
+        l2.addWidget(self.fps)
+
+        horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        l2.addItem(horizontalSpacer)
+
+        right_layout.addLayout(l2)
+
+        l2 = QHBoxLayout()
+        l2.addWidget(QLabel("Duration (s)"))
+        self.duration = QSpinBox()
+        self.duration.setMinimum(10)
+        self.duration.setMaximum(86400)
+        self.duration.setValue(DEFAULT_VIDEO_DURATION)
+        l2.addWidget(self.duration)
+
+        right_layout.addLayout(l2)
+
+        l2.addWidget(QLabel("Video file name prefix"))
+        self.prefix = QLineEdit("")
+        l2.addWidget(self.prefix)
+
+        right_layout.addLayout(l2)
+
+        # get video / video list
+        l2 = QHBoxLayout()
+        q = QPushButton("Video list")
+        q.clicked.connect(self.video_list)
+        l2.addWidget(q)
+
+        self.download_button = QPushButton("Download all video", clicked=partial(self.download_all_video, ""))
+        l2.addWidget(self.download_button)
+
+        l2.addWidget(QPushButton("Delete all video", clicked=self.delete_all_video))
+        right_layout.addLayout(l2)
+
+        right_layout.addWidget(QLabel("<b>System commands</b>"))
+
+        l2 = QHBoxLayout()
+        l2.addWidget(QPushButton("Send command", clicked=self.send_command))
+        l2.addWidget(QPushButton("Reboot", clicked=self.reboot))
+        l2.addWidget(QPushButton("Shutdown", clicked=self.shutdown))
+
+        right_layout.addLayout(l2)
+
+        verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        right_layout.addItem(verticalSpacer)
+
+        l.addLayout(left_left_layout)
+        l.addLayout(left_layout)
+        l.addLayout(right_layout)
+        hlayout1.addLayout(l)
+
+        q1.setLayout(hlayout1)
+
+        return q1
 
 
     def create_raspberry_tabs(self):
@@ -253,6 +467,7 @@ class Video_recording_control(QMainWindow):
         q1 = QWidget()
         rasp_count = 0
         for rb in sorted(self.RASPBERRY_IP.keys()):
+            print(f"Creating Rapsberry Pi {rb}")
 
             self.download_process[rb] = QProcess()
             rasp_count += 1
@@ -539,16 +754,18 @@ class Video_recording_control(QMainWindow):
 
         for ip_range in IP_RANGES:
 
+            print(ip_range)
+
             ip_addr, interval = ip_range[0], ip_range[1]
             self.scan_raspberries(ip_addr, interval)
 
-            self.message_box.setText(f"Scanning done: {len(self.RASPBERRY_IP)} client(s) found on {ip_range}")
+            self.message_box.setText(f"Scanning done: {len(self.RASPBERRY_IP)} client(s) found on {ip_range[0]}")
 
 
 
         print("self.RASPBERRY_IP", self.RASPBERRY_IP)
 
-        self.create_raspberry_tabs()
+        # self.create_raspberry_tabs()
 
         self.status_all(output=output)
 
@@ -938,6 +1155,7 @@ class Video_recording_control(QMainWindow):
 
         if output:
             for rb in sorted(self.RASPBERRY_IP.keys()):
+                print(rb)
                 self.status_list[rb].setStyleSheet("")
 
         self.status_dict = {}
