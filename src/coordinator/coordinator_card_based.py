@@ -38,6 +38,7 @@ from PIL.ImageQt import ImageQt
 from multiprocessing.pool import ThreadPool
 import json
 import pprint
+import shutil
 
 import config_coordinator_local as cfg
 
@@ -423,8 +424,7 @@ class Video_recording_control(QMainWindow):
 
         # get video / video list
         l2 = QHBoxLayout()
-        q = QPushButton("Video list")
-        q.clicked.connect(self.video_list)
+        q = QPushButton("Get list of videos", clicked=self.get_videos_list)
         l2.addWidget(q)
 
         self.download_button = QPushButton("Download videos", clicked=self.download_videos_clicked)
@@ -482,9 +482,17 @@ class Video_recording_control(QMainWindow):
         self.video_streaming(self.current_raspberry_id, action)
 
     def download_videos_clicked(self):
-        self.download_all_video(self.current_raspberry_id, "")
+        """
+        Download videos from current Raspberry Pi
+        """
+        self.download_videos(self.current_raspberry_id, "")
 
+    def get_videos_list(self):
+        """
+        Download list of videos from current Raspberry Pi
+        """
 
+        self.video_list(self.current_raspberry_id)
 
 
     def populate_rasp_list(self):
@@ -668,36 +676,38 @@ class Video_recording_control(QMainWindow):
 
 
     def go_left(self):
-        self.tw.setCurrentIndex(self.tw.currentIndex() - 1)
+        pass
 
 
     def go_right(self):
-        self.tw.setCurrentIndex(self.tw.currentIndex() + 1)
+        pass
 
 
-    def video_list(self, rb):
+    def video_list(self, raspberry_id):
         """
         request a list of video to server
         """
 
-        if rb in self.RASPBERRY_IP and self.raspberry_status[rb]:
+        if raspberry_id in self.RASPBERRY_IP and self.raspberry_status[raspberry_id]:
             try:
-                r = requests.get(f"http://{self.RASPBERRY_IP[rb]}:{SERVER_PORT}/video_list")
+                r = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}:{cfg.SERVER_PORT}/video_list")
                 if r.status_code == 200:
-                    self.rb_msg(rb, "list received (* for files not in archive)")
+                    self.rb_msg(raspberry_id, "list received (* for files not in archive)")
                     r2 = eval(r.text)
                     if "video_list" in r2:
                         for x in sorted(r2["video_list"]):
-                            if not pathlib.Path(VIDEO_ARCHIVE + "/" + x).is_file():
-                                self.text_list[rb].append(f"<b>* {x}</b>")
+                            if not pathlib.Path(cfg.VIDEO_ARCHIVE + "/" + x).is_file():
+                                self.raspberry_output[raspberry_id] += f"<b>* {x}</b><br>"
                             else:
-                                self.text_list[rb].append(x)
+                                self.raspberry_output[raspberry_id] += f"{x}<br>"
+
+                    self.rb_msg(raspberry_id, "")
                 else:
-                    self.rb_msg(rb, f"<b>Error status code: {r.status_code}</b>")
-                    self.status_one(rb, output=False)
+                    self.rb_msg(raspberry_id, f"<b>Error status code: {r.status_code}</b>")
+                    self.status_one(output=False)
             except Exception:
-                self.rb_msg(rb, "<b>Error</b>")
-                self.status_one(rb, output=False)
+                self.rb_msg(raspberry_id, "<b>Error</b>")
+
 
 
     def video_list_from_all(self):
@@ -1174,20 +1184,22 @@ class Video_recording_control(QMainWindow):
                     self.rb_msg(rb, "<b>Error during server update</b>")
 
 
-    def download_videos(self, rb, download_dir=""):
+
+
+    def download_videos(self, raspberry_id, download_dir=""):
         """
         download all video from one raspberry
         """
 
         if download_dir == "":
-            download_dir = VIDEO_ARCHIVE
+            download_dir = cfg.VIDEO_ARCHIVE
 
         if not pathlib.Path(download_dir).is_dir():
             QMessageBox.critical(None, "Raspberry controller",
-                                 f"Destination not found!<br>{VIDEO_ARCHIVE}<br><br>Choose another directory",
+                                 f"Destination not found!<br>{cfg.VIDEO_ARCHIVE}<br><br>Choose another directory",
                                  QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
 
-            new_download_dir = QFileDialog().getExistingDirectory(self, "Choose a directory to download video",
+            new_download_dir = QFileDialog().getExistingDirectory(self, "Choose a directory to download videos",
                                                                   str(pathlib.Path.home()),
                                                                   options=QFileDialog.ShowDirsOnly)
             if new_download_dir:
@@ -1195,21 +1207,35 @@ class Video_recording_control(QMainWindow):
             else:
                 return
 
-        if rb in self.RASPBERRY_IP and self.raspberry_status[rb]:
+        if raspberry_id in self.RASPBERRY_IP and self.raspberry_status[raspberry_id]:
 
-            self.clear_output(rb)
-            self.download_button[rb].setStyleSheet("background: red;")
-            app.processEvents()
-            self.download_process[rb] = QProcess()
-            self.download_process[rb].setProcessChannelMode(QProcess.MergedChannels)
-            self.download_process[rb].readyReadStandardOutput.connect(lambda: self.read_process_stdout(rb))
-            self.download_process[rb].error.connect(lambda x: self.process_error(x, rb))
-            self.download_process[rb].finished.connect(lambda exitcode: self.download_finished(exitcode, rb))
+            try:
+                r = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}:{cfg.SERVER_PORT}/video_list")
+                if r.status_code == 200:
+                    self.rb_msg(raspberry_id, "list received (* for files not in archive)")
+                    r2 = eval(r.text)
+                    if "video_list" in r2:
+                        for x in sorted(r2["video_list"]):
+                            if not pathlib.Path(cfg.VIDEO_ARCHIVE + "/" + x).is_file():
+                                print(f"dOWNLOADING {x}")
 
-            self.download_process[rb].start("rsync",
-                                            ["-avz",
-                                             f"pi@{self.RASPBERRY_IP[rb]}:{CLIENT_PROJECT_DIRECTORY}/static/video_archive/",
-                                             download_dir])
+                                with requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}:{cfg.SERVER_PORT}/static/video_archive/{x}", stream=True) as r:
+                                        with open(cfg.VIDEO_ARCHIVE + "/" + x, 'wb') as f:
+                                            shutil.copyfileobj(r.raw, f)
+
+
+                                # r = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}:{cfg.SERVER_PORT}/static/video_archive/{x}")
+
+                                print(f"{x} downloaded")
+
+                    self.rb_msg(raspberry_id, "")
+                else:
+                    self.rb_msg(raspberry_id, f"<b>Error status code: {r.status_code}</b>")
+                    self.status_one(output=False)
+            except Exception:
+                self.rb_msg(raspberry_id, "<b>Error</b>")
+
+
 
 
     def read_process_stdout(self, rb):
@@ -1246,9 +1272,9 @@ class Video_recording_control(QMainWindow):
         if not ok or text != "yes":
             return
 
-        if not pathlib.Path(VIDEO_ARCHIVE).is_dir():
+        if not pathlib.Path(cfg.VIDEO_ARCHIVE).is_dir():
             QMessageBox.critical(None, "Raspberry - Video recording",
-                                 f"Destination not found!<br>{VIDEO_ARCHIVE}<br><br>Choose another directory",
+                                 f"Destination not found!<br>{cfg.VIDEO_ARCHIVE}<br><br>Choose another directory",
                                  QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
 
             new_download_dir = QFileDialog().getExistingDirectory(self, "Choose a directory to download video",
@@ -1260,7 +1286,7 @@ class Video_recording_control(QMainWindow):
             else:
                 download_dir = new_download_dir
         else:
-            download_dir = VIDEO_ARCHIVE
+            download_dir = cfg.VIDEO_ARCHIVE
 
 
         for rb in sorted(self.RASPBERRY_IP.keys()):
