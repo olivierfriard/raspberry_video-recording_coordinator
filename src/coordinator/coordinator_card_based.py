@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QMainWindow,
                              QListWidget, QListWidgetItem,
                              QAction, QMenu)
 from PyQt5.QtGui import QPixmap, QIcon
-from PyQt5.QtCore import QProcess, QTimer, Qt, QUrl
+from PyQt5.QtCore import QTimer, Qt, QUrl, pyqtSignal, QObject, QThread
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 
@@ -127,7 +127,40 @@ def get_wifi_ssid():
 
 
 
+
 class Video_recording_control(QMainWindow):
+
+
+    class Download_videos_worker(QObject):
+        def __init__(self, raspberry_ip):
+            super().__init__()
+            self.raspberry_ip = raspberry_ip
+
+        start = pyqtSignal(str, list)
+        finished = pyqtSignal(str)
+
+        def run(self, raspberry_id, videos_list):
+            print(raspberry_id, videos_list)
+
+            #raspberry_id, videos_list = args
+            output = ""
+            for video_file_name in sorted(videos_list):
+                if not pathlib.Path(cfg.VIDEO_ARCHIVE + "/" + video_file_name).is_file():
+
+                    logging.info(f"Downloading  {video_file_name} from {raspberry_id}")
+
+                    with requests.get(f"http://{self.raspberry_ip[raspberry_id]}:{cfg.SERVER_PORT}/static/video_archive/{video_file_name}", stream=True) as r:
+                            with open(cfg.VIDEO_ARCHIVE + "/" + video_file_name, 'wb') as file_out:
+                                shutil.copyfileobj(r.raw, file_out)
+
+                    logging.info(f"{video_file_name} downloaded from {raspberry_id}")
+                    output += f"{video_file_name} downloaded\n"
+
+            if output == "":
+                self.finished.emit("No video to download")
+            else:
+                self.finished.emit(output)
+
 
     RASPBERRY_IP = {}
     raspberry_msg = {}
@@ -339,12 +372,25 @@ class Video_recording_control(QMainWindow):
         self.stack_list.setCurrentIndex(0)
 
 
+
         commands_layout = QVBoxLayout()
+
+        tw_commands = QTabWidget()
+
+        self.status_tab = QWidget()
+        tw_commands.addTab(self.status_tab, "Status")
+
+
+        status_layout = QVBoxLayout()
+
+        l2 = QHBoxLayout()
+        l2.addWidget(QLabel("Raspberry Pi id: "))
         self.lb_raspberry_id = QLabel(" ")
-        commands_layout.addWidget(self.lb_raspberry_id)
+        l2.addWidget(self.lb_raspberry_id)
+        status_layout.addLayout(l2)
 
+        l2 = QHBoxLayout()
         buttons = QHBoxLayout()
-
         self.status_list = QPushButton("Status", clicked=partial(self.status_one, output=True))
         buttons.addWidget(self.status_list)
 
@@ -353,23 +399,54 @@ class Video_recording_control(QMainWindow):
         buttons.addWidget(QPushButton("Clear output", clicked=self.clear_output))
         buttons.addWidget(QPushButton("Blink", clicked=self.blink))
         buttons.addWidget(QPushButton("Send key", clicked=self.send_public_key))
+        l2.addLayout(buttons)
 
-        commands_layout.addLayout(buttons)
+        status_layout.addLayout(l2)
 
-        commands_layout.addWidget(QLabel("<b>Picture</b>"))
         l2 = QHBoxLayout()
+        l2.addWidget(QLabel("<b>System commands</b>"))
+
+        l2.addWidget(QPushButton("Send command", clicked=self.send_command))
+        l2.addWidget(QPushButton("Reboot", clicked=self.reboot))
+        l2.addWidget(QPushButton("Shutdown", clicked=self.shutdown_clicked))
+
+        status_layout.addLayout(l2)
+
+        verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        status_layout.addItem(verticalSpacer)
+
+
+        self.status_tab.setLayout(status_layout)
+
+
+        self.picture_tab = QWidget()
+        tw_commands.addTab(self.picture_tab, "Picture")
+
+        l2 = QHBoxLayout()
+
+        l2.addWidget(QLabel("<b>Picture</b>"))
+
         l2.addWidget(QLabel("Resolution"))
         self.resolution = QComboBox()
         for resol in cfg.PICTURE_RESOLUTIONS:
             self.resolution.addItem(resol)
         self.resolution.setCurrentIndex(cfg.DEFAULT_PICTURE_RESOLUTION)
         l2.addWidget(self.resolution)
-        commands_layout.addLayout(l2)
-        commands_layout.addWidget(QPushButton("Take one picture", clicked=self.one_picture))
+
+        l2.addWidget(QPushButton("Take one picture", clicked=self.one_picture))
+
+        self.picture_tab.setLayout(l2)
 
 
-        commands_layout.addWidget(QLabel("<b>Video</b>"))
+        self.video_tab = QWidget()
+        tw_commands.addTab(self.video_tab, "Video")
+
+        video_layout = QVBoxLayout()
+
         l2 = QHBoxLayout()
+
+        l2.addWidget(QLabel("<b>Video</b>"))
+
         self.video_streaming_btn = QPushButton("Start video streaming", clicked=partial(self.video_streaming_clicked, "start"))
         l2.addWidget(self.video_streaming_btn)
         l2.addWidget(QPushButton("Stop video streaming", clicked=partial(self.video_streaming_clicked, "stop")))
@@ -377,7 +454,8 @@ class Video_recording_control(QMainWindow):
         self.record_button = QPushButton("Start video recording", clicked=self.start_video_recording)
         l2.addWidget(self.record_button)
         l2.addWidget(QPushButton("Stop video recording", clicked=self.stop_video_recording))
-        commands_layout.addLayout(l2)
+        video_layout.addLayout(l2)
+
 
         l2 = QHBoxLayout()
         l2.addWidget(QLabel("Video mode"))
@@ -404,7 +482,7 @@ class Video_recording_control(QMainWindow):
         horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
         l2.addItem(horizontalSpacer)
 
-        commands_layout.addLayout(l2)
+        video_layout.addLayout(l2)
 
         l2 = QHBoxLayout()
         l2.addWidget(QLabel("Duration (s)"))
@@ -414,13 +492,13 @@ class Video_recording_control(QMainWindow):
         self.duration.setValue(cfg.DEFAULT_VIDEO_DURATION)
         l2.addWidget(self.duration)
 
-        commands_layout.addLayout(l2)
+        video_layout.addLayout(l2)
 
         l2.addWidget(QLabel("Video file name prefix"))
         self.prefix = QLineEdit("")
         l2.addWidget(self.prefix)
 
-        commands_layout.addLayout(l2)
+        video_layout.addLayout(l2)
 
         # get video / video list
         l2 = QHBoxLayout()
@@ -430,20 +508,21 @@ class Video_recording_control(QMainWindow):
         self.download_button = QPushButton("Download videos", clicked=self.download_videos_clicked)
         l2.addWidget(self.download_button)
 
+        self.lb_download_videos = QLabel("...")
+        l2.addWidget(self.lb_download_videos)
+
         l2.addWidget(QPushButton("Delete all video", clicked=self.delete_all_video))
-        commands_layout.addLayout(l2)
+        video_layout.addLayout(l2)
 
-        commands_layout.addWidget(QLabel("<b>System commands</b>"))
+        self.video_tab.setLayout(video_layout)
 
-        l2 = QHBoxLayout()
-        l2.addWidget(QPushButton("Send command", clicked=self.send_command))
-        l2.addWidget(QPushButton("Reboot", clicked=self.reboot))
-        l2.addWidget(QPushButton("Shutdown", clicked=self.shutdown_clicked))
 
-        commands_layout.addLayout(l2)
-
+        '''
         verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
-        commands_layout.addItem(verticalSpacer)
+        self.video_tab.addItem(verticalSpacer)
+        '''
+
+        commands_layout.addWidget(tw_commands)
 
         l.addLayout(rasp_list_layout)
         l.addLayout(commands_layout)
@@ -720,7 +799,7 @@ class Video_recording_control(QMainWindow):
 
     def rb_msg(self, raspberry_id, msg):
 
-        print(f"<pre>{date_iso()}: {msg}</pre>")
+        logging.info(f"{date_iso()}: {msg}")
 
         if raspberry_id not in self.raspberry_output:
             self.raspberry_output[raspberry_id] = ""
@@ -728,8 +807,7 @@ class Video_recording_control(QMainWindow):
 
         if raspberry_id == self.current_raspberry_id:
             self.text_list.setText(self.raspberry_output[raspberry_id])
-
-        app.processEvents()
+            app.processEvents()
 
 
     def send_command(self, rb):
@@ -866,7 +944,7 @@ class Video_recording_control(QMainWindow):
         if self.RASPBERRY_IP.get(self.current_raspberry_id, ""):
             self.rb_msg(self.current_raspberry_id, "blink requested")
             try:
-                r = requests.get(f"http://{self.RASPBERRY_IP[self.current_raspberry_id]}:{SERVER_PORT}/blink", timeout=2)
+                r = requests.get(f"http://{self.RASPBERRY_IP[self.current_raspberry_id]}:{cfg.SERVER_PORT}/blink", timeout=2)
             except Exception:
                 self.rb_msg(self.current_raspberry_id, "Error")
                 self.status_one(self.current_raspberry_id)
@@ -1183,13 +1261,43 @@ class Video_recording_control(QMainWindow):
                 else:
                     self.rb_msg(rb, "<b>Error during server update</b>")
 
+    def download_videos_list(self, args):
 
+        raspberry_id, videos_list = args
+        output = ""
+        for video_file_name in sorted(videos_list):
+            if not pathlib.Path(cfg.VIDEO_ARCHIVE + "/" + video_file_name).is_file():
+
+                logging.info(f"Downloading  {video_file_name} from {raspberry_id}")
+
+                with requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}:{cfg.SERVER_PORT}/static/video_archive/{video_file_name}", stream=True) as r:
+                        with open(cfg.VIDEO_ARCHIVE + "/" + video_file_name, 'wb') as file_out:
+                            shutil.copyfileobj(r.raw, file_out)
+
+                logging.info(f"{video_file_name} downloaded from {raspberry_id}")
+                output += f"{video_file_name} downloaded\n"
+
+        if output == "":
+            return ["No video to download"]
+        else:
+            return output
+
+
+    def download_videos_finished(self, r):
+
+        logging.info(f"Videos downloaded: {r[0]}\n")
 
 
     def download_videos(self, raspberry_id, download_dir=""):
         """
         download all video from one raspberry
         """
+
+        def thread_finished(output):
+            print(output)
+            self.lb_download_videos.setText("Videos downloaded")
+            self.my_thread1.quit
+
 
         if download_dir == "":
             download_dir = cfg.VIDEO_ARCHIVE
@@ -1212,27 +1320,30 @@ class Video_recording_control(QMainWindow):
             try:
                 r = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}:{cfg.SERVER_PORT}/video_list")
                 if r.status_code == 200:
-                    self.rb_msg(raspberry_id, "list received (* for files not in archive)")
+                    self.rb_msg(raspberry_id, "download: list received (* for files not in archive)")
                     r2 = eval(r.text)
                     if "video_list" in r2:
-                        for x in sorted(r2["video_list"]):
-                            if not pathlib.Path(cfg.VIDEO_ARCHIVE + "/" + x).is_file():
-                                print(f"dOWNLOADING {x}")
+                        self.rb_msg(raspberry_id, "Downloading videos\n")
+                        '''
+                        pool = ThreadPool()
+                        r = pool.map_async(self.download_videos_list, ([[raspberry_id, r2["video_list"]]]), callback=self.download_videos_finished)
+                        '''
 
-                                with requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}:{cfg.SERVER_PORT}/static/video_archive/{x}", stream=True) as r:
-                                        with open(cfg.VIDEO_ARCHIVE + "/" + x, 'wb') as f:
-                                            shutil.copyfileobj(r.raw, f)
+                        self.my_thread1 = QThread(parent=self)
+                        self.my_thread1.start()
+                        self.my_worker1 = self.Download_videos_worker(self.RASPBERRY_IP)
+                        self.my_worker1.moveToThread(self.my_thread1)
+
+                        self.my_worker1.start.connect(self.my_worker1.run) #  <---- Like this instead
+                        self.my_worker1.finished.connect(thread_finished)
+                        self.my_worker1.start.emit(raspberry_id, r2["video_list"])
 
 
-                                # r = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}:{cfg.SERVER_PORT}/static/video_archive/{x}")
-
-                                print(f"{x} downloaded")
-
-                    self.rb_msg(raspberry_id, "")
                 else:
                     self.rb_msg(raspberry_id, f"<b>Error status code: {r.status_code}</b>")
                     self.status_one(output=False)
             except Exception:
+                raise
                 self.rb_msg(raspberry_id, "<b>Error</b>")
 
 
