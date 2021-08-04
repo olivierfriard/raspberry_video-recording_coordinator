@@ -40,6 +40,9 @@ class Ui_MainWindow(object):
         self.verticalLayout.setObjectName("verticalLayout")
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
+        self.pb_scan_network = QtWidgets.QPushButton(self.widget)
+        self.pb_scan_network.setObjectName("pb_scan_network")
+        self.horizontalLayout.addWidget(self.pb_scan_network)
         self.pb_up = QtWidgets.QPushButton(self.widget)
         self.pb_up.setObjectName("pb_up")
         self.horizontalLayout.addWidget(self.pb_up)
@@ -166,6 +169,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        self.pb_scan_network.setText(_translate("MainWindow", "Scan network"))
         self.pb_up.setText(_translate("MainWindow", "Up"))
         self.pb_down.setText(_translate("MainWindow", "Down"))
         self.label.setText(_translate("MainWindow", "Status"))

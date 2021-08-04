@@ -176,6 +176,8 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         #super(MainWindow, self).__init__(parent)
         self.setupUi(self)
 
+        self.pb_scan_network.clicked.connect(self.scan_network)
+
         self.setWindowTitle("Raspberry - Video recording")
         self.statusBar().showMessage(f"v. {__version__} - {__version_date__}    WIFI SSID: {get_wifi_ssid()}    IP address: {get_wlan_ip_address()}")
 
