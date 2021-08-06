@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1296</width>
-    <height>935</height>
+    <width>1285</width>
+    <height>889</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -36,7 +36,7 @@
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
-          <widget class="QWidget" name="">
+          <widget class="QWidget" name="layoutWidget">
            <layout class="QVBoxLayout" name="verticalLayout">
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout">
@@ -71,10 +71,10 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="">
+          <widget class="QWidget" name="layoutWidget">
            <layout class="QVBoxLayout" name="verticalLayout_3">
             <item>
-             <widget class="QLabel" name="lb_rasp_id">
+             <widget class="QLabel" name="raspberry_id_lb">
               <property name="font">
                <font>
                 <pointsize>13</pointsize>
@@ -90,7 +90,7 @@
             <item>
              <widget class="QTabWidget" name="rasp_tw">
               <property name="currentIndex">
-               <number>0</number>
+               <number>3</number>
               </property>
               <widget class="QWidget" name="status_tab">
                <attribute name="title">
@@ -101,17 +101,10 @@
                  <layout class="QVBoxLayout" name="verticalLayout_4">
                   <item>
                    <layout class="QGridLayout" name="gridLayout">
-                    <item row="0" column="1">
-                     <widget class="QLabel" name="lb_status">
+                    <item row="2" column="1">
+                     <widget class="QLabel" name="cpu_temp_lb">
                       <property name="text">
                        <string/>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="0">
-                     <widget class="QLabel" name="label">
-                      <property name="text">
-                       <string>Status</string>
                       </property>
                      </widget>
                     </item>
@@ -122,8 +115,15 @@
                       </property>
                      </widget>
                     </item>
-                    <item row="1" column="1">
-                     <widget class="QLabel" name="lb_datetime">
+                    <item row="3" column="0">
+                     <widget class="QLabel" name="label_8">
+                      <property name="text">
+                       <string>WiFi ESSID</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QLabel" name="status_lb">
                       <property name="text">
                        <string/>
                       </property>
@@ -136,8 +136,36 @@
                       </property>
                      </widget>
                     </item>
-                    <item row="2" column="1">
-                     <widget class="QLabel" name="lb_cpu_temp">
+                    <item row="0" column="0">
+                     <widget class="QLabel" name="label">
+                      <property name="text">
+                       <string>Status</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="3" column="1">
+                     <widget class="QLabel" name="wifi_essid_lb">
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="1">
+                     <widget class="QLabel" name="datetime_lb">
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="4" column="0">
+                     <widget class="QLabel" name="label_9">
+                      <property name="text">
+                       <string>Free SD space</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="4" column="1">
+                     <widget class="QLabel" name="free_sd_space_lb">
                       <property name="text">
                        <string/>
                       </property>
@@ -161,25 +189,45 @@
                   <item>
                    <layout class="QHBoxLayout" name="horizontalLayout_4">
                     <item>
-                     <widget class="QPushButton" name="pb_status_update">
+                     <widget class="QPushButton" name="status_update_pb">
                       <property name="text">
                        <string>Update status</string>
                       </property>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QPushButton" name="pb_time_synchro">
+                     <widget class="QPushButton" name="time_synchro_pb">
                       <property name="text">
                        <string>Time synchronization</string>
                       </property>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QPushButton" name="pb_blink">
+                     <widget class="QPushButton" name="blink_pb">
                       <property name="text">
                        <string>Blink</string>
                       </property>
                      </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="shutdown_pb">
+                      <property name="text">
+                       <string>Shutdown</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <spacer name="horizontalSpacer">
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>40</width>
+                        <height>20</height>
+                       </size>
+                      </property>
+                     </spacer>
                     </item>
                    </layout>
                   </item>
@@ -191,73 +239,195 @@
                <attribute name="title">
                 <string>Picture</string>
                </attribute>
-               <widget class="QPushButton" name="pb_take_picture">
-                <property name="geometry">
-                 <rect>
-                  <x>40</x>
-                  <y>170</y>
-                  <width>80</width>
-                  <height>25</height>
-                 </rect>
-                </property>
-                <property name="text">
-                 <string>Take picture</string>
-                </property>
-               </widget>
-               <widget class="QWidget" name="">
-                <property name="geometry">
-                 <rect>
-                  <x>40</x>
-                  <y>60</y>
-                  <width>140</width>
-                  <height>27</height>
-                 </rect>
-                </property>
-                <layout class="QHBoxLayout" name="horizontalLayout_2">
-                 <item>
-                  <widget class="QLabel" name="label_4">
-                   <property name="text">
-                    <string>Resolution</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QComboBox" name="cb_picture_resolution"/>
-                 </item>
-                </layout>
-               </widget>
+               <layout class="QVBoxLayout" name="verticalLayout_7">
+                <item>
+                 <layout class="QVBoxLayout" name="verticalLayout_6">
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_2">
+                    <item>
+                     <widget class="QLabel" name="label_4">
+                      <property name="text">
+                       <string>Resolution</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QComboBox" name="picture_resolution_cb"/>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="take_picture_pb">
+                      <property name="text">
+                       <string>Take picture</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="picture_lb">
+                    <property name="text">
+                     <string>TextLabel</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </widget>
+              <widget class="QWidget" name="tab">
+               <attribute name="title">
+                <string>Streaming</string>
+               </attribute>
+               <layout class="QVBoxLayout" name="verticalLayout_9">
+                <item>
+                 <layout class="QVBoxLayout" name="verticalLayout_8">
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_5">
+                    <item>
+                     <widget class="QPushButton" name="pb_start_video_streaming">
+                      <property name="text">
+                       <string>Start video streaming</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pb_stop_video_streaming">
+                      <property name="text">
+                       <string>Stop video streaming</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <widget class="QWidget" name="streaming_wdg" native="true"/>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
               </widget>
               <widget class="QWidget" name="video_tab">
                <attribute name="title">
                 <string>Video</string>
                </attribute>
-               <widget class="QPushButton" name="pb_video_streaming">
-                <property name="geometry">
-                 <rect>
-                  <x>20</x>
-                  <y>80</y>
-                  <width>161</width>
-                  <height>25</height>
-                 </rect>
-                </property>
-                <property name="text">
-                 <string>Start video streaming</string>
-                </property>
-               </widget>
-               <widget class="QPushButton" name="pb_video_recording">
-                <property name="geometry">
-                 <rect>
-                  <x>20</x>
-                  <y>120</y>
-                  <width>141</width>
-                  <height>25</height>
-                 </rect>
-                </property>
-                <property name="text">
-                 <string>Start video recording</string>
-                </property>
-               </widget>
+               <layout class="QVBoxLayout" name="verticalLayout_11">
+                <item>
+                 <layout class="QVBoxLayout" name="verticalLayout_10">
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_10">
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_7">
+                      <item>
+                       <widget class="QLabel" name="label_5">
+                        <property name="text">
+                         <string>Video mode</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QComboBox" name="video_mode_cb"/>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_8">
+                      <item>
+                       <widget class="QLabel" name="label_6">
+                        <property name="text">
+                         <string>Video quality (Mbp/s)</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QSpinBox" name="video_quality_sb">
+                        <property name="minimum">
+                         <number>1</number>
+                        </property>
+                        <property name="maximum">
+                         <number>10</number>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_9">
+                      <item>
+                       <widget class="QLabel" name="label_7">
+                        <property name="text">
+                         <string>FPS</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QSpinBox" name="video_fps_sb">
+                        <property name="minimum">
+                         <number>1</number>
+                        </property>
+                        <property name="maximum">
+                         <number>30</number>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_6">
+                    <item>
+                     <widget class="QPushButton" name="pb_start_video_recording">
+                      <property name="text">
+                       <string>Start video recording</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pb_stop_video_recording">
+                      <property name="text">
+                       <string>Stop video recording</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <spacer name="horizontalSpacer_2">
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>40</width>
+                        <height>20</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <spacer name="verticalSpacer_2">
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
               </widget>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="rasp_output_lb">
+              <property name="text">
+               <string/>
+              </property>
              </widget>
             </item>
            </layout>
@@ -280,12 +450,39 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1296</width>
+     <width>1285</width>
      <height>22</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionShow_IP_address"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuTools"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionShow_IP_address">
+   <property name="text">
+    <string>Show IP address for all Raspberries Pi</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

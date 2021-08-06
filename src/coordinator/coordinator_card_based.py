@@ -40,7 +40,16 @@ import json
 import pprint
 import shutil
 
-import config_coordinator_local as cfg
+try:
+    import config_coordinator_local as cfg
+except Exception:
+    print("file config_coordinator_local.py not found")
+    try:
+        import config_coordinator as cfg
+    except Exception:
+        print("file config_coordinator.py not found")
+        sys.exit()
+
 
 __version__ = "5"
 __version_date__ = "2021-03-17"
