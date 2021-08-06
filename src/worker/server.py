@@ -5,8 +5,7 @@ Video control server
 
 """
 
-__version__ = "0.0.11"
-
+__version__ = "0.0.12"
 
 
 
@@ -21,12 +20,21 @@ import logging
 # required by get_hw_addr function
 import fcntl
 import socket
-import struct 
+import struct
 import base64
 import pathlib
 import shutil
 
 from server_config import *
+
+
+def is_camera_detected():
+    '''
+    check if camera is plugged
+    '''
+    process = subprocess.run(["/opt/vc/bin/vcgencmd", "get_camera"], stdout=subprocess.PIPE)
+    output = process.stdout.decode("utf-8").strip()
+    return (output == "supported=1 detected=1")
 
 
 def get_hw_addr(ifname):
@@ -97,10 +105,10 @@ def get_cpu_temperature():
         try:
             return output.split('=')[1]
         except:
-            return "not determined"    
+            return "not determined"
     else:
         return "not determined"
-        
+
 def get_free_space():
     '''
     free disk space in Gb
@@ -108,6 +116,11 @@ def get_free_space():
     stat = shutil.disk_usage('/home/pi')
     return f"{round(stat.free / 1024 / 1024 / 1024, 2)} Gb"
 
+
+def get_uptime():
+    process = subprocess.run(["uptime", "-p"], stdout=subprocess.PIPE)
+    output = process.stdout.decode("utf-8").strip()
+    return output
 
 
 def datetime_now_iso():
@@ -127,11 +140,22 @@ while True:
     except FileNotFoundError:
         print("log file path not found. Use server.log")
         LOG_PATH = "server.log"
-    
+
 
 app = Flask(__name__, static_url_path='/static')
 
 thread = threading.Thread()
+
+'''
+@app.route("/test", methods=("GET", "POST"))
+def test():
+    print(list(request.args.keys()))
+    print(request.values)
+    print(request.values['data1'])
+    return {"test": "blabla"}
+
+'''
+
 
 @app.route("/")
 def home():
@@ -166,17 +190,24 @@ def status():
                        "wifi_essid": get_wifi_ssid(),
                        "CPU temperature": get_cpu_temperature(),
                        "free disk space": get_free_space(),
+                       "camera detected": is_camera_detected(),
+                       "uptime": get_uptime(),
                       }
 
+
+        '''
+        "duration": thread.parametduration,
+        "started_at": thread.started_at,
+        "w": thread.w,
+        "h": thread.h,
+        "fps": thread.fps,
+        "quality": thread.quality,
+        "server_version": __version__
+        '''
+
+
         if thread.is_alive():
-            video_info = {"video_recording": True,
-                          "duration": thread.duration,
-                          "started_at": thread.started_at,
-                          "w": thread.w,
-                          "h": thread.h,
-                          "fps": thread.fps,
-                          "quality": thread.quality,
-                          "server_version": __version__}
+            video_info = {**{"video_recording": True} **thread.parameters}
         else:
             video_info = {"video_recording": False}
 
@@ -189,21 +220,27 @@ def status():
 
 class Raspivid_thread(threading.Thread):
 
-    def __init__(self, duration, w, h, fps, quality, prefix):
+    def __init__(self, parameters: dict):
         threading.Thread.__init__(self)
-        self.duration = duration
-        self.w = w
-        self.h = h
-        self.fps = fps
-        self.quality = quality
-        self.prefix = prefix
+        self.parameters = parameters
 
-        logging.info("thread args: {} fps: {} resolution: {}x{} quality: {} prefix:{}".format(duration, fps, w, h, quality, prefix))
-
+        # logging.info("thread args: {} fps: {} resolution: {}x{} quality: {} prefix:{}".format(duration, fps, w, h, quality, prefix))
 
     def run(self):
         logging.info("start  thread")
         file_name = datetime.datetime.now().replace(microsecond=0).isoformat().replace("T", "_").replace(":", "")
+
+
+        cmd = ["raspivid",
+               "-t", str(int(self.parameters['duration']) * 1000),
+               "-w", f"{self.parameters['width']}",
+               "-h", f"{self.parameters['height']}",
+               "-fps", f"{self.parameters['fps']}",
+               "-b", str(int(self.parameters['quality']) * 1000),
+               "-o", f"{VIDEO_ARCHIVE}/{socket.gethostname()}_{self.parameters['prefix']}_{file_name}"
+              ]
+
+        '''
         cmd = ("raspivid "
            + "-t {} ".format(self.duration * 1000)
            + "-w {w} -h {h} ".format(w=self.w, h=self.h)
@@ -213,11 +250,16 @@ class Raspivid_thread(threading.Thread):
                                                                      file_name=file_name,
                                                                      prefix=self.prefix,
                                                                      hostname=socket.gethostname()))
+        '''
 
-        logging.info(cmd)
+        logging.info(f"{cmd}")
+        print(" ".join(cmd))
         self.started_at = datetime.datetime.now().replace(microsecond=0).isoformat()
 
+        '''
         os.system(cmd)
+        '''
+        subprocess.run(cmd)
 
 
 class Blink_thread(threading.Thread):
@@ -245,51 +287,61 @@ class Blink_thread(threading.Thread):
         os.system("echo input | sudo tee /sys/class/leds/led1/trigger")
         '''
 
-@app.route("/video_streaming/<action>")
+@app.route("/video_streaming/<action>", methods=("GET", "POST",))
 def video_streaming(action):
     """
     start/stop video streaming with uv4l
 
     see /etc/uv4l/uv4l-raspicam.conf for default configuration
 
-    sudo uv4l -nopreview --auto-video_nr --driver raspicam --encoding mjpeg --width 640 --height 480 --framerate 10 --server-option '--port=9090' 
+    sudo uv4l -nopreview --auto-video_nr --driver raspicam --encoding mjpeg --width 640 --height 480 --framerate 10 --server-option '--port=9090'
     --server-option '--max-queued-connections=30' --server-option '--max-streams=25' --server-option '--max-threads=29'
 
     """
-    # kill current streaming 
+    # kill current streaming
     subprocess.run(["sudo", "pkill", "uv4l"])
     time.sleep(2)
     if action == "stop":
         return str({"msg": "video streaming stopped"})
 
     if action == "start":
-        w = request.args.get("w", default=DEFAULT_VIDEO_WIDTH, type=int)
-        h = request.args.get("h", default=DEFAULT_VIDEO_HEIGHT, type=int)
+
+        try:
+            width = request.values['width']
+        except Exception:
+            width = DEFAULT_PICTURE_WIDTH
+
+        try:
+            height = request.values['height']
+        except Exception:
+            height = DEFAULT_PICTURE_HEIGHT
+
         process = subprocess.run(["sudo",
-                                    "uv4l",
-                                    "-nopreview",
-                                    "--auto-video_nr",
-                                    "--driver", "raspicam",
-                                    "--encoding", "mjpeg",
-                                    "--width", str(w),
-                                    "--height", str(h),
-                                    "--framerate", "5",
-                                    "--server-option", "--port=9090",
-                                    "--server-option", "--max-queued-connections=30",
-                                    "--server-option", "--max-streams=25",
-                                    "--server-option", "--max-threads=29",
-                                    ])
+                                  "uv4l",
+                                  "-nopreview",
+                                  "--auto-video_nr",
+                                  "--driver", "raspicam",
+                                  "--encoding", "mjpeg",
+                                  "--width", str(width),
+                                  "--height", str(height),
+                                  "--framerate", "5",
+                                  "--server-option", "--port=9090",
+                                  "--server-option", "--max-queued-connections=30",
+                                  "--server-option", "--max-streams=25",
+                                  "--server-option", "--max-threads=29",
+                                  ])
         return str({"msg": "video streaming started"})
 
 
+'''
 @app.route("/set_hostname/<hostname>")
 def set_hostname(hostname):
-    '''
-    set client hostname 
-    '''
+    """
+    set client hostname
+    """
     subprocess.run(["sudo", "hostnamectl", "set-hostname", hostname])
     return str({"new_hostname": socket.gethostname()})
-
+'''
 
 @app.route("/add_key/<key>")
 def add_key(key):
@@ -303,7 +355,7 @@ def add_key(key):
         if not (pathlib.Path.home() / pathlib.Path(".ssh")).is_dir():
             subprocess.run(["mkdir", str(pathlib.Path.home() / pathlib.Path(".ssh"))])
             logging.info(f".ssh directory created")
-        
+
         with open(pathlib.Path.home() / pathlib.Path(".ssh") / pathlib.Path("authorized_keys"), "w") as f_out:
             f_out.write(file_content)
             logging.info(f"Coordinator public key written in .ssh/authorized_keys")
@@ -312,7 +364,7 @@ def add_key(key):
         return {"msg": "error"}
 
 
-@app.route("/start_video")
+@app.route("/start_video", methods=("GET", "POST",))
 def start_video():
 
     global thread
@@ -320,21 +372,26 @@ def start_video():
     if thread.is_alive():
         return str({"status": "Video already recording"})
 
+
+    '''
     duration = request.args.get("duration", default = DEFAULT_VIDEO_DURATION, type = int)
     w = request.args.get("w", default = DEFAULT_VIDEO_WIDTH, type = int)
     h = request.args.get("h", default = DEFAULT_VIDEO_HEIGHT, type = int)
     fps = request.args.get("fps", default = DEFAULT_FPS, type = int)
     quality = request.args.get("quality", default = DEFAULT_VIDEO_QUALITY, type = int)
     prefix = request.args.get("prefix", default="", type = str)
+    '''
+    print(request.values)
 
-    logging.info(f"Starting video for {duration} min ({w}x{h})")
+    logging.info(f"Starting video for {request.values['duration']} min ({request.values['width']}x{request.values['height']})")
     try:
-        thread = Raspivid_thread(duration, w, h, fps, quality, prefix)
+        thread = Raspivid_thread(request.values)
         thread.start()
 
         logging.info("Video recording started")
         return str({"status": "Video recording"})
     except Exception:
+        raise
         logging.info("Video recording not started")
         return str({"status": "Video not recording"})
 
@@ -374,20 +431,32 @@ def sync_time(date, hour):
                 "output": datetime.datetime.now().replace(microsecond=0).isoformat().replace("T", " ")}
 
 
-@app.route("/one_picture")
-def one_picture():
-    os.system("sudo rm -f static/live.jpg")
-    w = request.args.get("w", default = DEFAULT_PICTURE_WIDTH, type = int)
-    h = request.args.get("h", default = DEFAULT_PICTURE_HEIGHT, type = int)
+@app.route("/take_picture", methods=("GET", "POST",))
+def take_picture():
+    r = os.system("sudo rm -f static/live.jpg")
+    if r:
+        logging.warning("Unable to delete static/live.jpg")
+
+    try:
+        width = request.values['width']
+    except Exception:
+        width = DEFAULT_PICTURE_WIDTH
+
+    try:
+        height = request.values['height']
+    except Exception:
+        height = DEFAULT_PICTURE_HEIGHT
+
+
     r = os.system((#"raspistill --nopreview "
-                  "raspistill  "
-                  #"--timeout 4 "
-                  "-w {w} -h {h} "
-                  "--annotate '{hostname} {datetime}' "
-                  "-o static/live.jpg").format(w=w,
-                                            h=h,
-                                            datetime=datetime.datetime.now().replace(microsecond=0).isoformat().replace("T", " "),
-                                            hostname=socket.gethostname()))
+                   "raspistill  "
+                   #"--timeout 4 "
+                   "-w {w} -h {h} "
+                   "--annotate '{hostname} {datetime}' "
+                   "-o static/live.jpg").format(w=width,
+                                                h=height,
+                                                datetime=datetime.datetime.now().replace(microsecond=0).isoformat().replace("T", " "),
+                                                hostname=socket.gethostname()))
     if not r:
         return {"error": False, "status": "picture taken", "output": ""}
     else:

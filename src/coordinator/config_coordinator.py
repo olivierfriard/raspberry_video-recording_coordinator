@@ -1,9 +1,5 @@
-# configuration file for master.py
+# configuration file for coordinator.py
 
-RASPBERRY_MAC_ADDR = {
-
-
-}
 
 TIME_OUT = 10
 SERVER_PORT = 5000
@@ -25,10 +21,6 @@ REFRESH_INTERVAL = 300 # seconds -> 10 min
 # seconds between 2 pictures in time lapse mode
 DEFAULT_INTERVAL = 20
 
-# number of columns in the interface
-GUI_COLUMNS_NUMBER = 1 if len(RASPBERRY_MAC_ADDR) == 1 else 2
-
-GUI_COLUMNS_NUMBER = 1
 
 
 

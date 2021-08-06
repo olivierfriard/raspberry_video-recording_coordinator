@@ -101,21 +101,84 @@
                  <layout class="QVBoxLayout" name="verticalLayout_4">
                   <item>
                    <layout class="QGridLayout" name="gridLayout">
-                    <item row="2" column="1">
+                    <item row="3" column="0">
+                     <widget class="QLabel" name="label_3">
+                      <property name="text">
+                       <string>CPU temperature (°C)</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="6" column="1">
+                     <widget class="QLabel" name="camera_detected_lb">
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="3" column="1">
                      <widget class="QLabel" name="cpu_temp_lb">
                       <property name="text">
                        <string/>
                       </property>
                      </widget>
                     </item>
-                    <item row="1" column="0">
+                    <item row="5" column="0">
+                     <widget class="QLabel" name="label_9">
+                      <property name="text">
+                       <string>Free SD space</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="0">
                      <widget class="QLabel" name="label_2">
                       <property name="text">
                        <string>Date/time</string>
                       </property>
                      </widget>
                     </item>
-                    <item row="3" column="0">
+                    <item row="2" column="1">
+                     <widget class="QLabel" name="datetime_lb">
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="4" column="1">
+                     <widget class="QLabel" name="wifi_essid_lb">
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="6" column="0">
+                     <widget class="QLabel" name="label_10">
+                      <property name="text">
+                       <string>Camera detected</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="5" column="1">
+                     <widget class="QLabel" name="free_sd_space_lb">
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="7" column="1">
+                     <widget class="QLabel" name="uptime_lb">
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="7" column="0">
+                     <widget class="QLabel" name="label_11">
+                      <property name="text">
+                       <string>Uptime</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="4" column="0">
                      <widget class="QLabel" name="label_8">
                       <property name="text">
                        <string>WiFi ESSID</string>
@@ -129,13 +192,6 @@
                       </property>
                      </widget>
                     </item>
-                    <item row="2" column="0">
-                     <widget class="QLabel" name="label_3">
-                      <property name="text">
-                       <string>CPU temperature (°C)</string>
-                      </property>
-                     </widget>
-                    </item>
                     <item row="0" column="0">
                      <widget class="QLabel" name="label">
                       <property name="text">
@@ -143,29 +199,15 @@
                       </property>
                      </widget>
                     </item>
-                    <item row="3" column="1">
-                     <widget class="QLabel" name="wifi_essid_lb">
+                    <item row="1" column="0">
+                     <widget class="QLabel" name="label_12">
                       <property name="text">
-                       <string/>
+                       <string>IP address</string>
                       </property>
                      </widget>
                     </item>
                     <item row="1" column="1">
-                     <widget class="QLabel" name="datetime_lb">
-                      <property name="text">
-                       <string/>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="4" column="0">
-                     <widget class="QLabel" name="label_9">
-                      <property name="text">
-                       <string>Free SD space</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="4" column="1">
-                     <widget class="QLabel" name="free_sd_space_lb">
+                     <widget class="QLabel" name="ip_address_lb">
                       <property name="text">
                        <string/>
                       </property>
@@ -376,7 +418,7 @@
                   <item>
                    <layout class="QHBoxLayout" name="horizontalLayout_6">
                     <item>
-                     <widget class="QPushButton" name="pb_start_video_recording">
+                     <widget class="QPushButton" name="start_video_recording_pb">
                       <property name="text">
                        <string>Start video recording</string>
                       </property>

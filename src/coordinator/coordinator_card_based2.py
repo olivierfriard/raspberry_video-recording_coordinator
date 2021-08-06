@@ -1,9 +1,14 @@
 """
-Raspberry video recording master (TCP/IP)
+Raspberry Pi coordinator (via TCP/IP)
 
 
 TODO:
-CLIENT_PROJECT_DIRECTORY: ask to raspberry
+
+* CLIENT_PROJECT_DIRECTORY: ask to raspberry
+* raspberry uptime
+* scan network wit QThread
+
+
 """
 
 from PyQt5.QtWidgets import (QApplication, QWidget, QMainWindow,
@@ -242,7 +247,7 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         for resolution in cfg.PICTURE_RESOLUTIONS:
             self.picture_resolution_cb.addItem(resolution)
         self.picture_resolution_cb.currentIndexChanged.connect(self.picture_resolution_changed)
-        
+
 
         # video streaming
         self.pb_start_video_streaming.clicked.connect(partial(self.video_streaming_clicked, "start"))
@@ -253,6 +258,7 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
 
 
         # video recording
+        self.start_video_recording_pb.clicked.connect(self.start_video_recording_clicked)
 
         self.video_mode_cb.currentIndexChanged.connect(self.video_mode_changed)
         self.video_quality_sb.valueChanged.connect(self.video_quality_changed)
@@ -287,7 +293,7 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         """
         update video quality in raspberry info
         """
-        if self.current_raspberry_id:        
+        if self.current_raspberry_id:
             self.raspberry_info[self.current_raspberry_id]["video quality"] = self.video_quality_sb.value()
 
     def video_fps_changed(self, idx):
@@ -454,7 +460,7 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         # Set widget to contain window contents
         wid.setLayout(layout_video)
 
-        
+
         stack3_layout.addWidget(wid)
 
         self.stack3.setLayout(stack3_layout)
@@ -688,7 +694,7 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
             if r.status_code == 200:
                 try:
                     logging.info(f"{ip_addr}: server available")
-                    r_dict = json.loads(r.text)
+                    r_dict = r.json()
 
                     # check hostname
                     remote_hostname = r_dict.get('hostname', '')
@@ -771,20 +777,22 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         print(" ".join([f"pi@{self.RASPBERRY_IP[x]}" for x in self.RASPBERRY_IP]))
 
 
-    def video_streaming(self, rb, action):
+    def video_streaming(self, raspberry_id, action):
         """
         start/stop video streaming on client and show output
         see /etc/uv4l/uv4l-raspicam.conf for default configuration
         """
-        if rb in self.RASPBERRY_IP and self.raspberry_status[rb]:
+        if raspberry_id in self.RASPBERRY_IP and self.raspberry_info[raspberry_id]["status"]["status"] == "OK":
 
             if action == "start":
 
-                print(self.raspberry_info)
+                width, height = self.raspberry_info[raspberry_id]["video mode"].split("x")
+                data = {"width": width, "height": height}
+                r = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}:{cfg.SERVER_PORT}/video_streaming/start", data=data)
 
-                w, h = self.raspberry_info[rb]["video mode"].split("x")
                 #w, h = self.video_mode[rb].currentText().split("x")
-                r = requests.get(f"http://{self.RASPBERRY_IP[rb]}:{cfg.SERVER_PORT}/video_streaming/start?&w={w}&h={h}")
+                #r = requests.get(f"http://{self.RASPBERRY_IP[rb]}:{cfg.SERVER_PORT}/video_streaming/start?&w={w}&h={h}")
+
                 if r.status_code == 200:
                     self.rasp_output_lb.setText(f"Video streaming requested")
                 else:
@@ -792,25 +800,27 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
                     return
 
                 time.sleep(1)
-                self.media_list.setMedia(QMediaContent(QUrl(f"http://{self.RASPBERRY_IP[rb]}:9090/stream/video.mjpeg")))
+                self.media_list.setMedia(QMediaContent(QUrl(f"http://{self.RASPBERRY_IP[raspberry_id]}:9090/stream/video.mjpeg")))
                 self.media_list.play()
-                print(self.media_list)
                 self.rasp_output_lb.setText(f"Media playing")
 
                 # generate QR code
                 try:
                     import qrcode
-                    img = qrcode.make(f"http://{self.RASPBERRY_IP[rb]}:9090/stream/video.mjpeg")
-                    self.picture_lb[rb].setPixmap(QPixmap.fromImage(ImageQt(img)))   #.scaled(self.picture_lb[rb].size(), Qt.KeepAspectRatio))
+                    img = qrcode.make(f"http://{self.RASPBERRY_IP[raspberry_id]}:9090/stream/video.mjpeg")
+                    self.picture_lb[raspberry_id].setPixmap(QPixmap.fromImage(ImageQt(img)))   #.scaled(self.picture_lb[rb].size(), Qt.KeepAspectRatio))
                 except:
                     logging.info("qrcode module not installed")
 
             if action == "stop":
-                r = requests.get(f"http://{self.RASPBERRY_IP[rb]}:{cfg.SERVER_PORT}/video_streaming/stop")
-                if r.status_code == 200:
-                    self.rb_msg(rb, f"Video streaming stopped")
+                self.rasp_output_lb.setText("Video streaming stop requested")
+                response = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}:{cfg.SERVER_PORT}/video_streaming/stop")
+                if response.status_code == 200:
+                    self.rasp_output_lb.setText("Video streaming stopped")
+                else:
+                    self.rasp_output_lb.setText(f"Error stopping video streaming (status code: {response.status_code})")
 
-            self.get_raspberry_status(rb)
+            self.get_raspberry_status(raspberry_id)
 
 
 
@@ -891,6 +901,9 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         self.status_lb.setText(self.raspberry_info[raspberry_id]["status"].get("status", "Not available"))
         self.wifi_essid_lb.setText(self.raspberry_info[raspberry_id]["status"].get("wifi_essid", "Not available"))
         self.free_sd_space_lb.setText(self.raspberry_info[raspberry_id]["status"].get("free disk space", "Not available"))
+        self.camera_detected_lb.setText("Yes" if self.raspberry_info[raspberry_id]["status"].get("camera detected", "") else "No")
+        self.uptime_lb.setText(self.raspberry_info[raspberry_id]["status"].get("uptime", ""))
+        self.ip_address_lb.setText(self.raspberry_info[raspberry_id]["status"].get("IP_address", "Not detected"))
 
 
     def rb_msg(self, raspberry_id, msg):
@@ -947,7 +960,7 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
                 self.rb_msg(rb, f"sent command: {text}")
                 try:
                     cmd = base64.b64encode(text.encode('utf-8')).decode('utf-8')
-                    r = requests.get(f"http://{self.RASPBERRY_IP[rb]}:{SERVER_PORT}/command/{cmd}")
+                    r = requests.get(f"http://{self.RASPBERRY_IP[rb]}:{cfg.SERVER_PORT}/command/{cmd}")
                     if r.status_code == 200:
                         r2 = eval(r.text)
                         self.rb_msg(rb, f"Return code: {r2.get('return_code', '-')}")
@@ -970,7 +983,7 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
             if not ok or text != "yes":
                 return
             try:
-                r = requests.get(f"http://{self.RASPBERRY_IP[rb]}:{SERVER_PORT}/reboot")
+                r = requests.get(f"http://{self.RASPBERRY_IP[rb]}:{cfg.SERVER_PORT}/reboot")
                 if r.status_code == 200:
                     self.rb_msg(rb, r.text)
                 else:
@@ -1118,14 +1131,13 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
                 else:
                     r = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}:{cfg.SERVER_PORT}/status", timeout=cfg.TIME_OUT)
                     if r.status_code == 200:
-                        r_dict = json.loads(r.text)
+                        r_dict = r.json()
                     else:
                         r_dict = {"status": f"not available (status code: {r.status_code})"}
             else:
                 r_dict = {"status": f"not available ({raspberry_id} not detected)"}
         except Exception:
             r_dict = {"status": "not reachable"}
-
 
         print(r_dict)
 
@@ -1160,7 +1172,7 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
                 color = "yellow"
         else:
             color = "red"
-        
+
         for x in range(self.rasp_list.count()):
             if self.rasp_list.item(x).text() == rb:
                 self.rasp_list.item(x).setIcon(QIcon(f"{color}.png"))
@@ -1215,7 +1227,7 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
             self.rasp_output_lb.setText(f"{r['raspberry_output']['status']}: {r['raspberry_output']['output']}")
 
             self.get_raspberry_status(self.current_raspberry_id)
-        
+
         self.update_raspberry_dashboard(self.current_raspberry_id)
 
 
@@ -1229,7 +1241,7 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
             try:
                 r = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}:{cfg.SERVER_PORT}/sync_time/{date}/{hour}")
                 if r.status_code == 200:
-                    return {"raspberry_id": raspberry_id, "raspberry_output": json.loads(r.text), "error": False}
+                    return {"raspberry_id": raspberry_id, "raspberry_output": r.json(), "error": False}
                 else:
                     return {"raspberry_id": raspberry_id, "msg": f"Error (status code: {r.status_code})", "error": True}
             except Exception:
@@ -1268,11 +1280,14 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
             try:
                 self.rasp_output_lb.setText(f"Picture requested")
 
-                w, h = self.raspberry_info[raspberry_id]['picture resolution'].split("x") 
+                width, height = self.raspberry_info[raspberry_id]['picture resolution'].split("x")
+                data = {"width": width, "height": height}
 
-                r = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}:{cfg.SERVER_PORT}/one_picture?w={w}&h={h}")
+                #r = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}:{cfg.SERVER_PORT}/one_picture?w={w}&h={h}")
+                r = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}:{cfg.SERVER_PORT}/take_picture", data=data)
+                print(r)
 
-                r2 = json.loads(r.text)
+                r2 = r.json()
                 if not r2["error"]:
                     r = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}:{cfg.SERVER_PORT}/static/live.jpg", stream=True)
                     if r.status_code == 200:
@@ -1291,45 +1306,64 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
                 self.rasp_output_lb.setText(f"Error taking picture (connection error)")
 
             except Exception:
+                raise
                 self.rasp_output_lb.setText(f"Error taking picture")
 
 
-    def start_video_recording(self, rb):
+    def start_video_recording_clicked(self):
+        print("start vidoe record1")
+        self.start_video_recording(self.current_raspberry_id)
+
+
+    def start_video_recording(self, raspberry_id):
         """
         start video recording with selected parameters
         """
-
-        if rb in self.RASPBERRY_IP and self.raspberry_info[raspberry_id]["status"]["status"] == "OK":
-            w, h = self.video_mode[rb].currentText().split("x")
+        print("start vidoe record2")
+        if raspberry_id in self.RASPBERRY_IP and self.raspberry_info[raspberry_id]["status"]["status"] == "OK":
             try:
-                r = requests.get((f"http://{self.RASPBERRY_IP[rb]}:{cfg.SERVER_PORT}/start_video?"
-                                  f"duration={self.duration[rb].value()}&w={w}&h={h}&prefix={self.prefix[rb].text()}&fps={self.fps[rb].value()}&quality={self.video_quality[rb].value()}")
+                width, height = self.raspberry_info[raspberry_id]["video mode"].split("x")
+
+                data = {"duration": self.raspberry_info[raspberry_id]["video duration"],
+                        "width": width,
+                        "height": height,
+                        "prefix":  "",
+                        "fps": self.raspberry_info[raspberry_id]["FPS"],
+                        "quality": self.raspberry_info[raspberry_id]["video quality"],
+                }
+
+                self.rasp_output_lb.setText("start video recording requested")
+                r = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}:{cfg.SERVER_PORT}/start_video", data=data)
+                print(r)
+                '''
+                r = requests.get((f"http://{self.RASPBERRY_IP[raspberry_id]}:{cfg.SERVER_PORT}/start_video?"
+                                  f"duration={self.duration[raspberry_id].value()}&w={w}&h={h}&prefix={self.prefix[raspberry_id].text()}&fps={self.fps[raspberry_id].value()}&quality={self.video_quality[raspberry_id].value()}")
                                 )
-                self.rb_msg(rb, r.text)
-                self.status_one(rb)
+                '''
+                self.get_raspberry_status(raspberry_id)
 
             except requests.exceptions.ConnectionError:
-                self.rb_msg(rb, "Connection refused")
-                self.status_one(rb, output=False)
+                raise
+                #self.rb_msg(rb, "Connection refused")
+                self.get_raspberry_status(raspberry_id)
 
             except Exception:
-                self.rb_msg(rb, "Error1")
-                self.status_one(rb, output=False)
+                raise
+                #self.rb_msg(rb, "Error1")
+                self.get_raspberry_status(raspberry_id)
 
 
-    def stop_video_recording(self, rb):
+    def stop_video_recording(self, raspberry_id):
         """
         stop the video recording
         """
-        if rb in self.RASPBERRY_IP and self.raspberry_info[raspberry_id]["status"]["status"] == "OK":
+        if raspberry_id in self.RASPBERRY_IP and self.raspberry_info[raspberry_id]["status"]["status"] == "OK":
             try:
-                self.rb_msg(rb, "stop video recording requested")
-                r = requests.get(f"http://{self.RASPBERRY_IP[rb]}:{cfg.SERVER_PORT}/stop_video")
-                self.rb_msg(rb, r.text)
-                self.status_one(rb, output=False)
+                self.raspberry_output("stop video recording requested")
+                r = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}:{cfg.SERVER_PORT}/stop_video")
+                self.get_raspberry_status(raspberry_id)
             except Exception:
-                self.rb_msg(rb, "Error2")
-                self.status_one(rb, output=False)
+                self.get_raspberry_status(raspberry_id)
 
 
     def delete_all_video(self, rb):
