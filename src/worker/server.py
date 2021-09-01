@@ -388,44 +388,53 @@ def start_video():
 
 @app.route("/stop_video")
 def stop_video():
-    os.system("sudo killall raspivid")
+    """
+    Stop the video recording
+    """
+
+    subprocess.run(["sudo", "killall", "raspivid"])
     time.sleep(2)
+
     if not thread.is_alive():
-        result = {"result": "video stopped"}
+        return {"msg": "video recording stopped"}
     else:
-        result = {"result": "video not stopped"}
-    return str(result)
+        return {"msg": "video recording not stopped"}
+
 
 
 @app.route("/blink")
 def blink():
-    thread = Blink_thread()
-    thread.start()
-    result = {"result": "blinking"}
-    return str(result)
+    """
+    Blink the power led
+    """
+    try:
+        thread = Blink_thread()
+        thread.start()
+        return {"msg": "blinking successful"}
+    except Exception:
+        return {"msg": "blinking not successful"}
 
 
 @app.route("/sync_time/<date>/<hour>")
 def sync_time(date, hour):
-    '''
+    """
     synchronize the date and time
-    '''
-    completed = subprocess.run(['sudo', 'timedatectl','set-time', "{date} {hour}".format(date=date, hour=hour)]) # 2015-11-23 10:11:22
+    """
+    completed = subprocess.run(['sudo', 'timedatectl','set-time', f"{date} {hour}"]) # 2015-11-23 10:11:22
     if completed.returncode:
-        return {"error": True,
-                "status": "time not synchronised",
-                "output": datetime.datetime.now().replace(microsecond=0).isoformat().replace("T", " ")}
+        return {"error": True, "msg": "time not synchronised"}
     else:
-        return {"status": "time synchronised",
-                "error": False,
-                "output": datetime.datetime.now().replace(microsecond=0).isoformat().replace("T", " ")}
+        return {"msg": "time synchronised", "error": True}
 
 
 @app.route("/take_picture", methods=("GET", "POST",))
 def take_picture():
-    r = os.system("sudo rm -f static/live.jpg")
-    if r:
-        logging.warning("Unable to delete static/live.jpg")
+
+    # delete previous picture
+    try:
+        completed = subprocess.run(["sudo", "rm", "-f" ,"static/live.jpg"])
+    except Exception:
+        pass
 
     try:
         width = request.values['width']
@@ -437,20 +446,16 @@ def take_picture():
     except Exception:
         height = cfg.DEFAULT_PICTURE_HEIGHT
 
-
-    r = os.system((#"raspistill --nopreview "
-                   "raspistill  "
-                   #"--timeout 4 "
-                   "-w {w} -h {h} "
-                   "--annotate '{hostname} {datetime}' "
-                   "-o static/live.jpg").format(w=width,
-                                                h=height,
-                                                datetime=datetime.datetime.now().replace(microsecond=0).isoformat().replace("T", " "),
-                                                hostname=socket.gethostname()))
-    if not r:
-        return {"error": False, "status": "picture taken", "output": ""}
+    completed = subprocess.run(["raspistill",
+                                "-w", f"{width}",
+                                "-h", f"{height}",
+                                "--annotate",  f'{socket.gethostname()} {datetime.datetime.now().replace(microsecond=0).isoformat().replace("T", " ")}',
+                                "-o", "static/live.jpg"
+                                ])
+    if not completed.returncode:
+        return {"error": False, "msg": "picture taken"}
     else:
-        return {"error": r, "status": "picture not taken", "output": ""}
+        return {"error": completed.returncode, "msg": "picture not taken"}
 
 
 @app.route("/video_list")
@@ -460,7 +465,7 @@ def video_list():
 
 @app.route("/get_video/<file_name>")
 def get_video(file_name):
-    print(cfg.VIDEO_ARCHIVE + "/" + file_name)
+
     return send_from_directory(cfg.VIDEO_ARCHIVE, file_name, as_attachment=True)
 
 
