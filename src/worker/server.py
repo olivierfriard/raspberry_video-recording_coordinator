@@ -5,7 +5,7 @@ Video control server
 
 """
 
-__version__ = "0.0.12"
+__version__ = "0.0.13"
 
 
 
@@ -25,7 +25,7 @@ import base64
 import pathlib
 import shutil
 
-from server_config import *
+import server_config as cfg
 
 
 def is_camera_detected():
@@ -131,7 +131,7 @@ from flask import Flask, request, send_from_directory
 
 while True:
     try:
-        logging.basicConfig(filename=LOG_PATH,
+        logging.basicConfig(filename=cfg.LOG_PATH,
                             filemode="a",
                             format='%(asctime)s, %(message)s',
                             datefmt='%Y-%m-%d %H:%M:%S',
@@ -164,7 +164,7 @@ video control server v. {__version__}<br>
 <br>
 hostname: {socket.gethostname()}<br>
 IP address: {get_ip()}<br>
-MAC Addr: {get_hw_addr(WIFI_INTERFACE)}<br>
+MAC Addr: {get_hw_addr(cfg.WIFI_INTERFACE)}<br>
 date time on server: {datetime_now_iso()}<br>
 Timezone: {get_timezone()}<br>
 <br>
@@ -183,7 +183,7 @@ def status():
         server_info = {"status": "OK",
                        "server_datetime": datetime.datetime.now().replace(microsecond=0).isoformat().replace("T", " "),
                        "server_version": __version__,
-                       "MAC_addr": get_hw_addr(WIFI_INTERFACE),
+                       "MAC_addr": get_hw_addr(cfg.WIFI_INTERFACE),
                        "hostname": socket.gethostname(),
                        "IP_address": get_ip(),
                        "video_streaming_active": video_streaming_active(),
@@ -194,28 +194,22 @@ def status():
                        "uptime": get_uptime(),
                       }
 
-
-        '''
-        "duration": thread.parametduration,
-        "started_at": thread.started_at,
-        "w": thread.w,
-        "h": thread.h,
-        "fps": thread.fps,
-        "quality": thread.quality,
-        "server_version": __version__
-        '''
-
-
         if thread.is_alive():
-            video_info = {**{"video_recording": True} **thread.parameters}
+            video_info = {"video_recording": True,
+                          "duration": thread.parameters["duration"],
+                          "width": thread.parameters["width"],
+                          "height": thread.parameters["height"],
+                          "fps": thread.parameters["fps"],
+                          "quality": thread.parameters["quality"],
+                          "started_at": thread.started_at,
+                          "server_version": __version__}
         else:
             video_info = {"video_recording": False}
 
         return {**server_info, **video_info}
 
     except Exception:
-        raise
-        return str("no thread")
+        return {"status": "Not available"}
 
 
 class Raspivid_thread(threading.Thread):
@@ -227,7 +221,7 @@ class Raspivid_thread(threading.Thread):
         # logging.info("thread args: {} fps: {} resolution: {}x{} quality: {} prefix:{}".format(duration, fps, w, h, quality, prefix))
 
     def run(self):
-        logging.info("start  thread")
+        logging.info("start raspivid thread")
         file_name = datetime.datetime.now().replace(microsecond=0).isoformat().replace("T", "_").replace(":", "")
 
 
@@ -237,7 +231,7 @@ class Raspivid_thread(threading.Thread):
                "-h", f"{self.parameters['height']}",
                "-fps", f"{self.parameters['fps']}",
                "-b", str(int(self.parameters['quality']) * 1000),
-               "-o", f"{VIDEO_ARCHIVE}/{socket.gethostname()}_{self.parameters['prefix']}_{file_name}"
+               "-o", f"{cfg.VIDEO_ARCHIVE}/{socket.gethostname()}_{self.parameters['prefix']}_{file_name}.h264"
               ]
 
         '''
@@ -253,12 +247,9 @@ class Raspivid_thread(threading.Thread):
         '''
 
         logging.info(f"{cmd}")
-        print(" ".join(cmd))
+
         self.started_at = datetime.datetime.now().replace(microsecond=0).isoformat()
 
-        '''
-        os.system(cmd)
-        '''
         subprocess.run(cmd)
 
 
@@ -270,7 +261,8 @@ class Blink_thread(threading.Thread):
     def run(self):
         logging.info("start  blinking")
 
-        os.system("bash blink_sudo.bash")
+        subprocess.run(["bash", "blink_sudo.bash"])
+
         '''
         # Set the PWR LED to GPIO mode (set 'off' by default).
         os.system("echo gpio | sudo tee /sys/class/leds/led1/trigger")
@@ -287,6 +279,7 @@ class Blink_thread(threading.Thread):
         os.system("echo input | sudo tee /sys/class/leds/led1/trigger")
         '''
 
+
 @app.route("/video_streaming/<action>", methods=("GET", "POST",))
 def video_streaming(action):
     """
@@ -299,24 +292,29 @@ def video_streaming(action):
 
     """
     # kill current streaming
-    subprocess.run(["sudo", "pkill", "uv4l"])
-    time.sleep(2)
+    try:
+        subprocess.run(["sudo", "pkill", "uv4l"])
+        time.sleep(2)
+    except Exception:
+        return {"msg": "Problem trying to stop the video streaming"}
+
     if action == "stop":
-        return str({"msg": "video streaming stopped"})
+        return {"msg": "video streaming stopped"}
 
     if action == "start":
 
         try:
             width = request.values['width']
         except Exception:
-            width = DEFAULT_PICTURE_WIDTH
+            width = cfg.DEFAULT_PICTURE_WIDTH
 
         try:
             height = request.values['height']
         except Exception:
-            height = DEFAULT_PICTURE_HEIGHT
+            height = cfg.DEFAULT_PICTURE_HEIGHT
 
-        process = subprocess.run(["sudo",
+        try:
+            subprocess.run(["sudo",
                                   "uv4l",
                                   "-nopreview",
                                   "--auto-video_nr",
@@ -330,7 +328,10 @@ def video_streaming(action):
                                   "--server-option", "--max-streams=25",
                                   "--server-option", "--max-threads=29",
                                   ])
-        return str({"msg": "video streaming started"})
+            return {"msg": "video streaming started"}
+        except Exception:
+            return {"msg": "video streaming not started"}
+
 
 
 '''
@@ -370,30 +371,19 @@ def start_video():
     global thread
 
     if thread.is_alive():
-        return str({"status": "Video already recording"})
+        return {"msg": "Video already recording"}
 
 
-    '''
-    duration = request.args.get("duration", default = DEFAULT_VIDEO_DURATION, type = int)
-    w = request.args.get("w", default = DEFAULT_VIDEO_WIDTH, type = int)
-    h = request.args.get("h", default = DEFAULT_VIDEO_HEIGHT, type = int)
-    fps = request.args.get("fps", default = DEFAULT_FPS, type = int)
-    quality = request.args.get("quality", default = DEFAULT_VIDEO_QUALITY, type = int)
-    prefix = request.args.get("prefix", default="", type = str)
-    '''
-    print(request.values)
-
-    logging.info(f"Starting video for {request.values['duration']} min ({request.values['width']}x{request.values['height']})")
+    logging.info(f"Starting video for {request.values['duration']} s ({request.values['width']}x{request.values['height']})")
     try:
         thread = Raspivid_thread(request.values)
         thread.start()
 
         logging.info("Video recording started")
-        return str({"status": "Video recording"})
+        return {"msg": "Video recording"}
     except Exception:
-        raise
         logging.info("Video recording not started")
-        return str({"status": "Video not recording"})
+        return {"msg": "Video not recording"}
 
 
 @app.route("/stop_video")
@@ -440,12 +430,12 @@ def take_picture():
     try:
         width = request.values['width']
     except Exception:
-        width = DEFAULT_PICTURE_WIDTH
+        width = cfg.DEFAULT_PICTURE_WIDTH
 
     try:
         height = request.values['height']
     except Exception:
-        height = DEFAULT_PICTURE_HEIGHT
+        height = cfg.DEFAULT_PICTURE_HEIGHT
 
 
     r = os.system((#"raspistill --nopreview "
@@ -465,13 +455,13 @@ def take_picture():
 
 @app.route("/video_list")
 def video_list():
-    return str({"video_list": [x.replace(VIDEO_ARCHIVE + "/", "") for x in glob.glob(VIDEO_ARCHIVE + "/*.h264")]})
+    return str({"video_list": [x.replace(cfg.VIDEO_ARCHIVE + "/", "") for x in glob.glob(cfg.VIDEO_ARCHIVE + "/*.h264")]})
 
 
 @app.route("/get_video/<file_name>")
 def get_video(file_name):
-    print(VIDEO_ARCHIVE + "/" + file_name)
-    return send_from_directory(VIDEO_ARCHIVE, file_name, as_attachment=True)
+    print(cfg.VIDEO_ARCHIVE + "/" + file_name)
+    return send_from_directory(cfg.VIDEO_ARCHIVE, file_name, as_attachment=True)
 
 
 @app.route("/command/<command_to_run>")
@@ -499,7 +489,7 @@ def get_log():
 @app.route("/delete_all_video")
 def delete_all_video():
     try:
-        os.system("rm -f {VIDEO_ARCHIVE}/*.h264".format(VIDEO_ARCHIVE=VIDEO_ARCHIVE))
+        os.system("rm -f {VIDEO_ARCHIVE}/*.h264".format(VIDEO_ARCHIVE=cfg.VIDEO_ARCHIVE))
         return str({"status": "OK", "msg": "all video deleted"})
     except Exception:
         return str({"status": "error"})
@@ -507,7 +497,7 @@ def delete_all_video():
 
 @app.route("/get_mac")
 def get_mac():
-    return str({"mac_addr": get_hw_addr(WIFI_INTERFACE)})
+    return str({"mac_addr": get_hw_addr(cfg.WIFI_INTERFACE)})
 
 
 @app.route("/reboot")
@@ -525,4 +515,4 @@ def shutdown():
 if __name__ == '__main__':
     logging.info("server started")
     app.debug = True
-    app.run(host = '0.0.0.0', port=PORT)
+    app.run(host = '0.0.0.0', port=cfg.PORT)
