@@ -653,10 +653,9 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
             if not ok or text != "yes":
                 return
 
-        self.rasp_output_lb.setText("Shutdown requested")
+
         self.shutdown(self.current_raspberry_id)
 
-        self.get_raspberry_status(self.current_raspberry_id)
 
 
     def video_streaming_clicked(self, action):
@@ -1040,13 +1039,18 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         send shutdown signal to Raspberry pi
         """
         try:
-            r = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}:{cfg.SERVER_PORT}/shutdown")
-            if r.status_code == 200:
-                self.rasp_output_lb.setText(r.text)
-            else:
-                self.rasp_output_lb.setText(f"Error during shutdown. (status code: {r.status_code})")
+            self.rasp_output_lb.setText("Shutdown requested")
+            response = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}:{cfg.SERVER_PORT}/shutdown")
         except Exception:
-            self.get_raspberry_status(raspberry_id)
+            self.rasp_output_lb.setText(f"Error during shutdown.")
+            return
+        if response.status_code != 200:
+            self.rasp_output_lb.setText(f"Error during shutdown. (status code: {r.status_code})")
+            return
+        self.rasp_output_lb.setText(response.json().get("msg", "Error during shutdown"))
+
+        self.get_raspberry_status(raspberry_id)
+        self.update_raspberry_dashboard(raspberry_id)
 
 
     def shutdown_all(self):

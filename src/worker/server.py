@@ -486,7 +486,7 @@ def command(command_to_run):
 @app.route("/get_log")
 def get_log():
     try:
-        return str("<pre>" + open(LOG_PATH).read() + "</pre>")
+        return str("<pre>" + open(cfg.LOG_PATH).read() + "</pre>")
     except Exception:
         return str({"status": "error"})
 
@@ -494,7 +494,7 @@ def get_log():
 @app.route("/delete_all_video")
 def delete_all_video():
     try:
-        os.system("rm -f {VIDEO_ARCHIVE}/*.h264".format(VIDEO_ARCHIVE=cfg.VIDEO_ARCHIVE))
+        os.system("rm -f {cfg.VIDEO_ARCHIVE}/*.h264".format(VIDEO_ARCHIVE=cfg.VIDEO_ARCHIVE))
         return str({"status": "OK", "msg": "all video deleted"})
     except Exception:
         return str({"status": "error"})
@@ -511,11 +511,18 @@ def reboot():
     return str({"status": "reboot requested"})
 
 
-
 @app.route("/shutdown")
 def shutdown():
-    os.system("sudo shutdown now")
-    return str({"status": "shutdown requested"})
+    try:
+        completed = subprocess.run(["sudo", "shutdown", "now"])
+    except Exception:
+        return {"error": 1, "msg": "shutdown error"}
+
+    if not completed.returncode:
+        return {"error": False, "msg": "shutdown requested"}
+    else:
+        return {"error": completed.returncode, "msg": "shutdown error"}
+
 
 if __name__ == '__main__':
     logging.info("server started")
