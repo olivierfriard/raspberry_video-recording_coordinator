@@ -115,7 +115,7 @@
             <item>
              <widget class="QTabWidget" name="rasp_tw">
               <property name="currentIndex">
-               <number>1</number>
+               <number>3</number>
               </property>
               <widget class="QWidget" name="status_tab">
                <attribute name="title">
@@ -126,20 +126,6 @@
                  <layout class="QVBoxLayout" name="verticalLayout_4">
                   <item>
                    <layout class="QGridLayout" name="gridLayout">
-                    <item row="1" column="1">
-                     <widget class="QLabel" name="ip_address_lb">
-                      <property name="text">
-                       <string/>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="3" column="1">
-                     <widget class="QLabel" name="cpu_temp_lb">
-                      <property name="text">
-                       <string/>
-                      </property>
-                     </widget>
-                    </item>
                     <item row="5" column="0">
                      <widget class="QLabel" name="label_9">
                       <property name="text">
@@ -147,78 +133,8 @@
                       </property>
                      </widget>
                     </item>
-                    <item row="6" column="0">
-                     <widget class="QLabel" name="label_10">
-                      <property name="text">
-                       <string>Camera detected</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="6" column="1">
-                     <widget class="QLabel" name="camera_detected_lb">
-                      <property name="text">
-                       <string/>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="4" column="1">
-                     <widget class="QLabel" name="wifi_essid_lb">
-                      <property name="text">
-                       <string/>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="0">
-                     <widget class="QLabel" name="label_2">
-                      <property name="text">
-                       <string>Date/time</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="3" column="0">
-                     <widget class="QLabel" name="label_3">
-                      <property name="text">
-                       <string>CPU temperature (°C)</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="0">
-                     <widget class="QLabel" name="label">
-                      <property name="text">
-                       <string>Status</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="0">
-                     <widget class="QLabel" name="label_12">
-                      <property name="text">
-                       <string>IP address</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="7" column="0">
-                     <widget class="QLabel" name="label_11">
-                      <property name="text">
-                       <string>Uptime</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="8" column="0">
-                     <widget class="QLabel" name="label_13">
-                      <property name="text">
-                       <string>Video recording active</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="7" column="1">
-                     <widget class="QLabel" name="uptime_lb">
-                      <property name="text">
-                       <string/>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="5" column="1">
-                     <widget class="QLabel" name="free_sd_space_lb">
+                    <item row="3" column="1">
+                     <widget class="QLabel" name="cpu_temp_lb">
                       <property name="text">
                        <string/>
                       </property>
@@ -231,8 +147,29 @@
                       </property>
                      </widget>
                     </item>
+                    <item row="1" column="0">
+                     <widget class="QLabel" name="label_12">
+                      <property name="text">
+                       <string>IP address</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="1">
+                     <widget class="QLabel" name="ip_address_lb">
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
                     <item row="8" column="1">
                      <widget class="QLabel" name="video_recording_active_lb">
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="7" column="1">
+                     <widget class="QLabel" name="uptime_lb">
                       <property name="text">
                        <string/>
                       </property>
@@ -245,13 +182,6 @@
                       </property>
                      </widget>
                     </item>
-                    <item row="2" column="1">
-                     <widget class="QLabel" name="datetime_lb">
-                      <property name="text">
-                       <string/>
-                      </property>
-                     </widget>
-                    </item>
                     <item row="9" column="0">
                      <widget class="QLabel" name="label_14">
                       <property name="text">
@@ -261,6 +191,90 @@
                     </item>
                     <item row="9" column="1">
                      <widget class="QLabel" name="video_streaming_active_lb">
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="5" column="1">
+                     <widget class="QLabel" name="free_sd_space_lb">
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="0">
+                     <widget class="QLabel" name="label">
+                      <property name="text">
+                       <string>Status</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="3" column="0">
+                     <widget class="QLabel" name="label_3">
+                      <property name="text">
+                       <string>CPU temperature (°C)</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="6" column="1">
+                     <widget class="QLabel" name="camera_detected_lb">
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="8" column="0">
+                     <widget class="QLabel" name="label_13">
+                      <property name="text">
+                       <string>Video recording active</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="7" column="0">
+                     <widget class="QLabel" name="label_11">
+                      <property name="text">
+                       <string>Uptime</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="0">
+                     <widget class="QLabel" name="label_2">
+                      <property name="text">
+                       <string>Date/time</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="4" column="1">
+                     <widget class="QLabel" name="wifi_essid_lb">
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="6" column="0">
+                     <widget class="QLabel" name="label_10">
+                      <property name="text">
+                       <string>Camera detected</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="1">
+                     <widget class="QLabel" name="datetime_lb">
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="10" column="0">
+                     <widget class="QLabel" name="label_22">
+                      <property name="text">
+                       <string>Time lapse active</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="10" column="1">
+                     <widget class="QLabel" name="time_lapse_active_lb">
                       <property name="text">
                        <string/>
                       </property>
@@ -484,6 +498,13 @@
                    </widget>
                   </item>
                   <item>
+                   <widget class="QCheckBox" name="picture_annotation_cb">
+                    <property name="text">
+                     <string>Annotate picture</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
                    <spacer name="horizontalSpacer_4">
                     <property name="orientation">
                      <enum>Qt::Horizontal</enum>
@@ -525,7 +546,7 @@
                    </widget>
                   </item>
                   <item>
-                   <widget class="QSpinBox" name="time_lapse_between_sb"/>
+                   <widget class="QSpinBox" name="time_lapse_wait_sb"/>
                   </item>
                   <item>
                    <spacer name="horizontalSpacer_6">
@@ -544,6 +565,13 @@
                 </item>
                 <item>
                  <layout class="QHBoxLayout" name="horizontalLayout_15">
+                  <item>
+                   <widget class="QPushButton" name="stop_time_lapse_pb">
+                    <property name="text">
+                     <string>Stop time lapse</string>
+                    </property>
+                   </widget>
+                  </item>
                   <item>
                    <widget class="QPushButton" name="take_picture_pb">
                     <property name="text">
@@ -709,9 +737,16 @@
                    </widget>
                   </item>
                   <item>
-                   <widget class="QPushButton" name="pb_stop_video_recording">
+                   <widget class="QPushButton" name="stop_video_recording_pb">
                     <property name="text">
                      <string>Stop video recording</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="download_videos_pb">
+                    <property name="text">
+                     <string>Download videos</string>
                     </property>
                    </widget>
                   </item>

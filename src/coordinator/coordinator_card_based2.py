@@ -154,7 +154,6 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         def run(self, raspberry_id, videos_list):
             print(raspberry_id, videos_list)
 
-            #raspberry_id, videos_list = args
             output = ""
             for video_file_name in sorted(videos_list):
                 if not pathlib.Path(cfg.VIDEO_ARCHIVE + "/" + video_file_name).is_file():
@@ -175,12 +174,6 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
 
 
     RASPBERRY_IP = {}
-    raspberry_msg = {}
-    (status_list, text_list, download_button, record_button,
-    image_label, stack_list, combo_list, media_list, combo_list, video_streaming_btn) = {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
-    (start_time, duration, interval, video_mode,
-     video_quality, fps, prefix, resolution, download_process) = {}, {}, {}, {}, {}, {}, {}, {}, {}
-
     raspberry_info = {}
 
     def __init__(self, parent=None):
@@ -195,7 +188,7 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
 
         self.define_connections()
 
-        self.setWindowTitle("Raspberry - Video recording")
+        self.setWindowTitle("Raspberry Pi coordinator")
         self.statusBar().showMessage(f"v. {__version__} - {__version_date__}    WIFI SSID: {get_wifi_ssid()}    IP address: {get_wlan_ip_address()}")
 
         self.setGeometry(0, 0, 1300, 768)
@@ -232,6 +225,7 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
 
         # picture
         self.take_picture_pb.clicked.connect(self.take_picture_clicked)
+        self.stop_time_lapse_pb.clicked.connect(self.stop_time_lapse_clicked)
 
         self.picture_lb.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.picture_lb.setAlignment(Qt.AlignCenter)
@@ -250,6 +244,12 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         self.picture_rotation_sb.valueChanged.connect(self.picture_rotation_changed)
         self.picture_hflip_cb.clicked.connect(self.picture_hflip_changed)
         self.picture_vflip_cb.clicked.connect(self.picture_vflip_changed)
+        self.picture_annotation_cb.clicked.connect(self.picture_annotation_changed)
+
+        self.time_lapse_cb.clicked.connect(self.time_lapse_changed)
+        self.time_lapse_duration_sb.valueChanged.connect(self.time_lapse_duration_changed)
+        self.time_lapse_wait_sb.valueChanged.connect(self.time_lapse_wait_changed)
+
 
 
         # video streaming
@@ -262,6 +262,9 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
 
         # video recording
         self.start_video_recording_pb.clicked.connect(self.start_video_recording_clicked)
+        self.stop_video_recording_pb.clicked.connect(self.stop_video_recording_clicked)
+
+        self.download_videos_pb.clicked.connect(self.download_videos_clicked)
 
         self.video_mode_cb.currentIndexChanged.connect(self.video_mode_changed)
         self.video_duration_sb.valueChanged.connect(self.video_duration_changed)
@@ -276,6 +279,8 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         streaming_layout = QHBoxLayout()
         streaming_layout.setContentsMargins(0, 0, 0, 0)
         streaming_layout.addWidget(videoWidget)
+
+
 
         self.streaming_wdg.setLayout(streaming_layout)
 
@@ -306,19 +311,15 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
     def picture_brightness_changed(self):
         if self.current_raspberry_id:
             self.raspberry_info[self.current_raspberry_id]["picture brightness"] = self.picture_brightness_sb.value()
-
     def picture_contrast_changed(self):
         if self.current_raspberry_id:
             self.raspberry_info[self.current_raspberry_id]["picture contrast"] = self.picture_contrast_sb.value()
-
     def picture_sharpness_changed(self):
         if self.current_raspberry_id:
             self.raspberry_info[self.current_raspberry_id]["picture sharpness"] = self.picture_sharpness_sb.value()
-
     def picture_saturation_changed(self):
         if self.current_raspberry_id:
             self.raspberry_info[self.current_raspberry_id]["picture saturation"] = self.picture_saturation_sb.value()
-
     def picture_iso_changed(self):
         if self.current_raspberry_id:
             self.raspberry_info[self.current_raspberry_id]["picture iso"] = self.picture_iso_sb.value()
@@ -331,6 +332,18 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
     def picture_vflip_changed(self):
         if self.current_raspberry_id:
             self.raspberry_info[self.current_raspberry_id]["picture vflip"] = self.picture_vflip_cb.isChecked()
+    def picture_annotation_changed(self):
+        if self.current_raspberry_id:
+            self.raspberry_info[self.current_raspberry_id]["picture annotation"] = self.picture_annotation_cb.isChecked()
+    def time_lapse_changed(self):
+        self.raspberry_info[self.current_raspberry_id]["time lapse"] = self.time_lapse_cb.isChecked()
+    def time_lapse_duration_changed(self):
+        if self.current_raspberry_id:
+            self.raspberry_info[self.current_raspberry_id]["time lapse duration"] = self.time_lapse_duration_sb.value()
+    def time_lapse_wait_changed(self):
+        if self.current_raspberry_id:
+            self.raspberry_info[self.current_raspberry_id]["time lapse wait"] = self.time_lapse_wait_sb.value()
+
 
 
 
@@ -668,6 +681,7 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         """
         self.download_videos(self.current_raspberry_id, "")
 
+
     def get_videos_list(self):
         """
         Download list of videos from current Raspberry Pi
@@ -678,25 +692,19 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
 
     def populate_rasp_list(self):
         """
-        Populate the list widget with the Raspberry clients found
+        Populate the list widget with the Raspberry Pi that were found
         """
         self.raspberry_info = {}
         self.rasp_list.clear()
         for raspberry_id in sorted(self.RASPBERRY_IP.keys()):
             self.rasp_list.addItem(QListWidgetItem(raspberry_id))
-            self.raspberry_info[raspberry_id] = {"picture resolution": cfg.PICTURE_RESOLUTIONS[cfg.DEFAULT_PICTURE_RESOLUTION],
-                                                 "picture brightness": cfg.PICTURE_BRIGHTNESS,
-                                                 "video mode": cfg.VIDEO_MODES[cfg.DEFAULT_VIDEO_MODE],
-                                                 "video quality": cfg.DEFAULT_VIDEO_QUALITY,
-                                                 "FPS": cfg.DEFAULT_FPS,
-                                                 "video duration": cfg.DEFAULT_VIDEO_DURATION,
-                                                 }
-
+            self.raspberry_info[raspberry_id] = dict(cfg.RPI_DEFAULTS)
+            
 
     def connect(self, ip_address):
-        '''
-        try to connect to http://{ip_addr}/status
-        '''
+        """
+        try to connect to http://{ip_address}/status
+        """
         try:
             response = requests.get(f"http://{ip_address}{cfg.SERVER_PORT}/status", timeout=cfg.TIME_OUT)
         except requests.exceptions.ConnectionError:
@@ -893,9 +901,6 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         update the Raspberry Pi dashboard
         """
 
-        print(f"raspberry_id=")
-        print(self.raspberry_info[raspberry_id])
-
         self.datetime_lb.setText(self.raspberry_info[raspberry_id]["status"].get("server_datetime", "Not available"))
         self.cpu_temp_lb.setText(self.raspberry_info[raspberry_id]["status"].get("CPU temperature", "Not available").replace("'", "°"))
         self.status_lb.setText(self.raspberry_info[raspberry_id]["status"].get("status", "Not available"))
@@ -905,15 +910,11 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         self.uptime_lb.setText(self.raspberry_info[raspberry_id]["status"].get("uptime", ""))
         self.ip_address_lb.setText(self.raspberry_info[raspberry_id]["status"].get("IP_address", "Not detected"))
 
-        if self.raspberry_info[raspberry_id]["status"].get("video_recording", False) == True:
-            self.video_recording_active_lb.setText("Yes")
-        else:
-            self.video_recording_active_lb.setText("No")
+        self.video_recording_active_lb.setText("Yes" if self.raspberry_info[raspberry_id]["status"].get("video_recording", False) else "No")
 
-        if self.raspberry_info[raspberry_id]["status"].get("video_streaming_active", False) == True:
-            self.video_streaming_active_lb.setText("Yes")
-        else:
-            self.video_streaming_active_lb.setText("No")
+        self.video_streaming_active_lb.setText("Yes" if self.raspberry_info[raspberry_id]["status"].get("video_streaming_active", False) else "No")
+
+        self.time_lapse_active_lb.setText("Yes" if self.raspberry_info[raspberry_id]["status"].get("time_lapse_active", False) else "No")
 
 
     def rb_msg(self, raspberry_id, msg):
@@ -923,12 +924,6 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         if raspberry_id not in self.raspberry_output:
             self.raspberry_output[raspberry_id] = ""
         self.raspberry_output[raspberry_id] += f"<pre>{date_iso()}: {msg}</pre>"
-
-        '''
-        if raspberry_id == self.current_raspberry_id:
-            self.text_list.setText(self.raspberry_output[raspberry_id])
-            app.processEvents()
-        '''
 
 
     def send_command(self, rb):
@@ -1075,9 +1070,9 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
 
 
     def get_raspberry_status(self, raspberry_id):
-        '''
+        """
         get Raspberry Pi status
-        '''
+        """
 
         try:
             if raspberry_id in self.RASPBERRY_IP:
@@ -1138,7 +1133,6 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         for x in range(self.rasp_list.count()):
             if self.rasp_list.item(x).text() == raspberry_id:
                 self.rasp_list.item(x).setIcon(QIcon(f"{color}.png"))
-
 
 
     def status_for_all_rpi(self):
@@ -1232,7 +1226,11 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
                     "rotation": self.raspberry_info[raspberry_id]['picture rotation'],
                     "hflip": self.raspberry_info[raspberry_id]['picture hflip'],
                     "vflip": self.raspberry_info[raspberry_id]['picture vflip'],
+                    "timelapse": self.raspberry_info[raspberry_id]['time lapse wait'],
+                    "timeout": self.raspberry_info[raspberry_id]['time lapse duration'],
+                    "annotate": self.raspberry_info[raspberry_id]['picture annotation'],
                     }
+            
 
             try:
                 response = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}{cfg.SERVER_PORT}/take_picture",
@@ -1251,6 +1249,11 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
                 self.rasp_output_lb.setText(response.json().get("msg", "Undefined error"))
                 return
 
+            # time lapse
+            if self.raspberry_info[raspberry_id]['time lapse wait'] and self.raspberry_info[raspberry_id]['time lapse duration']:
+                self.rasp_output_lb.setText(response.json().get("msg", "Undefined error"))
+                return
+
             try:
                 response2 = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}{cfg.SERVER_PORT}/static/live.jpg", stream=True)
             except Exception:
@@ -1266,6 +1269,36 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
 
             self.picture_lb.setPixmap(QPixmap(f"live_{raspberry_id}.jpg").scaled(self.picture_lb.size(), Qt.KeepAspectRatio))
             self.rasp_output_lb.setText(f"Picture taken")
+
+
+    def stop_time_lapse_clicked(self):
+        """
+        Stop the time lapse
+        """
+
+        self.stop_time_lapse(self.current_raspberry_id)
+
+
+    def stop_time_lapse(self, raspberry_id):
+        """
+        Stop the time lapse
+        """
+        if raspberry_id not in self.RASPBERRY_IP:
+            return
+
+        try:
+            response = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}{cfg.SERVER_PORT}/stop_time_lapse")
+        except requests.exceptions.ConnectionError:
+            self.rasp_output_lb.setText(f"Failed to establish a connection")
+            self.get_raspberry_status(raspberry_id)
+            self.update_raspberry_display(raspberry_id)
+            return
+
+        if response.status_code != 200:
+            self.rasp_output_lb.setText(f"Error trying to stop time lapse (status code: {response.status_code})")
+            return
+        self.rasp_output_lb.setText(response.json().get("msg", "Error during stopping time lapse"))
+
 
 
     def start_video_recording_clicked(self):
@@ -1307,29 +1340,34 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
             self.update_raspberry_dashboard(raspberry_id)
 
 
+    def stop_video_recording_clicked(self):
+        self.stop_video_recording(self.current_raspberry_id)
+
 
     def stop_video_recording(self, raspberry_id):
         """
-        stop the video recording
+        stop video recording
         """
-        if raspberry_id in self.RASPBERRY_IP and self.raspberry_info[raspberry_id]["status"]["status"] == "OK":
-            try:
-                self.rasp_output_lb.setText("stop video recording requested")
-                response = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}{cfg.SERVER_PORT}/stop_video")
-                if response.status_code == 200 and response.json().get("msg", "") == "video recording stopped":
-                    self.rasp_output_lb.setText("Video recording stopped")
-                else:
-                    self.rasp_output_lb.setText(response.json().get("msg", ""))
+        if raspberry_id not in self.RASPBERRY_IP:
+            return
 
-            except Exception:
-                pass
+        self.rasp_output_lb.setText("stop video recording requested")
+        try:
+            response = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}{cfg.SERVER_PORT}/stop_video")
+            if response.status_code == 200 and response.json().get("msg", "") == "video recording stopped":
+                self.rasp_output_lb.setText("Video recording stopped")
+            else:
+                self.rasp_output_lb.setText(response.json().get("msg", ""))
 
-            self.get_raspberry_status(raspberry_id)
+        except Exception:
+            pass
+
+        self.get_raspberry_status(raspberry_id)
 
 
     def delete_all_video(self, rb):
         """
-        delete all video from server
+        delete all video from Raspberry Pi
         """
         text, ok = QInputDialog.getText(self, f"Delete all video from the Raspberry Pi {rb}", "Confirm writing 'yes'")
         if not ok or text != "yes":
@@ -1350,7 +1388,7 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         except Exception:
             self.rb_msg(rb, "<b>Error</b>")
 
-
+    '''
     def get_log(self):
 
         if self.current_raspberry_id in self.RASPBERRY_IP and self.raspberry_info[raspberry_id]["status"]["status"] == "OK":
@@ -1359,7 +1397,7 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
                 self.rb_msg(self.current_raspberry_id, r.text)
             except Exception:
                 self.rb_msg(self.current_raspberry_id, "Error")
-
+    '''
 
     '''
     def update_all(self):
@@ -1380,6 +1418,7 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
                     self.rb_msg(rb, "<b>Error during server update</b>")
     '''
 
+    '''
     def download_videos_list(self, args):
 
         raspberry_id, videos_list = args
@@ -1400,21 +1439,15 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
             return ["No video to download"]
         else:
             return output
-
-
-    def download_videos_finished(self, r):
-
-        logging.info(f"Videos downloaded: {r[0]}\n")
-
+    '''
 
     def download_videos(self, raspberry_id, download_dir=""):
         """
-        download all video from one raspberry
+        download all video from Raspberry Pi
         """
 
         def thread_finished(output):
-            print(output)
-            self.lb_download_videos.setText("Videos downloaded")
+            self.rasp_output_lb.setText("Videos downloaded")
             self.my_thread1.quit
 
 
@@ -1422,7 +1455,7 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
             download_dir = cfg.VIDEO_ARCHIVE
 
         if not pathlib.Path(download_dir).is_dir():
-            QMessageBox.critical(None, "Raspberry controller",
+            QMessageBox.critical(None, "Raspberry Pi coordinator",
                                  f"Destination not found!<br>{cfg.VIDEO_ARCHIVE}<br><br>Choose another directory",
                                  QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
 
@@ -1458,13 +1491,8 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
                         self.my_worker1.start.emit(raspberry_id, r2["video_list"])
 
 
-                else:
-                    self.rb_msg(raspberry_id, f"<b>Error status code: {r.status_code}</b>")
-                    self.status_one(output=False)
             except Exception:
                 raise
-                self.rb_msg(raspberry_id, "<b>Error</b>")
-
 
 
 
@@ -1478,19 +1506,6 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         logging.info(f"process error: {process_error}")
         logging.info(f"process state: {self.download_process[rb].state()}")
         self.rb_msg(rb, f"Error downloading video.\nProcess error: {process_error}  Process state: {self.download_process[rb].state()}")
-        self.download_button[rb].setStyleSheet("")
-
-
-    def download_finished(self, exitcode, rb):
-        """
-        download finished
-        """
-        print("exit code", exitcode)
-        if exitcode:
-            self.rb_msg(rb, f"Error downloading video.\nExit code: {exitcode}")
-        else:
-            self.rb_msg(rb, "File downloaded.")
-
         self.download_button[rb].setStyleSheet("")
 
 
