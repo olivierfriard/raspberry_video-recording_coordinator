@@ -5,7 +5,7 @@ Video control server
 
 """
 
-__version__ = "0.0.13"
+__version__ = "0.0.14"
 
 
 
@@ -93,6 +93,15 @@ def video_streaming_active():
     process = subprocess.run(["ps", "auxwg"], stdout=subprocess.PIPE)
     processes_list = process.stdout.decode("utf-8").split("\n")
     return len([x for x in processes_list if "uv4l" in x]) > 0
+
+
+def time_lapse_active():
+    '''
+    check if raspistill process is present
+    '''
+    process = subprocess.run(["ps", "auxwg"], stdout=subprocess.PIPE)
+    processes_list = process.stdout.decode("utf-8").split("\n")
+    return len([x for x in processes_list if "raspistill" in x]) > 0
 
 
 def get_cpu_temperature():
@@ -192,6 +201,7 @@ def status():
                        "free disk space": get_free_space(),
                        "camera detected": is_camera_detected(),
                        "uptime": get_uptime(),
+                       "time_lapse_active": time_lapse_active(),
                       }
 
         if thread.is_alive():
@@ -224,7 +234,6 @@ class Raspivid_thread(threading.Thread):
         logging.info("start raspivid thread")
         file_name = datetime.datetime.now().replace(microsecond=0).isoformat().replace("T", "_").replace(":", "")
 
-
         cmd = ["raspivid",
                "-t", str(int(self.parameters['duration']) * 1000),
                "-w", f"{self.parameters['width']}",
@@ -233,18 +242,6 @@ class Raspivid_thread(threading.Thread):
                "-b", str(int(self.parameters['quality']) * 1000),
                "-o", f"{cfg.VIDEO_ARCHIVE}/{socket.gethostname()}_{self.parameters['prefix']}_{file_name}.h264"
               ]
-
-        '''
-        cmd = ("raspivid "
-           + "-t {} ".format(self.duration * 1000)
-           + "-w {w} -h {h} ".format(w=self.w, h=self.h)
-           + "-fps {} ".format(self.fps)
-           + "-b {} ".format(self.quality * 1000000)
-           + "-o {VIDEO_ARCHIVE}/{hostname}_{prefix}_{file_name}.h264".format(VIDEO_ARCHIVE=VIDEO_ARCHIVE,
-                                                                     file_name=file_name,
-                                                                     prefix=self.prefix,
-                                                                     hostname=socket.gethostname()))
-        '''
 
         logging.info(f"{cmd}")
 
@@ -344,11 +341,12 @@ def set_hostname(hostname):
     return str({"new_hostname": socket.gethostname()})
 '''
 
+'''
 @app.route("/add_key/<key>")
 def add_key(key):
-    '''
+    """
     add coordinator public key to ~/.ssh/authorized_keys
-    '''
+    """
     try:
         file_content = base64.b64decode(key).decode("utf-8")
         dir_exists = (pathlib.Path.home() / pathlib.Path(".ssh")).is_dir()
@@ -363,7 +361,7 @@ def add_key(key):
         return {"msg": "file authorized_keys created"}
     except:
         return {"msg": "error"}
-
+'''
 
 @app.route("/start_video", methods=("GET", "POST",))
 def start_video():
@@ -401,6 +399,21 @@ def stop_video():
         return {"msg": "video recording not stopped"}
 
 
+@app.route("/stop_time_lapse")
+def stop_time_lapse():
+    """
+    Stop the time lapse
+    """
+
+    subprocess.run(["sudo", "killall", "raspistill"])
+    time.sleep(2)
+
+    if not time_lapse_active():
+        return {"msg": "Time lapse stopped"}
+    else:
+        return {"msg": "Time lapse not stopped"}
+
+
 
 @app.route("/blink")
 def blink():
@@ -422,9 +435,9 @@ def sync_time(date, hour):
     """
     completed = subprocess.run(['sudo', 'timedatectl','set-time', f"{date} {hour}"]) # 2015-11-23 10:11:22
     if completed.returncode:
-        return {"error": True, "msg": "time not synchronised"}
+        return {"error": True, "msg": "Time not synchronised"}
     else:
-        return {"msg": "time synchronised", "error": True}
+        return {"error": False, "msg": "Time successfully synchronized"}
 
 
 @app.route("/take_picture", methods=("GET", "POST",))
@@ -436,26 +449,53 @@ def take_picture():
     except Exception:
         pass
 
-    try:
-        width = request.values['width']
-    except Exception:
-        width = cfg.DEFAULT_PICTURE_WIDTH
+    command_line = ["raspistill",
+                    #"--timeout", "5",
+                    "--nopreview",
+                    "-q", "90",
+                   ]
 
-    try:
-        height = request.values['height']
-    except Exception:
-        height = cfg.DEFAULT_PICTURE_HEIGHT
+    for key in request.values:
 
-    completed = subprocess.run(["raspistill",
-                                "-w", f"{width}",
-                                "-h", f"{height}",
-                                "--annotate",  f'{socket.gethostname()} {datetime.datetime.now().replace(microsecond=0).isoformat().replace("T", " ")}',
-                                "-o", "static/live.jpg"
-                                ])
-    if not completed.returncode:
-        return {"error": False, "msg": "picture taken"}
+        if key in ["timelapse", "timeout", "annotate"]:
+            continue
+        if request.values[key] == 'True':
+            command_line.extend([f"--{key}"])
+        elif request.values[key] != 'False':
+            command_line.extend([f"--{key}", f"{request.values[key]}"])
+
+    if "annotate" in request.values and request.values["annotate"] == 'True':
+        command_line.extend(["-a", "4", "-a", f'"{socket.gethostname()} %Y-%m-%d %X"'])
+
+    # check time lapse
+    if ("timeout" in request.values and request.values["timeout"] != '0' 
+        and "timelapse" in request.values and request.values["timelapse"] != '0'):
+        command_line.extend([f"--timeout", str(int(request.values["timeout"]) * 1000)])
+        command_line.extend([f"--timelapse", str(int(request.values["timelapse"]) * 1000)])
+        command_line.extend(["--timestamp"])
+        command_line.extend(["-o", f"static/pictures_archive/{socket.gethostname()}_" + "%04d.jpg"])
+
+        try:
+            subprocess.Popen(command_line)
+        except:
+            logging.warning("Error running time lapse (wrong command line option)")
+            return {"error": 1, "msg": "Error running time lapse (wrong command line option)"} 
+        return {"error": False, "msg": "Time lapse running"}
+
     else:
-        return {"error": completed.returncode, "msg": "picture not taken"}
+
+        command_line.extend(["-o", "static/live.jpg"])
+        try:
+            completed = subprocess.run(command_line)
+        except:
+            logging.warning("Error taking picture (wrong command line option)")
+            return {"error": 1, "msg": "Error taking picture (wrong command line option)"} 
+        if not completed.returncode:
+            return {"error": False, "msg": "Picture taken successfully"}
+        else:
+            return {"error": completed.returncode, "msg": "Picture not taken"} 
+
+
 
 
 @app.route("/video_list")
