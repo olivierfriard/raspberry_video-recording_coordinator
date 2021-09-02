@@ -16,6 +16,31 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_12">
+      <item>
+       <widget class="QPushButton" name="all_get_status_pb">
+        <property name="text">
+         <string>Get status</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="all_time_synchro_pb">
+        <property name="text">
+         <string>Synchronize time</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="all_shutdown_pb">
+        <property name="text">
+         <string>Shutdown</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
      <widget class="QTabWidget" name="main_tw">
       <property name="currentIndex">
        <number>0</number>
@@ -90,7 +115,7 @@
             <item>
              <widget class="QTabWidget" name="rasp_tw">
               <property name="currentIndex">
-               <number>0</number>
+               <number>1</number>
               </property>
               <widget class="QWidget" name="status_tab">
                <attribute name="title">
@@ -309,20 +334,173 @@
                <attribute name="title">
                 <string>Picture</string>
                </attribute>
-               <layout class="QVBoxLayout" name="verticalLayout_7">
+               <layout class="QVBoxLayout" name="verticalLayout_11">
                 <item>
-                 <layout class="QVBoxLayout" name="verticalLayout_6">
+                 <layout class="QVBoxLayout" name="verticalLayout_7">
                   <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_2">
+                   <layout class="QVBoxLayout" name="verticalLayout_6">
                     <item>
-                     <widget class="QLabel" name="label_4">
-                      <property name="text">
-                       <string>Resolution</string>
-                      </property>
-                     </widget>
+                     <layout class="QHBoxLayout" name="horizontalLayout_2">
+                      <item>
+                       <widget class="QLabel" name="label_4">
+                        <property name="text">
+                         <string>Resolution</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QComboBox" name="picture_resolution_cb"/>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="label_19">
+                        <property name="text">
+                         <string>Rotation</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QSpinBox" name="picture_rotation_sb">
+                        <property name="maximum">
+                         <number>270</number>
+                        </property>
+                        <property name="singleStep">
+                         <number>90</number>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QCheckBox" name="picture_hflip_cb">
+                        <property name="text">
+                         <string>Horizontal flip</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QCheckBox" name="picture_vflip_cb">
+                        <property name="text">
+                         <string>Vertical flip</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <spacer name="horizontalSpacer_3">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>40</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                     </layout>
                     </item>
                     <item>
-                     <widget class="QComboBox" name="picture_resolution_cb"/>
+                     <layout class="QHBoxLayout" name="horizontalLayout_13">
+                      <item>
+                       <widget class="QLabel" name="label_15">
+                        <property name="text">
+                         <string>Brightness</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QSpinBox" name="picture_brightness_sb">
+                        <property name="maximum">
+                         <number>100</number>
+                        </property>
+                        <property name="value">
+                         <number>50</number>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="label_16">
+                        <property name="text">
+                         <string>Contrast</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QSpinBox" name="picture_contrast_sb">
+                        <property name="minimum">
+                         <number>-100</number>
+                        </property>
+                        <property name="maximum">
+                         <number>100</number>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="Sharpness">
+                        <property name="text">
+                         <string>Sharpness</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QSpinBox" name="picture_sharpness_sb">
+                        <property name="minimum">
+                         <number>-100</number>
+                        </property>
+                        <property name="maximum">
+                         <number>100</number>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="label_17">
+                        <property name="text">
+                         <string>Saturation</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QSpinBox" name="picture_saturation_sb">
+                        <property name="minimum">
+                         <number>-100</number>
+                        </property>
+                        <property name="maximum">
+                         <number>100</number>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="label_18">
+                        <property name="text">
+                         <string>ISO</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QSpinBox" name="picture_iso_sb">
+                        <property name="minimum">
+                         <number>100</number>
+                        </property>
+                        <property name="maximum">
+                         <number>800</number>
+                        </property>
+                        <property name="singleStep">
+                         <number>50</number>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <spacer name="horizontalSpacer_4">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>40</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                     </layout>
                     </item>
                     <item>
                      <widget class="QPushButton" name="take_picture_pb">

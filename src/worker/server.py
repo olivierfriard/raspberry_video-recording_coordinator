@@ -502,19 +502,35 @@ def delete_all_video():
 
 @app.route("/get_mac")
 def get_mac():
-    return str({"mac_addr": get_hw_addr(cfg.WIFI_INTERFACE)})
+    """
+    return MAC ADDR of the wireless interface
+    """
+    return {"mac_addr": get_hw_addr(cfg.WIFI_INTERFACE)}
 
 
 @app.route("/reboot")
 def reboot():
-    os.system("sudo reboot")
-    return str({"status": "reboot requested"})
+    """
+    shutdown the Raspberry Pi with 1 min delay
+    """
+    try:
+        completed = subprocess.run(["sudo", "shutdown", "--reboot", "+1"])
+    except Exception:
+        return {"error": 1, "msg": "reboot error"}
+
+    if not completed.returncode:
+        return {"error": False, "msg": "reboot requested"}
+    else:
+        return {"error": completed.returncode, "msg": "reboot error"}
 
 
 @app.route("/shutdown")
 def shutdown():
+    """
+    shutdown the Raspberry Pi with 1 min delay
+    """
     try:
-        completed = subprocess.run(["sudo", "shutdown", "now"])
+        completed = subprocess.run(["sudo", "shutdown", "+1"])
     except Exception:
         return {"error": 1, "msg": "shutdown error"}
 
