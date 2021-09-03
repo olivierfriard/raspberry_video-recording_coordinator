@@ -699,7 +699,7 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         for raspberry_id in sorted(self.RASPBERRY_IP.keys()):
             self.rasp_list.addItem(QListWidgetItem(raspberry_id))
             self.raspberry_info[raspberry_id] = dict(cfg.RPI_DEFAULTS)
-            
+
 
     def connect(self, ip_address):
         """
@@ -1230,7 +1230,7 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
                     "timeout": self.raspberry_info[raspberry_id]['time lapse duration'],
                     "annotate": self.raspberry_info[raspberry_id]['picture annotation'],
                     }
-            
+
 
             try:
                 response = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}{cfg.SERVER_PORT}/take_picture",
@@ -1341,6 +1341,9 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
 
 
     def stop_video_recording_clicked(self):
+        """
+        Stop current video recording
+        """
         self.stop_video_recording(self.current_raspberry_id)
 
 
@@ -1365,28 +1368,26 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         self.get_raspberry_status(raspberry_id)
 
 
-    def delete_all_video(self, rb):
+    def delete_all_video(self, raspberry_id):
         """
         delete all video from Raspberry Pi
         """
-        text, ok = QInputDialog.getText(self, f"Delete all video from the Raspberry Pi {rb}", "Confirm writing 'yes'")
+        text, ok = QInputDialog.getText(self, f"Delete all video on the Raspberry Pi {raspberry_id}", "Confirm writing 'yes'")
         if not ok or text != "yes":
             return
+        self.rasp_output_lb.setText("Deletion of all video requested")
         try:
-            self.rasp_output_lb.setText("deletion of all video requested")
+            response = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}{cfg.SERVER_PORT}/delete_all_video")
+        except requests.exceptions.ConnectionError:
+            self.rasp_output_lb.setText(f"Failed to establish a connection")
+            self.get_raspberry_status(raspberry_id)
+            self.update_raspberry_display(raspberry_id)
+            return
+        if response.status_code != 200:
+            self.rasp_output_lb.setText(f"Error deleting the video (status code: {response.status_code})")
+            return
 
-            r = requests.get(f"http://{self.RASPBERRY_IP[rb]}{cfg.SERVER_PORT}/delete_all_video")
-            if r.status_code == 200:
-                r2 = eval(r.text)
-                if r2.get("status", "") == "OK":
-                    self.rb_msg(rb, "All video deleted")
-                if r2.get("status", "") == "error":
-                    self.rb_msg(rb, "<b>Error deleting all video</b>")
-
-            else:
-                self.rb_msg(rb, f"<b>Error status code: {r.status_code}</b>")
-        except Exception:
-            self.rb_msg(rb, "<b>Error</b>")
+        self.rasp_output_lb.setText(response.json().get("msg", "Error during delteing the video"))
 
     '''
     def get_log(self):

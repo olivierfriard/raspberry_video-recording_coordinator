@@ -5,7 +5,7 @@ Video control server
 
 """
 
-__version__ = "0.0.14"
+__version__ = "0.0.15"
 
 
 
@@ -468,7 +468,7 @@ def take_picture():
         command_line.extend(["-a", "4", "-a", f'"{socket.gethostname()} %Y-%m-%d %X"'])
 
     # check time lapse
-    if ("timeout" in request.values and request.values["timeout"] != '0' 
+    if ("timeout" in request.values and request.values["timeout"] != '0'
         and "timelapse" in request.values and request.values["timelapse"] != '0'):
         command_line.extend([f"--timeout", str(int(request.values["timeout"]) * 1000)])
         command_line.extend([f"--timelapse", str(int(request.values["timelapse"]) * 1000)])
@@ -479,7 +479,7 @@ def take_picture():
             subprocess.Popen(command_line)
         except:
             logging.warning("Error running time lapse (wrong command line option)")
-            return {"error": 1, "msg": "Error running time lapse (wrong command line option)"} 
+            return {"error": 1, "msg": "Error running time lapse (wrong command line option)"}
         return {"error": False, "msg": "Time lapse running"}
 
     else:
@@ -489,11 +489,11 @@ def take_picture():
             completed = subprocess.run(command_line)
         except:
             logging.warning("Error taking picture (wrong command line option)")
-            return {"error": 1, "msg": "Error taking picture (wrong command line option)"} 
+            return {"error": 1, "msg": "Error taking picture (wrong command line option)"}
         if not completed.returncode:
             return {"error": False, "msg": "Picture taken successfully"}
         else:
-            return {"error": completed.returncode, "msg": "Picture not taken"} 
+            return {"error": completed.returncode, "msg": "Picture not taken"}
 
 
 
@@ -533,11 +533,14 @@ def get_log():
 
 @app.route("/delete_all_video")
 def delete_all_video():
+    """
+    Delete all video records in the video archive
+    """
     try:
-        os.system("rm -f {cfg.VIDEO_ARCHIVE}/*.h264".format(VIDEO_ARCHIVE=cfg.VIDEO_ARCHIVE))
-        return str({"status": "OK", "msg": "all video deleted"})
+        subprocess.run(["rm", "-f", f"{cfg.VIDEO_ARCHIVE}/*.h264"])
     except Exception:
-        return str({"status": "error"})
+        return {"error": True, "msg": "video not deleted"}
+    return {"error": False, "msg": "All video deleted"})
 
 
 @app.route("/get_mac")
