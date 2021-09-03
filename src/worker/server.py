@@ -249,10 +249,17 @@ class Raspivid_thread(threading.Thread):
 
         subprocess.run(cmd)
 
+        # md5sum
         process = subprocess.run(["md5sum", f"{cfg.VIDEO_ARCHIVE}/{socket.gethostname()}_{self.parameters['prefix']}_{file_name}.h264"],
                                  stdout=subprocess.PIPE)
 
         print(process.stdout.decode("utf-8"))
+        try:
+            with open(f"{cfg.VIDEO_ARCHIVE}/{socket.gethostname()}_{self.parameters['prefix']}_{file_name}.md5sum", "w") as f_out:
+                f_out.write(process.stdout.decode("utf-8"))
+        except Exception:
+            logging.warning(f"MD5SUM writing failed for {socket.gethostname()}_{self.parameters['prefix']}_{file_name}.h264")
+
 
 
 class Blink_thread(threading.Thread):

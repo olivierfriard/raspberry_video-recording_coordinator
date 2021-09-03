@@ -140,6 +140,23 @@ def get_wifi_ssid():
 
 from coordinator_ui import Ui_MainWindow
 
+
+def md5sum(file_path):
+    md5_hash = hashlib.md5()
+
+
+    a_file = open("test.txt", "rb")
+
+    content = a_file.read()
+
+    md5_hash.update(content)
+
+
+    digest = md5_hash.hexdigest()
+
+    print(digest)
+
+
 class Video_recording_control(QMainWindow, Ui_MainWindow):
 
 
@@ -161,8 +178,8 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
                     logging.info(f"Downloading  {video_file_name} from {raspberry_id}")
 
                     with requests.get(f"http://{self.raspberry_ip[raspberry_id]}{cfg.SERVER_PORT}/static/video_archive/{video_file_name}", stream=True) as r:
-                            with open(cfg.VIDEO_ARCHIVE + "/" + video_file_name, 'wb') as file_out:
-                                shutil.copyfileobj(r.raw, file_out)
+                        with open(cfg.VIDEO_ARCHIVE + "/" + video_file_name, "wb") as file_out:
+                            shutil.copyfileobj(r.raw, file_out)
 
                     logging.info(f"{video_file_name} downloaded from {raspberry_id}")
                     output += f"{video_file_name} downloaded\n"
