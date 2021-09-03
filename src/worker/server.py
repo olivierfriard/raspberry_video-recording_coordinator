@@ -249,6 +249,11 @@ class Raspivid_thread(threading.Thread):
 
         subprocess.run(cmd)
 
+        process = subprocess.run(["md5sum", f"{cfg.VIDEO_ARCHIVE}/{socket.gethostname()}_{self.parameters['prefix']}_{file_name}.h264"],
+                                 stdout=subprocess.PIPE)
+
+        print(process.stdout.decode("utf-8"))
+
 
 class Blink_thread(threading.Thread):
 
@@ -370,7 +375,6 @@ def start_video():
 
     if thread.is_alive():
         return {"msg": "Video already recording"}
-
 
     logging.info(f"Starting video for {request.values['duration']} s ({request.values['width']}x{request.values['height']})")
     try:
@@ -500,7 +504,7 @@ def take_picture():
 
 @app.route("/video_list")
 def video_list():
-    return str({"video_list": [x.replace(cfg.VIDEO_ARCHIVE + "/", "") for x in glob.glob(cfg.VIDEO_ARCHIVE + "/*.h264")]})
+    return {"video_list": [x.replace(cfg.VIDEO_ARCHIVE + "/", "") for x in glob.glob(cfg.VIDEO_ARCHIVE + "/*.h264")]}
 
 
 @app.route("/get_video/<file_name>")

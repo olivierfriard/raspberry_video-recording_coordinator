@@ -761,7 +761,7 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
 
     def scan_network(self, output):
         """
-        scan all network defined in IP_RANGES
+        scan all networks defined in IP_RANGES
         """
         self.message_box.setText("Scanning network...")
         app.processEvents()
@@ -796,7 +796,11 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
 
                 width, height = self.raspberry_info[raspberry_id]["video mode"].split("x")
                 data = {"width": width, "height": height}
-                response = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}{cfg.SERVER_PORT}/video_streaming/start", data=data)
+                try:
+                    response = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}{cfg.SERVER_PORT}/video_streaming/start", data=data)
+                except requests.exceptions.ConnectionError:
+
+                    return
 
                 if response.status_code == 200 and response.json().get("msg", "") == "video streaming started":
                     self.rasp_output_lb.setText(f"Video streaming started")
@@ -863,30 +867,26 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
 
     def video_list(self, raspberry_id):
         """
-        request a list of video to server
+        request a list of video to Raspberry Pi
         """
 
-        if raspberry_id in self.RASPBERRY_IP and self.raspberry_status[raspberry_id]:
-            try:
-                r = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}{cfg.SERVER_PORT}/video_list")
-                if r.status_code == 200:
-                    self.rb_msg(raspberry_id, "list received (* for files not in archive)")
-                    r2 = eval(r.text)
-                    if "video_list" in r2:
-                        for x in sorted(r2["video_list"]):
-                            if not pathlib.Path(cfg.VIDEO_ARCHIVE + "/" + x).is_file():
-                                self.raspberry_output[raspberry_id] += f"<b>* {x}</b><br>"
-                            else:
-                                self.raspberry_output[raspberry_id] += f"{x}<br>"
+        try:
+            response = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}{cfg.SERVER_PORT}/video_list")
+        except requests.exceptions.ConnectionError:
+            self.rasp_output_lb.setText(f"Failed to establish a connection")
+            self.get_raspberry_status(raspberry_id)
+            self.update_raspberry_display(raspberry_id)
+            return
 
-                    self.rb_msg(raspberry_id, "")
-                else:
-                    self.rb_msg(raspberry_id, f"<b>Error status code: {r.status_code}</b>")
-                    self.status_one(output=False)
-            except Exception:
-                self.rb_msg(raspberry_id, "<b>Error</b>")
+        if response.status_code != 200:
+            self.rasp_output_lb.setText(f"Error requiring the list of video (status code: {response.status_code})")
+            return
+        if "video_list" not in response.json():
+            self.rasp_output_lb.setText(f"Error requiring the list of video")
+            return
+        self.rasp_output_lb.setText(f"List of video received ({len(response.json()["video_list"])} video)")
 
-
+        return list(response.json()["video_list"])
 
     def video_list_from_all(self):
         """
@@ -925,11 +925,11 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
             self.raspberry_output[raspberry_id] = ""
         self.raspberry_output[raspberry_id] += f"<pre>{date_iso()}: {msg}</pre>"
 
-
+    '''
     def send_command(self, rb):
-        '''
+        """
         send command to a raspberry and retrieve output
-        '''
+        """
         if rb in self.RASPBERRY_IP and self.raspberry_status[rb]:
             text, ok = QInputDialog.getText(self, "Send a command", "Command:")
             if not ok:
@@ -950,8 +950,9 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
             except Exception:
                 self.rb_msg(rb, "<b>Error</b>")
                 self.status_one(rb, output=False)
+    '''
 
-
+    '''
     def send_command_all(self):
         """
         send command to all raspberries
@@ -977,7 +978,7 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
                         raise
                     self.rb_msg(rb, "<b>Error</b>")
                     self.status_one(rb, output=False)
-
+    '''
 
     def reboot(self, raspberry_id, force_reboot=False):
         """
@@ -1038,7 +1039,7 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         """
         shutdown all Raspberry Pi
         """
-        text, ok = QInputDialog.getText(self, "Shutdown all Rasberry Pi", "Please confirm writing 'yes'")
+        text, ok = QInputDialog.getText(self, "Shutdown all Raspberry Pi", "Please confirm writing 'yes'")
         if not ok or text != "yes":
             return
 
@@ -1451,6 +1452,8 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
             self.rasp_output_lb.setText("Videos downloaded")
             self.my_thread1.quit
 
+        if raspberry_id not in self.RASPBERRY_IP:
+            return
 
         if download_dir == "":
             download_dir = cfg.VIDEO_ARCHIVE
@@ -1468,58 +1471,28 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
             else:
                 return
 
-        if raspberry_id in self.RASPBERRY_IP and self.raspberry_info[raspberry_id]["status"]["status"] == "OK":
+        video_list = self.video_list(raspberry_id)
 
-            try:
-                r = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}{cfg.SERVER_PORT}/video_list")
-                if r.status_code == 200:
-                    self.rb_msg(raspberry_id, "download: list received (* for files not in archive)")
-                    r2 = eval(r.text)
-                    if "video_list" in r2:
-                        self.rb_msg(raspberry_id, "Downloading videos\n")
-                        '''
-                        pool = ThreadPool()
-                        r = pool.map_async(self.download_videos_list, ([[raspberry_id, r2["video_list"]]]), callback=self.download_videos_finished)
-                        '''
+        self.my_thread1 = QThread(parent=self)
+        self.my_thread1.start()
+        self.my_worker1 = self.Download_videos_worker(self.RASPBERRY_IP)
+        self.my_worker1.moveToThread(self.my_thread1)
 
-                        self.my_thread1 = QThread(parent=self)
-                        self.my_thread1.start()
-                        self.my_worker1 = self.Download_videos_worker(self.RASPBERRY_IP)
-                        self.my_worker1.moveToThread(self.my_thread1)
-
-                        self.my_worker1.start.connect(self.my_worker1.run) #  <---- Like this instead
-                        self.my_worker1.finished.connect(thread_finished)
-                        self.my_worker1.start.emit(raspberry_id, r2["video_list"])
-
-
-            except Exception:
-                raise
-
-
-
-    def read_process_stdout(self, rb):
-
-        out = self.download_process[rb].readAllStandardOutput()
-        self.rb_msg(rb, bytes(out).decode("utf-8").strip())
-
-
-    def process_error(self, process_error, rb):
-        logging.info(f"process error: {process_error}")
-        logging.info(f"process state: {self.download_process[rb].state()}")
-        self.rb_msg(rb, f"Error downloading video.\nProcess error: {process_error}  Process state: {self.download_process[rb].state()}")
-        self.download_button[rb].setStyleSheet("")
+        self.my_worker1.start.connect(self.my_worker1.run) #  <---- Like this instead
+        self.my_worker1.finished.connect(thread_finished)
+        self.my_worker1.start.emit(raspberry_id, video_list)
 
 
     def download_all_video_from_all(self):
         """
-        download all video from all raspberries
+        download all video from all Raspberry Pi
         """
-        text, ok = QInputDialog.getText(self, "Download video from all raspberries", "confirm writing 'yes'")
+        text, ok = QInputDialog.getText(self, "Download video from all Raspberry Pi", "Please confirm writing 'yes'")
         if not ok or text != "yes":
             return
 
         if not pathlib.Path(cfg.VIDEO_ARCHIVE).is_dir():
-            QMessageBox.critical(None, "Raspberry - Video recording",
+            QMessageBox.critical(None, "Raspberry Pi coordinator",
                                  f"Destination not found!<br>{cfg.VIDEO_ARCHIVE}<br><br>Choose another directory",
                                  QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
 
@@ -1534,9 +1507,8 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         else:
             download_dir = cfg.VIDEO_ARCHIVE
 
-
         for raspberry_id in sorted(self.RASPBERRY_IP.keys()):
-            if raspberry_id in self.RASPBERRY_IP and self.raspberry_info[raspberry_id]["status"]["status"] == "OK":
+            if self.raspberry_info[raspberry_id]["status"]["status"] == "OK":
                 self.download_all_video(raspberry_id, download_dir)
 
 
