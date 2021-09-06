@@ -1,0 +1,15 @@
+[Unit]
+Description=instance to serve server.py
+After=network.target
+
+[Service]
+User=pi
+Group=pi
+WorkingDirectory=/home/pi/video
+Environment="PATH=/home/pi/video_venv/bin:/usr/bin:/usr/sbin/:/bin"
+ExecStart=/home/pi/video_venv/bin/python3 server.py
+
+[Install]
+WantedBy=multi-user.target
+
+

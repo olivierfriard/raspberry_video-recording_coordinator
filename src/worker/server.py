@@ -5,11 +5,11 @@ Video control server
 
 """
 
-__version__ = "0.0.15"
+__version__ = "0.0.16"
 
 
 
-import os
+import sys
 import threading
 import datetime
 import glob
@@ -75,7 +75,7 @@ def get_timezone():
 
 
 def get_wifi_ssid():
-    process = subprocess.run(["iwgetid"], stdout=subprocess.PIPE)
+    process = subprocess.run(["/usr/sbin/iwgetid"], stdout=subprocess.PIPE)
     output = process.stdout.decode("utf-8").strip()
     if output:
         try:
@@ -118,6 +118,7 @@ def get_cpu_temperature():
     else:
         return "not determined"
 
+
 def get_free_space():
     '''
     free disk space in Gb
@@ -136,7 +137,7 @@ def datetime_now_iso():
     return datetime.datetime.now().replace(microsecond=0).isoformat().replace("T", " ")
 
 
-from flask import Flask, request, send_from_directory
+from flask import Flask, request, send_from_directory, Response
 
 while True:
     try:
@@ -150,6 +151,14 @@ while True:
         print("log file path not found. Use server.log")
         LOG_PATH = "server.log"
 
+# load security key
+try:
+    with open("/boot/security_key") as f_in:
+        security_key = f_in.read().strip()
+    logging.info("Security key loaded")
+except Exception:
+    logging.critical("Security key not found")
+    sys.exit()
 
 app = Flask(__name__, static_url_path='/static')
 
@@ -184,8 +193,13 @@ Timezone: {get_timezone()}<br>
 """
 
 
-@app.route("/status")
+@app.route("/status", methods=("GET", "POST",))
 def status():
+
+    if request.values.get('key', '') != security_key:
+        status_code = Response(status=204)  # 204 No Content     The server successfully processed the request, and is not returning any content.
+        return status_code
+
     global thread
     try:
         logging.info(f"thread is alive: {thread.is_alive()}")
@@ -426,11 +440,15 @@ def stop_time_lapse():
 
 
 
-@app.route("/blink")
+@app.route("/blink", methods=("GET", "POST",))
 def blink():
     """
     Blink the power led
     """
+    if request.values.get('key', '') != security_key:
+        status_code = Response(status=204)  # 204 No Content     The server successfully processed the request, and is not returning any content.
+        return status_code
+
     try:
         thread = Blink_thread()
         thread.start()
@@ -439,11 +457,15 @@ def blink():
         return {"msg": "blinking not successful"}
 
 
-@app.route("/sync_time/<date>/<hour>")
+@app.route("/sync_time/<date>/<hour>", methods=("GET", "POST",))
 def sync_time(date, hour):
     """
     synchronize the date and time
     """
+    if request.values.get('key', '') != security_key:
+        status_code = Response(status=204)  # 204 No Content     The server successfully processed the request, and is not returning any content.
+        return status_code
+
     completed = subprocess.run(['sudo', 'timedatectl','set-time', f"{date} {hour}"]) # 2015-11-23 10:11:22
     if completed.returncode:
         return {"error": True, "msg": "Time not synchronised"}
@@ -453,6 +475,10 @@ def sync_time(date, hour):
 
 @app.route("/take_picture", methods=("GET", "POST",))
 def take_picture():
+
+    if request.values.get('key', '') != security_key:
+        status_code = Response(status=204)  # 204 No Content     The server successfully processed the request, and is not returning any content.
+        return status_code
 
     # delete previous picture
     try:
@@ -509,13 +535,22 @@ def take_picture():
 
 
 
-@app.route("/video_list")
+@app.route("/video_list", methods=("GET", "POST",))
 def video_list():
+
+    if request.values.get('key', '') != security_key:
+        status_code = Response(status=204)  # 204 No Content     The server successfully processed the request, and is not returning any content.
+        return status_code
+
     return {"video_list": [x.replace(cfg.VIDEO_ARCHIVE + "/", "") for x in glob.glob(cfg.VIDEO_ARCHIVE + "/*.h264")]}
 
 
-@app.route("/get_video/<file_name>")
+@app.route("/get_video/<file_name>", methods=("GET", "POST",))
 def get_video(file_name):
+
+    if request.values.get('key', '') != security_key:
+        status_code = Response(status=204)  # 204 No Content     The server successfully processed the request, and is not returning any content.
+        return status_code
 
     return send_from_directory(cfg.VIDEO_ARCHIVE, file_name, as_attachment=True)
 
@@ -542,16 +577,20 @@ def get_log():
         return str({"status": "error"})
 
 
-@app.route("/delete_all_video")
+@app.route("/delete_all_video", methods=("GET", "POST",))
 def delete_all_video():
     """
     Delete all video records in the video archive
     """
+    if request.values.get('key', '') != security_key:
+        status_code = Response(status=204)  # 204 No Content     The server successfully processed the request, and is not returning any content.
+        return status_code
+
     try:
         subprocess.run(["rm", "-f", f"{cfg.VIDEO_ARCHIVE}/*.h264"])
     except Exception:
         return {"error": True, "msg": "video not deleted"}
-    return {"error": False, "msg": "All video deleted"})
+    return {"error": False, "msg": "All video deleted"}
 
 
 @app.route("/get_mac")
@@ -562,11 +601,15 @@ def get_mac():
     return {"mac_addr": get_hw_addr(cfg.WIFI_INTERFACE)}
 
 
-@app.route("/reboot")
+@app.route("/reboot", methods=("GET", "POST",))
 def reboot():
     """
     shutdown the Raspberry Pi with 1 min delay
     """
+    if request.values.get('key', '') != security_key:
+        status_code = Response(status=204)  # 204 No Content     The server successfully processed the request, and is not returning any content.
+        return status_code
+
     try:
         completed = subprocess.run(["sudo", "shutdown", "--reboot", "+1"])
     except Exception:
@@ -578,11 +621,15 @@ def reboot():
         return {"error": completed.returncode, "msg": "reboot error"}
 
 
-@app.route("/shutdown")
+@app.route("/shutdown", methods=("GET", "POST",))
 def shutdown():
     """
     shutdown the Raspberry Pi with 1 min delay
     """
+    if request.values.get('key', '') != security_key:
+        status_code = Response(status=204)  # 204 No Content     The server successfully processed the request, and is not returning any content.
+        return status_code
+
     try:
         completed = subprocess.run(["sudo", "shutdown", "+1"])
     except Exception:
