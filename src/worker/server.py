@@ -424,6 +424,45 @@ def stop_video():
         return {"msg": "video recording not stopped"}
 
 
+@app.route("/configure_video_recording", methods=("GET", "POST",))
+def configure_video_recording():
+    """
+    Configure the video recording scheme
+    see https://pypi.org/project/crontab/
+    """
+    if request.values.get('key', '') != security_key:
+        status_code = Response(status=204)  # 204 No Content     The server successfully processed the request, and is not returning any content.
+        return status_code
+
+    for key in request.values:
+        logging.warning(f"{key}: {request.values[key]}")
+
+    return {"error": False, "msg": "Video recording configured"}
+
+
+
+@app.route("/video_list", methods=("GET", "POST",))
+def video_list():
+
+    if request.values.get('key', '') != security_key:
+        status_code = Response(status=204)  # 204 No Content     The server successfully processed the request, and is not returning any content.
+        return status_code
+
+    return {"video_list": [x.replace(cfg.VIDEO_ARCHIVE + "/", "") for x in glob.glob(cfg.VIDEO_ARCHIVE + "/*.h264")]}
+
+
+@app.route("/get_video/<file_name>", methods=("GET", "POST",))
+def get_video(file_name):
+
+    if request.values.get('key', '') != security_key:
+        status_code = Response(status=204)  # 204 No Content     The server successfully processed the request, and is not returning any content.
+        return status_code
+
+    return send_from_directory(cfg.VIDEO_ARCHIVE, file_name, as_attachment=True)
+
+
+
+
 @app.route("/stop_time_lapse")
 def stop_time_lapse():
     """
@@ -494,7 +533,7 @@ def take_picture():
 
     for key in request.values:
 
-        if key in ["timelapse", "timeout", "annotate"]:
+        if key in ["timelapse", "timeout", "annotate", "key"]:
             continue
         if request.values[key] == 'True':
             command_line.extend([f"--{key}"])
@@ -522,7 +561,7 @@ def take_picture():
     else:
 
         command_line.extend(["-o", "static/live.jpg"])
-        print(command_line)
+        logging.info(" ".join(command_line))
         try:
             completed = subprocess.run(command_line)
         except:
@@ -535,32 +574,12 @@ def take_picture():
 
 
 
-
-@app.route("/video_list", methods=("GET", "POST",))
-def video_list():
-
-    if request.values.get('key', '') != security_key:
-        status_code = Response(status=204)  # 204 No Content     The server successfully processed the request, and is not returning any content.
-        return status_code
-
-    return {"video_list": [x.replace(cfg.VIDEO_ARCHIVE + "/", "") for x in glob.glob(cfg.VIDEO_ARCHIVE + "/*.h264")]}
-
-
-@app.route("/get_video/<file_name>", methods=("GET", "POST",))
-def get_video(file_name):
-
-    if request.values.get('key', '') != security_key:
-        status_code = Response(status=204)  # 204 No Content     The server successfully processed the request, and is not returning any content.
-        return status_code
-
-    return send_from_directory(cfg.VIDEO_ARCHIVE, file_name, as_attachment=True)
-
-
+'''
 @app.route("/command/<command_to_run>")
 def command(command_to_run):
-    '''
+    """
     run a command and send output
-    '''
+    """
     try:
         cmd = base64.b64decode(command_to_run).decode("utf-8")
         process = subprocess.run(cmd.split(" "), stdout=subprocess.PIPE)
@@ -568,14 +587,24 @@ def command(command_to_run):
         return str(results)
     except Exception:
         return str({"status": "error"})
+'''
 
-
+'''
 @app.route("/get_log")
 def get_log():
+    """
+    return server log
+    """
+    if request.values.get('key', '') != security_key:
+        status_code = Response(status=204)  # 204 No Content     The server successfully processed the request, and is not returning any content.
+        return status_code
+
     try:
-        return str("<pre>" + open(cfg.LOG_PATH).read() + "</pre>")
+        return {"error": False, "msg": open(cfg.LOG_PATH).read()}
     except Exception:
-        return str({"status": "error"})
+        return {"error": True}
+'''
+
 
 
 @app.route("/delete_all_video", methods=("GET", "POST",))
