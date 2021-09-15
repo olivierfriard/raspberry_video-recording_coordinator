@@ -126,78 +126,50 @@
                  <layout class="QVBoxLayout" name="verticalLayout_4">
                   <item>
                    <layout class="QGridLayout" name="gridLayout">
-                    <item row="5" column="0">
-                     <widget class="QLabel" name="label_9">
+                    <item row="11" column="0">
+                     <widget class="QLabel" name="label_22">
                       <property name="text">
-                       <string>Free SD space</string>
+                       <string>Time lapse active</string>
                       </property>
                      </widget>
                     </item>
-                    <item row="3" column="1">
-                     <widget class="QLabel" name="cpu_temp_lb">
-                      <property name="text">
-                       <string/>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="1">
-                     <widget class="QLabel" name="status_lb">
+                    <item row="6" column="1">
+                     <widget class="QLabel" name="free_sd_space_lb">
                       <property name="text">
                        <string/>
                       </property>
                      </widget>
                     </item>
-                    <item row="1" column="0">
-                     <widget class="QLabel" name="label_12">
-                      <property name="text">
-                       <string>IP address</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="1">
-                     <widget class="QLabel" name="ip_address_lb">
+                    <item row="4" column="1">
+                     <widget class="QLabel" name="wifi_essid_lb">
                       <property name="text">
                        <string/>
                       </property>
                      </widget>
                     </item>
-                    <item row="8" column="1">
+                    <item row="11" column="1">
+                     <widget class="QLabel" name="time_lapse_active_lb">
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="0">
+                     <widget class="QLabel" name="label_2">
+                      <property name="text">
+                       <string>Date/time</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="9" column="1">
                      <widget class="QLabel" name="video_recording_active_lb">
                       <property name="text">
                        <string/>
                       </property>
                      </widget>
                     </item>
-                    <item row="7" column="1">
-                     <widget class="QLabel" name="uptime_lb">
-                      <property name="text">
-                       <string/>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="4" column="0">
-                     <widget class="QLabel" name="label_8">
-                      <property name="text">
-                       <string>WiFi ESSID</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="9" column="0">
-                     <widget class="QLabel" name="label_14">
-                      <property name="text">
-                       <string>Video streaming active</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="9" column="1">
-                     <widget class="QLabel" name="video_streaming_active_lb">
-                      <property name="text">
-                       <string/>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="5" column="1">
-                     <widget class="QLabel" name="free_sd_space_lb">
+                    <item row="2" column="1">
+                     <widget class="QLabel" name="datetime_lb">
                       <property name="text">
                        <string/>
                       </property>
@@ -217,64 +189,106 @@
                       </property>
                      </widget>
                     </item>
-                    <item row="6" column="1">
+                    <item row="4" column="0">
+                     <widget class="QLabel" name="label_8">
+                      <property name="text">
+                       <string>WiFi ESSID</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="7" column="1">
                      <widget class="QLabel" name="camera_detected_lb">
                       <property name="text">
                        <string/>
                       </property>
                      </widget>
                     </item>
-                    <item row="8" column="0">
-                     <widget class="QLabel" name="label_13">
-                      <property name="text">
-                       <string>Video recording active</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="7" column="0">
-                     <widget class="QLabel" name="label_11">
-                      <property name="text">
-                       <string>Uptime</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="0">
-                     <widget class="QLabel" name="label_2">
-                      <property name="text">
-                       <string>Date/time</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="4" column="1">
-                     <widget class="QLabel" name="wifi_essid_lb">
+                    <item row="1" column="1">
+                     <widget class="QLabel" name="ip_address_lb">
                       <property name="text">
                        <string/>
                       </property>
                      </widget>
                     </item>
-                    <item row="6" column="0">
+                    <item row="3" column="1">
+                     <widget class="QLabel" name="cpu_temp_lb">
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="0">
+                     <widget class="QLabel" name="label_12">
+                      <property name="text">
+                       <string>IP address</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="7" column="0">
                      <widget class="QLabel" name="label_10">
                       <property name="text">
                        <string>Camera detected</string>
                       </property>
                      </widget>
                     </item>
-                    <item row="2" column="1">
-                     <widget class="QLabel" name="datetime_lb">
+                    <item row="10" column="0">
+                     <widget class="QLabel" name="label_14">
+                      <property name="text">
+                       <string>Video streaming active</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="6" column="0">
+                     <widget class="QLabel" name="label_9">
+                      <property name="text">
+                       <string>Free SD space</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="9" column="0">
+                     <widget class="QLabel" name="label_13">
+                      <property name="text">
+                       <string>Video recording active</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="8" column="0">
+                     <widget class="QLabel" name="label_11">
+                      <property name="text">
+                       <string>Uptime</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="8" column="1">
+                     <widget class="QLabel" name="uptime_lb">
                       <property name="text">
                        <string/>
                       </property>
                      </widget>
                     </item>
-                    <item row="10" column="0">
-                     <widget class="QLabel" name="label_22">
+                    <item row="10" column="1">
+                     <widget class="QLabel" name="video_streaming_active_lb">
                       <property name="text">
-                       <string>Time lapse active</string>
+                       <string/>
                       </property>
                      </widget>
                     </item>
-                    <item row="10" column="1">
-                     <widget class="QLabel" name="time_lapse_active_lb">
+                    <item row="0" column="1">
+                     <widget class="QLabel" name="status_lb">
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="5" column="0">
+                     <widget class="QLabel" name="label_23">
+                      <property name="text">
+                       <string>Server version</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="5" column="1">
+                     <widget class="QLabel" name="server_version_lb">
                       <property name="text">
                        <string/>
                       </property>
@@ -605,7 +619,7 @@
               </widget>
               <widget class="QWidget" name="tab">
                <attribute name="title">
-                <string>Streaming</string>
+                <string>Video streaming</string>
                </attribute>
                <layout class="QVBoxLayout" name="verticalLayout_9">
                 <item>
@@ -637,7 +651,7 @@
               </widget>
               <widget class="QWidget" name="video_tab">
                <attribute name="title">
-                <string>Video</string>
+                <string>Video recording</string>
                </attribute>
                <layout class="QVBoxLayout" name="verticalLayout_10">
                 <item>
@@ -732,21 +746,14 @@
                   <item>
                    <widget class="QPushButton" name="start_video_recording_pb">
                     <property name="text">
-                     <string>Start video recording</string>
+                     <string>Start video recording now</string>
                     </property>
                    </widget>
                   </item>
                   <item>
                    <widget class="QPushButton" name="stop_video_recording_pb">
                     <property name="text">
-                     <string>Stop video recording</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="download_videos_pb">
-                    <property name="text">
-                     <string>Download videos</string>
+                     <string>Stop current video recording</string>
                     </property>
                    </widget>
                   </item>
@@ -764,6 +771,130 @@
                    </spacer>
                   </item>
                  </layout>
+                </item>
+                <item>
+                 <widget class="QGroupBox" name="groupBox">
+                  <property name="title">
+                   <string>Schedule</string>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout_7">
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_18">
+                     <item>
+                      <widget class="QLabel" name="label_24">
+                       <property name="text">
+                        <string>Hours</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="hours_le"/>
+                     </item>
+                     <item>
+                      <widget class="QLabel" name="label_25">
+                       <property name="text">
+                        <string>Minutes</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="minutes_le"/>
+                     </item>
+                     <item>
+                      <spacer name="horizontalSpacer_9">
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>40</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_16">
+                     <item>
+                      <widget class="QLabel" name="label_26">
+                       <property name="text">
+                        <string>Days of week (0-6 or SUN-SAT)</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="days_of_week_le"/>
+                     </item>
+                     <item>
+                      <spacer name="horizontalSpacer_7">
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>40</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_17">
+                     <item>
+                      <widget class="QLabel" name="label_27">
+                       <property name="text">
+                        <string>Days of month (1-31)</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="days_of_month_le"/>
+                     </item>
+                     <item>
+                      <widget class="QLabel" name="label_28">
+                       <property name="text">
+                        <string>Month(s)</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="months_le"/>
+                     </item>
+                     <item>
+                      <spacer name="horizontalSpacer_8">
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>40</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="configure_video_recording_pb">
+                     <property name="text">
+                      <string>Configure Raspberry Pi</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="download_videos_pb">
+                  <property name="text">
+                   <string>Download videos</string>
+                  </property>
+                 </widget>
                 </item>
                 <item>
                  <spacer name="verticalSpacer_2">

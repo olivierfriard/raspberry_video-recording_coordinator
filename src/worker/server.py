@@ -5,7 +5,7 @@ Video control server
 
 """
 
-__version__ = "0.0.16"
+__version__ = "0.0.17"
 
 
 
@@ -105,9 +105,9 @@ def time_lapse_active():
 
 
 def get_cpu_temperature():
-    '''
+    """
     get temperature of the CPU
-    '''
+    """
     process = subprocess.run(["/opt/vc/bin/vcgencmd", "measure_temp"], stdout=subprocess.PIPE)
     output = process.stdout.decode("utf-8").strip()
     if output:
@@ -120,9 +120,9 @@ def get_cpu_temperature():
 
 
 def get_free_space():
-    '''
+    """
     free disk space in Gb
-    '''
+    """
     stat = shutil.disk_usage('/home/pi')
     return f"{round(stat.free / 1024 / 1024 / 1024, 2)} Gb"
 
@@ -522,6 +522,7 @@ def take_picture():
     else:
 
         command_line.extend(["-o", "static/live.jpg"])
+        print(command_line)
         try:
             completed = subprocess.run(command_line)
         except:

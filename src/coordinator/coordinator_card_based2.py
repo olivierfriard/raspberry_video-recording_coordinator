@@ -281,13 +281,16 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         # video recording
         self.start_video_recording_pb.clicked.connect(self.start_video_recording_clicked)
         self.stop_video_recording_pb.clicked.connect(self.stop_video_recording_clicked)
-
         self.download_videos_pb.clicked.connect(self.download_videos_clicked)
+        self.configure_video_recording_pb.clicked.connect(self.configure_video_recording_clicked)
 
         self.video_mode_cb.currentIndexChanged.connect(self.video_mode_changed)
         self.video_duration_sb.valueChanged.connect(self.video_duration_changed)
         self.video_quality_sb.valueChanged.connect(self.video_quality_changed)
         self.video_fps_sb.valueChanged.connect(self.video_fps_changed)
+
+
+
 
         mediaPlayer = QMediaPlayer(None, QMediaPlayer.VideoSurface)
         self.media_list = mediaPlayer
@@ -672,9 +675,13 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         return q1
     '''
 
-    def request(self, raspberry_id, route, time_out=None):
+    def request(self, raspberry_id, route, data= {}, time_out=None):
+        if data:
+            data_to_send =  {**{'key': security_key}, **data}
+        else:
+            data_to_send = {'key': security_key}
         return requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}{cfg.SERVER_PORT}{route}",
-                            data={'key': security_key},
+                            data=data_to_send,
                             timeout=time_out
                             )
 
@@ -697,6 +704,163 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         Start video streaming on the current raspberry
         """
         self.video_streaming(self.current_raspberry_id, action)
+
+
+    def configure_video_recording_clicked(self):
+        """
+        Configure the video recording scheme on the current Raspberry Pi
+        """
+        self.configure_video_recording(self.current_raspberry_id)
+
+
+    def configure_video_recording(self, raspberry_id):
+        """
+        Configure the video recording scheme on the Raspberry Pi
+        """
+
+        if self.hours_le.text() == "":
+            QMessageBox.information(None, "Raspberry Pi coordinator",
+                                 f"Specify the hour(s) to start video recording",
+                                 QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+            return
+
+        if self.minutes_le.text() == "":
+            QMessageBox.information(None, "Raspberry Pi coordinator",
+                                 f"Specify the minutes(s) to start video recording",
+                                 QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+            return
+
+        if self.days_of_week_le.text() == "":
+            QMessageBox.information(None, "Raspberry Pi coordinator",
+                                 f"Specify the day(s) of the week to start video recording (0-6 or SUN-SAT)",
+                                 QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+            return
+
+        if self.days_of_month_le.text() == "":
+            QMessageBox.information(None, "Raspberry Pi coordinator",
+                                 f"Specify the day(s) of the month to start video recording (1-31)",
+                                 QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+            return
+
+        # check hours format
+        hours = self.hours_le.text().replace(" ", "")
+        if hours == "*":
+            hours_str = "*"
+        else:
+            hours_splt = hours.split(",")
+            try:
+                int_hours_list = [int(x) for x in hours_splt]
+                for x in int_hours_list:
+                    if not (0 <= x < 24):
+                        raise
+            except Exception:
+                QMessageBox.information(None, "Raspberry Pi coordinator",
+                                    f"The hour(s) format is not correct. Example; 1,2,13,15 or *",
+                                    QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+                return
+            hours_str = ",".join([str(x) for x in int_hours_list])
+
+
+        # check minutes format
+        minutes = self.minutes_le.text().replace(" ", "")
+        if minutes == "*":
+            minutes_str = minutes
+        else:
+            minutes_splt = minutes.split(",")
+            print(minutes_splt)
+            try:
+                int_minutes_list = [int(x) for x in minutes_splt]
+                for x in int_minutes_list:
+                    if not (0 <= x < 60):
+                        raise
+            except Exception:
+                QMessageBox.information(None, "Raspberry Pi coordinator",
+                                    f"The minutes(s) format is not correct. Example; 1,2,13,15 or *",
+                                    QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+                return
+
+            minutes_str = ",".join([str(x) for x in int_minutes_list])
+
+
+        # check days of month format
+        dom = self.days_of_month_le.text().replace(" ", "")
+        if dom == "*":
+            dom_str = dom
+        else:
+            dom_splt = dom.split(",")
+            try:
+                int_dom_list = [int(x) for x in dom_splt]
+                for x in int_dom_list:
+                    if not (1 <= x <= 31):
+                        raise
+            except Exception:
+                QMessageBox.information(None, "Raspberry Pi coordinator",
+                                    f"The day(s) of month format is not correct. Example; 1,2,13,15 or *",
+                                    QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+                return
+            dom_str = ",".join([str(x) for x in int_dom_list])
+
+
+        # check month format
+        month = self.months_le.text().replace(" ", "")
+        if month == "*":
+            month_str = month
+        else:
+            month_splt = month.split(",")
+            print(month_splt)
+            try:
+                int_month_list = [int(x) for x in month_splt]
+                for x in int_month_list:
+                    if not (1 <= x <= 12):
+                        raise
+            except Exception:
+                QMessageBox.information(None, "Raspberry Pi coordinator",
+                                    f"The month format is not correct. Example; 1,2,12 or *",
+                                    QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+                return
+            month_str = ",".join([str(x) for x in int_month_list])
+
+        # check days(s) of week format
+        dow = self.days_of_week_le.text().replace(" ", "")
+        if dow == "*":
+            dow_str = dow
+        else:
+            dow_splt = dow.split(",")
+            try:
+                int_dow_splt = [int(x) for x in dow_splt]
+            except Exception:
+                try:
+                    for x in dow_splt:
+                        if x.upper() not in ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]:
+                            raise
+                    int_dow_splt = dow_splt
+                except Exception:
+                    QMessageBox.information(None, "Raspberry Pi coordinator",
+                                    f"The days(s) of week format is not correct. Example; 0,1,2 or SUN,MON,TUE",
+                                    QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+
+            dow_str = ",".join([str(x) for x in int_dow_splt])
+
+
+
+
+        crontab_event = f"{minutes_str} {hours_str} {dom_str} {month_str} {dow_str}"
+
+        try:
+            response = self.request(raspberry_id, f"/configure_video_recording",
+                                    data={"crontab": crontab_event})
+        except requests.exceptions.ConnectionError:
+            self.rasp_output_lb.setText(f"Failed to establish a connection")
+            self.get_raspberry_status(raspberry_id)
+            self.update_raspberry_display(raspberry_id)
+            return
+
+        if response.status_code != 200:
+            self.rasp_output_lb.setText(f"Error during the video recording configuration (status code: {response.status_code})")
+            return
+        self.rasp_output_lb.setText(response.json().get("msg", "Error during video recording configuration"))
+
+
 
 
     def download_videos_clicked(self):
@@ -931,6 +1095,7 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         self.datetime_lb.setText(self.raspberry_info[raspberry_id]["status"].get("server_datetime", "Not available"))
         self.cpu_temp_lb.setText(self.raspberry_info[raspberry_id]["status"].get("CPU temperature", "Not available").replace("'", "°"))
         self.status_lb.setText(self.raspberry_info[raspberry_id]["status"].get("status", "Not available"))
+        self.server_version_lb.setText(self.raspberry_info[raspberry_id]["status"].get("server_version", "Not available"))
         self.wifi_essid_lb.setText(self.raspberry_info[raspberry_id]["status"].get("wifi_essid", "Not available"))
         self.free_sd_space_lb.setText(self.raspberry_info[raspberry_id]["status"].get("free disk space", "Not available"))
         self.camera_detected_lb.setText("Yes" if self.raspberry_info[raspberry_id]["status"].get("camera detected", "") else "No")
@@ -1264,7 +1429,7 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
                 return
 
             if response.json().get("error", True):
-                self.rasp_output_lb.setText(response.json().get("msg", "Undefined error"))
+                self.rasp_output_lb.setText(f'{response.json().get("msg", "Undefined error")}  returncode: {response.json().get("error", "-")}')
                 return
 
             # time lapse
@@ -1273,7 +1438,8 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
                 return
 
             try:
-                response2 = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}{cfg.SERVER_PORT}/static/live.jpg", stream=True)
+                response2 = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}{cfg.SERVER_PORT}/static/live.jpg",
+                                         stream=True)
             except Exception:
                 self.rasp_output_lb.setText(f"Error contacting the Raspberry Pi {raspberry_id}")
                 return
