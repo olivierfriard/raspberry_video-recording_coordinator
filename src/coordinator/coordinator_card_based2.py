@@ -676,6 +676,11 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
     '''
 
     def request(self, raspberry_id, route, data= {}, time_out=None):
+        """
+        wrapper for contacting Raspberry Pi using requests
+        """
+
+        print("request", data)
         if data:
             data_to_send =  {**{'key': security_key}, **data}
         else:
@@ -760,7 +765,6 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
                 return
             hours_str = ",".join([str(x) for x in int_hours_list])
 
-
         # check minutes format
         minutes = self.minutes_le.text().replace(" ", "")
         if minutes == "*":
@@ -781,7 +785,6 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
 
             minutes_str = ",".join([str(x) for x in int_minutes_list])
 
-
         # check days of month format
         dom = self.days_of_month_le.text().replace(" ", "")
         if dom == "*":
@@ -799,7 +802,6 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
                                     QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
                 return
             dom_str = ",".join([str(x) for x in int_dom_list])
-
 
         # check month format
         month = self.months_le.text().replace(" ", "")
@@ -841,14 +843,24 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
 
             dow_str = ",".join([str(x) for x in int_dow_splt])
 
-
-
-
         crontab_event = f"{minutes_str} {hours_str} {dom_str} {month_str} {dow_str}"
+
+
+        width, height = self.raspberry_info[raspberry_id]["video mode"].split("x")
+        data = {"crontab": crontab_event,
+                "duration": self.raspberry_info[raspberry_id]["video duration"],
+                "width": width,
+                "height": height,
+                "prefix":  "",
+                "fps": self.raspberry_info[raspberry_id]["FPS"],
+                "quality": self.raspberry_info[raspberry_id]["video quality"],
+        }
+
+        print(data)
 
         try:
             response = self.request(raspberry_id, f"/configure_video_recording",
-                                    data={"crontab": crontab_event})
+                                    data=data)
         except requests.exceptions.ConnectionError:
             self.rasp_output_lb.setText(f"Failed to establish a connection")
             self.get_raspberry_status(raspberry_id)
@@ -908,24 +920,15 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         logging.info(f"{ip_address}: server available")
 
         # check hostname
-        remote_hostname = response.json().get("hostname", "")
-        if not remote_hostname:
+        raspberry_id = response.json().get("hostname", "")
+        if not raspberry_id:
             logging.info(f"{ip_address}: hostname not found")
             return
 
-        self.RASPBERRY_IP[remote_hostname] = ip_address
+        self.RASPBERRY_IP[raspberry_id] = ip_address
 
         # set raspberry time date
-        date, hour = date_iso().split(" ")
-        try:
-            response2 = requests.get(f"http://{ip_address}{cfg.SERVER_PORT}/sync_time/{date}/{hour}")
-        except requests.exceptions.ConnectionError:
-            logging.debug(f"{ip_address}: failed to synchronize datetime")
-            return
-        if response2.status_code != 200:
-            logging.debug(f"{ip_address}: failed to synchronize datetime (status scode: {response2.status_code})")
-            return
-        logging.info(f"{ip_address}: datetime synchronized ({date} {hour})")
+        self.time_synchro(raspberry_id)
 
 
 
@@ -1499,7 +1502,6 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
             return
 
         width, height = self.raspberry_info[raspberry_id]["video mode"].split("x")
-
         data = {"key": security_key,
                 "duration": self.raspberry_info[raspberry_id]["video duration"],
                 "width": width,
