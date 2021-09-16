@@ -283,12 +283,22 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         self.stop_video_recording_pb.clicked.connect(self.stop_video_recording_clicked)
         self.download_videos_pb.clicked.connect(self.download_videos_clicked)
         self.configure_video_recording_pb.clicked.connect(self.configure_video_recording_clicked)
+        self.view_video_recording_schedule_pb.clicked.connect(self.view_video_recording_schedule_clicked)
+        self.delete_video_recording_schedule_pb.clicked.connect(self.delete_video_recording_schedule_clicked)
 
         self.video_mode_cb.currentIndexChanged.connect(self.video_mode_changed)
         self.video_duration_sb.valueChanged.connect(self.video_duration_changed)
         self.video_quality_sb.valueChanged.connect(self.video_quality_changed)
         self.video_fps_sb.valueChanged.connect(self.video_fps_changed)
 
+        self.video_brightness_sb.valueChanged.connect(self.video_brightness_changed)
+        self.video_contrast_sb.valueChanged.connect(self.video_contrast_changed)
+        self.video_sharpness_sb.valueChanged.connect(self.video_sharpness_changed)
+        self.video_saturation_sb.valueChanged.connect(self.video_saturation_changed)
+        self.video_iso_sb.valueChanged.connect(self.video_iso_changed)
+        self.video_rotation_sb.valueChanged.connect(self.video_rotation_changed)
+        self.video_hflip_cb.clicked.connect(self.video_hflip_changed)
+        self.video_vflip_cb.clicked.connect(self.video_vflip_changed)
 
 
 
@@ -365,6 +375,31 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         if self.current_raspberry_id:
             self.raspberry_info[self.current_raspberry_id]["time lapse wait"] = self.time_lapse_wait_sb.value()
 
+
+    def video_brightness_changed(self):
+        if self.current_raspberry_id:
+            self.raspberry_info[self.current_raspberry_id]["video brightness"] = self.video_brightness_sb.value()
+    def video_contrast_changed(self):
+        if self.current_raspberry_id:
+            self.raspberry_info[self.current_raspberry_id]["video contrast"] = self.video_contrast_sb.value()
+    def video_sharpness_changed(self):
+        if self.current_raspberry_id:
+            self.raspberry_info[self.current_raspberry_id]["video sharpness"] = self.video_sharpness_sb.value()
+    def video_saturation_changed(self):
+        if self.current_raspberry_id:
+            self.raspberry_info[self.current_raspberry_id]["video saturation"] = self.video_saturation_sb.value()
+    def video_iso_changed(self):
+        if self.current_raspberry_id:
+            self.raspberry_info[self.current_raspberry_id]["video iso"] = self.video_iso_sb.value()
+    def video_rotation_changed(self):
+        if self.current_raspberry_id:
+            self.raspberry_info[self.current_raspberry_id]["video rotation"] = self.video_rotation_sb.value()
+    def video_hflip_changed(self):
+        if self.current_raspberry_id:
+            self.raspberry_info[self.current_raspberry_id]["video hflip"] = self.video_hflip_cb.isChecked()
+    def video_vflip_changed(self):
+        if self.current_raspberry_id:
+            self.raspberry_info[self.current_raspberry_id]["video vflip"] = self.video_vflip_cb.isChecked()
 
 
 
@@ -847,6 +882,20 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
 
 
         width, height = self.raspberry_info[raspberry_id]["video mode"].split("x")
+
+        '''
+                    "brightness": self.raspberry_info[raspberry_id]['picture brightness'],
+                    "contrast": self.raspberry_info[raspberry_id]['picture contrast'],
+                    "saturation": self.raspberry_info[raspberry_id]['picture saturation'],
+                    "sharpness": self.raspberry_info[raspberry_id]['picture sharpness'],
+                    "ISO": self.raspberry_info[raspberry_id]['picture iso'],
+                    "rotation": self.raspberry_info[raspberry_id]['picture rotation'],
+                    "hflip": self.raspberry_info[raspberry_id]['picture hflip'],
+                    "vflip": self.raspberry_info[raspberry_id]['picture vflip'],
+
+        '''
+
+
         data = {"crontab": crontab_event,
                 "duration": self.raspberry_info[raspberry_id]["video duration"],
                 "width": width,
@@ -856,10 +905,8 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
                 "quality": self.raspberry_info[raspberry_id]["video quality"],
         }
 
-        print(data)
-
         try:
-            response = self.request(raspberry_id, f"/configure_video_recording",
+            response = self.request(raspberry_id, f"/schedule_video_recording",
                                     data=data)
         except requests.exceptions.ConnectionError:
             self.rasp_output_lb.setText(f"Failed to establish a connection")
@@ -872,6 +919,61 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
             return
         self.rasp_output_lb.setText(response.json().get("msg", "Error during video recording configuration"))
 
+
+    def view_video_recording_schedule_clicked(self):
+        """
+        view schedule on current raspberry
+        """
+        self.view_video_recording_schedule(self.current_raspberry_id)
+
+
+    def view_video_recording_schedule(self, raspberry_id):
+        """
+        view schedule on Raspberry Pi
+        """
+        try:
+            response = self.request(raspberry_id, f"/view_video_recording_schedule")
+        except requests.exceptions.ConnectionError:
+            self.rasp_output_lb.setText(f"Failed to establish a connection")
+            self.get_raspberry_status(raspberry_id)
+            self.update_raspberry_display(raspberry_id)
+            return
+
+        if response.status_code != 200:
+            self.rasp_output_lb.setText(f"Error during view of the video recording scheduling (status code: {response.status_code})")
+            return
+
+        QMessageBox.information(None, "Raspberry Pi coordinator",
+                                      response.json().get("msg", "Error during view of the video recording scheduling"),
+                                      QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+
+        #self.rasp_output_lb.setText(response.json().get("msg", "Error during view of the video recording scheduling"))
+
+
+
+
+
+    def delete_video_recording_schedule_clicked(self):
+        self.delete_video_recording_schedule(self.current_raspberry_id)
+
+
+    def delete_video_recording_schedule(self, raspberry_id):
+        """
+        delete all video recording scheduling
+        """
+
+        try:
+            response = self.request(raspberry_id, f"/delete_video_recording_schedule")
+        except requests.exceptions.ConnectionError:
+            self.rasp_output_lb.setText(f"Failed to establish a connection")
+            self.get_raspberry_status(raspberry_id)
+            self.update_raspberry_display(raspberry_id)
+            return
+
+        if response.status_code != 200:
+            self.rasp_output_lb.setText(f"Error during deletion of the video recording scheduling (status code: {response.status_code})")
+            return
+        self.rasp_output_lb.setText(response.json().get("msg", "Error during deletion of the video recording scheduling"))
 
 
 
