@@ -7,7 +7,7 @@ Video control server
 
 __version__ = "0.0.17"
 
-
+from crontab import CronTab
 
 import sys
 import threading
@@ -24,6 +24,8 @@ import struct
 import base64
 import pathlib
 import shutil
+
+from functools import wraps
 
 import server_config as cfg
 
@@ -137,6 +139,72 @@ def datetime_now_iso():
     return datetime.datetime.now().replace(microsecond=0).isoformat().replace("T", " ")
 
 
+
+class Raspivid_thread(threading.Thread):
+
+    def __init__(self, parameters: dict):
+        threading.Thread.__init__(self)
+        self.parameters = parameters
+
+    def run(self):
+        logging.info("start raspivid thread")
+        file_name = datetime.datetime.now().replace(microsecond=0).isoformat().replace("T", "_").replace(":", "")
+
+        cmd = ["raspivid",
+               "-t", str(int(self.parameters['duration']) * 1000),
+               "-w", f"{self.parameters['width']}",
+               "-h", f"{self.parameters['height']}",
+               "-fps", f"{self.parameters['fps']}",
+               "-b", str(int(self.parameters['quality']) * 1000),
+               "-o", f"{cfg.VIDEO_ARCHIVE}/{socket.gethostname()}_{self.parameters['prefix']}_{file_name}.h264"
+              ]
+
+        logging.info(f"{cmd}")
+
+        self.started_at = datetime.datetime.now().replace(microsecond=0).isoformat()
+
+        subprocess.run(cmd)
+
+        # md5sum
+        process = subprocess.run(["md5sum", f"{cfg.VIDEO_ARCHIVE}/{socket.gethostname()}_{self.parameters['prefix']}_{file_name}.h264"],
+                                 stdout=subprocess.PIPE)
+
+        try:
+            with open(f"{cfg.VIDEO_ARCHIVE}/{socket.gethostname()}_{self.parameters['prefix']}_{file_name}.md5sum", "w") as f_out:
+                f_out.write(process.stdout.decode("utf-8"))
+        except Exception:
+            logging.warning(f"MD5SUM writing failed for {socket.gethostname()}_{self.parameters['prefix']}_{file_name}.h264")
+
+
+
+class Blink_thread(threading.Thread):
+
+    def __init__(self):
+        threading.Thread.__init__(self)
+
+    def run(self):
+        logging.info("start  blinking")
+
+        subprocess.run(["bash", "blink_sudo.bash"])
+
+        '''
+        # Set the PWR LED to GPIO mode (set 'off' by default).
+        os.system("echo gpio | sudo tee /sys/class/leds/led1/trigger")
+
+        # (Optional) Turn on (1) or off (0) the PWR LED.
+
+        for n in range(30):
+            os.system("echo 0 | sudo tee /sys/class/leds/led1/brightness")
+            time.sleep(500)
+            os.system("echo 1 | sudo tee /sys/class/leds/led1/brightness")
+            time.sleep(500)
+
+        # Revert the PWR LED back to 'under-voltage detect' mode.
+        os.system("echo input | sudo tee /sys/class/leds/led1/trigger")
+        '''
+
+
+
 from flask import Flask, request, send_from_directory, Response
 
 while True:
@@ -174,6 +242,17 @@ def test():
 
 '''
 
+def security_key_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if request.values.get("key", "") != security_key:
+            status_code = Response(status=204)  # 204 No Content     The server successfully processed the request, and is not returning any content.
+            return status_code
+
+        return f(*args, **kwargs)
+
+    return decorated_function
+
 
 @app.route("/")
 def home():
@@ -194,11 +273,8 @@ Timezone: {get_timezone()}<br>
 
 
 @app.route("/status", methods=("GET", "POST",))
+@security_key_required
 def status():
-
-    if request.values.get('key', '') != security_key:
-        status_code = Response(status=204)  # 204 No Content     The server successfully processed the request, and is not returning any content.
-        return status_code
 
     global thread
     try:
@@ -234,73 +310,6 @@ def status():
 
     except Exception:
         return {"status": "Not available"}
-
-
-class Raspivid_thread(threading.Thread):
-
-    def __init__(self, parameters: dict):
-        threading.Thread.__init__(self)
-        self.parameters = parameters
-
-        # logging.info("thread args: {} fps: {} resolution: {}x{} quality: {} prefix:{}".format(duration, fps, w, h, quality, prefix))
-
-    def run(self):
-        logging.info("start raspivid thread")
-        file_name = datetime.datetime.now().replace(microsecond=0).isoformat().replace("T", "_").replace(":", "")
-
-        cmd = ["raspivid",
-               "-t", str(int(self.parameters['duration']) * 1000),
-               "-w", f"{self.parameters['width']}",
-               "-h", f"{self.parameters['height']}",
-               "-fps", f"{self.parameters['fps']}",
-               "-b", str(int(self.parameters['quality']) * 1000),
-               "-o", f"{cfg.VIDEO_ARCHIVE}/{socket.gethostname()}_{self.parameters['prefix']}_{file_name}.h264"
-              ]
-
-        logging.info(f"{cmd}")
-
-        self.started_at = datetime.datetime.now().replace(microsecond=0).isoformat()
-
-        subprocess.run(cmd)
-
-        # md5sum
-        process = subprocess.run(["md5sum", f"{cfg.VIDEO_ARCHIVE}/{socket.gethostname()}_{self.parameters['prefix']}_{file_name}.h264"],
-                                 stdout=subprocess.PIPE)
-
-        print(process.stdout.decode("utf-8"))
-        try:
-            with open(f"{cfg.VIDEO_ARCHIVE}/{socket.gethostname()}_{self.parameters['prefix']}_{file_name}.md5sum", "w") as f_out:
-                f_out.write(process.stdout.decode("utf-8"))
-        except Exception:
-            logging.warning(f"MD5SUM writing failed for {socket.gethostname()}_{self.parameters['prefix']}_{file_name}.h264")
-
-
-
-class Blink_thread(threading.Thread):
-
-    def __init__(self):
-        threading.Thread.__init__(self)
-
-    def run(self):
-        logging.info("start  blinking")
-
-        subprocess.run(["bash", "blink_sudo.bash"])
-
-        '''
-        # Set the PWR LED to GPIO mode (set 'off' by default).
-        os.system("echo gpio | sudo tee /sys/class/leds/led1/trigger")
-
-        # (Optional) Turn on (1) or off (0) the PWR LED.
-
-        for n in range(30):
-            os.system("echo 0 | sudo tee /sys/class/leds/led1/brightness")
-            time.sleep(500)
-            os.system("echo 1 | sudo tee /sys/class/leds/led1/brightness")
-            time.sleep(500)
-
-        # Revert the PWR LED back to 'under-voltage detect' mode.
-        os.system("echo input | sudo tee /sys/class/leds/led1/trigger")
-        '''
 
 
 @app.route("/video_streaming/<action>", methods=("GET", "POST",))
@@ -390,6 +399,7 @@ def add_key(key):
 '''
 
 @app.route("/start_video", methods=("GET", "POST",))
+@security_key_required
 def start_video():
 
     global thread
@@ -409,7 +419,8 @@ def start_video():
         return {"msg": "Video not recording"}
 
 
-@app.route("/stop_video")
+@app.route("/stop_video", methods=("GET", "POST",))
+@security_key_required
 def stop_video():
     """
     Stop the video recording
@@ -425,45 +436,62 @@ def stop_video():
 
 
 @app.route("/configure_video_recording", methods=("GET", "POST",))
+@security_key_required
 def configure_video_recording():
     """
     Configure the video recording scheme
     see https://pypi.org/project/crontab/
     """
-    if request.values.get('key', '') != security_key:
-        status_code = Response(status=204)  # 204 No Content     The server successfully processed the request, and is not returning any content.
-        return status_code
 
-    for key in request.values:
-        logging.warning(f"{key}: {request.values[key]}")
+    crontab_event = request.values.get("crontab", "")
+    if not crontab_event:
+        return {"error": True, "msg": "Video recording NOT configured. Crontab event not found"}
+
+    #file_name = datetime.datetime.now().replace(microsecond=0).isoformat().replace("T", "_").replace(":", "")
+
+    prefix = (request.values["prefix"] + "_" ) if request.values.get("prefix", "") else ""
+
+    cmd = ["/usr/bin/raspivid",
+               "-t", str(int(request.values.get('duration', 1)) * 1000),
+               "-w", f"{request.values.get('width', 640)}",
+               "-h", f"{request.values.get('height', 480)}",
+               "-fps", f"{request.values.get('fps', 25)}",
+               "-b", str(int(request.values.get('quality', 1)) * 1000),
+               #"-o", f"{cfg.VIDEO_ARCHIVE}/{socket.gethostname()}_{prefix}" + "`date +\%F_\%H\%M\%S`.h264"
+               "-o", f"{cfg.VIDEO_ARCHIVE}/{socket.gethostname()}_{prefix}" + "$(/usr/bin/date_crontab_helper).h264"
+              ]
+
+    logging.info(" ".join(cmd))
+
+    cron = CronTab(user="pi")
+    job = cron.new(command=" ".join(cmd))
+    job.setall(crontab_event)
+    cron.write()
 
     return {"error": False, "msg": "Video recording configured"}
 
 
 
-@app.route("/video_list", methods=("GET", "POST",))
-def video_list():
 
-    if request.values.get('key', '') != security_key:
-        status_code = Response(status=204)  # 204 No Content     The server successfully processed the request, and is not returning any content.
-        return status_code
+
+@app.route("/video_list", methods=("GET", "POST",))
+@security_key_required
+def video_list():
 
     return {"video_list": [x.replace(cfg.VIDEO_ARCHIVE + "/", "") for x in glob.glob(cfg.VIDEO_ARCHIVE + "/*.h264")]}
 
 
 @app.route("/get_video/<file_name>", methods=("GET", "POST",))
+@security_key_required
 def get_video(file_name):
-
-    if request.values.get('key', '') != security_key:
-        status_code = Response(status=204)  # 204 No Content     The server successfully processed the request, and is not returning any content.
-        return status_code
 
     return send_from_directory(cfg.VIDEO_ARCHIVE, file_name, as_attachment=True)
 
 
 
 
-@app.route("/stop_time_lapse")
+@app.route("/stop_time_lapse", methods=("GET", "POST",))
+@security_key_required
 def stop_time_lapse():
     """
     Stop the time lapse
@@ -480,13 +508,11 @@ def stop_time_lapse():
 
 
 @app.route("/blink", methods=("GET", "POST",))
+@security_key_required
 def blink():
     """
     Blink the power led
     """
-    if request.values.get('key', '') != security_key:
-        status_code = Response(status=204)  # 204 No Content     The server successfully processed the request, and is not returning any content.
-        return status_code
 
     try:
         thread = Blink_thread()
@@ -496,14 +522,13 @@ def blink():
         return {"msg": "blinking not successful"}
 
 
+
 @app.route("/sync_time/<date>/<hour>", methods=("GET", "POST",))
+@security_key_required
 def sync_time(date, hour):
     """
     synchronize the date and time
     """
-    if request.values.get('key', '') != security_key:
-        status_code = Response(status=204)  # 204 No Content     The server successfully processed the request, and is not returning any content.
-        return status_code
 
     completed = subprocess.run(['sudo', 'timedatectl','set-time', f"{date} {hour}"]) # 2015-11-23 10:11:22
     if completed.returncode:
@@ -513,11 +538,8 @@ def sync_time(date, hour):
 
 
 @app.route("/take_picture", methods=("GET", "POST",))
+@security_key_required
 def take_picture():
-
-    if request.values.get('key', '') != security_key:
-        status_code = Response(status=204)  # 204 No Content     The server successfully processed the request, and is not returning any content.
-        return status_code
 
     # delete previous picture
     try:
@@ -608,14 +630,11 @@ def get_log():
 
 
 @app.route("/delete_all_video", methods=("GET", "POST",))
+@security_key_required
 def delete_all_video():
     """
     Delete all video records in the video archive
     """
-    if request.values.get('key', '') != security_key:
-        status_code = Response(status=204)  # 204 No Content     The server successfully processed the request, and is not returning any content.
-        return status_code
-
     try:
         subprocess.run(["rm", "-f", f"{cfg.VIDEO_ARCHIVE}/*.h264"])
     except Exception:
@@ -623,7 +642,8 @@ def delete_all_video():
     return {"error": False, "msg": "All video deleted"}
 
 
-@app.route("/get_mac")
+@app.route("/get_mac", methods=("GET", "POST",))
+@security_key_required
 def get_mac():
     """
     return MAC ADDR of the wireless interface
@@ -632,13 +652,11 @@ def get_mac():
 
 
 @app.route("/reboot", methods=("GET", "POST",))
+@security_key_required
 def reboot():
     """
     shutdown the Raspberry Pi with 1 min delay
     """
-    if request.values.get('key', '') != security_key:
-        status_code = Response(status=204)  # 204 No Content     The server successfully processed the request, and is not returning any content.
-        return status_code
 
     try:
         completed = subprocess.run(["sudo", "shutdown", "--reboot", "+1"])
@@ -652,13 +670,11 @@ def reboot():
 
 
 @app.route("/shutdown", methods=("GET", "POST",))
+@security_key_required
 def shutdown():
     """
     shutdown the Raspberry Pi with 1 min delay
     """
-    if request.values.get('key', '') != security_key:
-        status_code = Response(status=204)  # 204 No Content     The server successfully processed the request, and is not returning any content.
-        return status_code
 
     try:
         completed = subprocess.run(["sudo", "shutdown", "+1"])
