@@ -150,21 +150,7 @@ class Raspivid_thread(threading.Thread):
     def run(self):
         logging.info("start raspivid thread")
 
-        file_name = datetime.datetime.now().replace(microsecond=0).isoformat().replace("T", "_").replace(":", "")
-
-        '''
-        cmd = ["raspivid",
-               "-t", str(int(self.parameters['duration']) * 1000),
-               "-w", f"{self.parameters['width']}",
-               "-h", f"{self.parameters['height']}",
-               "-fps", f"{self.parameters['fps']}",
-               "-b", str(int(self.parameters['quality']) * 1000),
-               "-o", f"{cfg.VIDEO_ARCHIVE}/{socket.gethostname()}_{self.parameters['prefix']}_{file_name}.h264"
-              ]
-        '''
-
-        command_line = ["/usr/bin/raspivid",
-                    ]
+        command_line = ["/usr/bin/raspivid", ]
 
         for key in self.parameters:
 
@@ -175,6 +161,7 @@ class Raspivid_thread(threading.Thread):
             elif self.parameters[key] != 'False':
                 command_line.extend([f"--{key}", f"{self.parameters[key]}"])
 
+        file_name = datetime.datetime.now().replace(microsecond=0).isoformat().replace("T", "_").replace(":", "")
         prefix = (self.parameters["prefix"] + "_" ) if self.parameters.get("prefix", "") else ""
 
         file_path = f"{cfg.VIDEO_ARCHIVE}/{socket.gethostname()}_{prefix}{file_name}.h264"
@@ -182,11 +169,10 @@ class Raspivid_thread(threading.Thread):
         command_line.extend(["-o", file_path])
 
         logging.info(" ".join(command_line))
-        print(" ".join(command_line))
 
         self.started_at = datetime.datetime.now().replace(microsecond=0).isoformat()
 
-        # subprocess.run(command_line)
+        subprocess.run(command_line)
 
         # md5sum
         process = subprocess.run(["md5sum", file_path],
@@ -456,7 +442,7 @@ def stop_video():
 @security_key_required
 def schedule_video_recording():
     """
-    schedule the video recording
+    schedule the video recording using crontab of user pi
     see https://pypi.org/project/crontab/
     """
 
@@ -466,8 +452,9 @@ def schedule_video_recording():
 
     #file_name = datetime.datetime.now().replace(microsecond=0).isoformat().replace("T", "_").replace(":", "")
 
-    prefix = (request.values["prefix"] + "_" ) if request.values.get("prefix", "") else ""
+    
 
+    '''
     cmd = ["/usr/bin/raspivid",
                "-t", str(int(request.values.get('duration', 1)) * 1000),
                "-w", f"{request.values.get('width', 640)}",
@@ -477,19 +464,39 @@ def schedule_video_recording():
                #"-o", f"{cfg.VIDEO_ARCHIVE}/{socket.gethostname()}_{prefix}" + "`date +\%F_\%H\%M\%S`.h264"
                "-o", f"{cfg.VIDEO_ARCHIVE}/{socket.gethostname()}_{prefix}" + "$(/usr/bin/date_crontab_helper).h264"
               ]
+    '''
 
-    logging.info(" ".join(cmd))
+    command_line = ["/usr/bin/raspivid", ]
+
+    for key in request.values:
+
+        if key in ["prefix", "annotate", "key"]:
+            continue
+        if request.values[key] == 'True':
+            command_line.extend([f"--{key}"])
+        elif request.values[key] != 'False':
+            command_line.extend([f"--{key}", f"{request.values[key]}"])
+
+    file_name = datetime.datetime.now().replace(microsecond=0).isoformat().replace("T", "_").replace(":", "")
+    prefix = (request.values["prefix"] + "_" ) if request.values.get("prefix", "") else ""
+
+    file_path = f"{cfg.VIDEO_ARCHIVE}/{socket.gethostname()}_{prefix}" + "$(/usr/bin/date_crontab_helper).h264"
+
+    command_line.extend(["-o", file_path])
+
+
+    logging.info(" ".join(command_line))
 
     cron = CronTab(user="pi")
-    job = cron.new(command=" ".join(cmd))
+    job = cron.new(command=" ".join(command_line))
     try:
         job.setall(crontab_event)
     except Exception:
-        return {"error": True, "msg": f"Video recording NOT configured. '{crontab_event}' is not valid."}
+        return {"error": True, "msg": f"Video recording NOT scheduled. '{crontab_event}' is not valid."}
 
     cron.write()
 
-    return {"error": False, "msg": "Video recording configured"}
+    return {"error": False, "msg": "Video recording scheduled"}
 
 
 @app.route("/view_video_recording_schedule", methods=("GET", "POST",))
