@@ -2,6 +2,8 @@
 
 Raspberry Pi worker
 
+to enable the service at boot:
+sudo systemctl enable worker
 """
 
 __version__ = "0.0.18"
