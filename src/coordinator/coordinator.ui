@@ -115,7 +115,7 @@
             <item>
              <widget class="QTabWidget" name="rasp_tw">
               <property name="currentIndex">
-               <number>0</number>
+               <number>3</number>
               </property>
               <widget class="QWidget" name="status_tab">
                <attribute name="title">
@@ -778,6 +778,9 @@
                      </item>
                      <item>
                       <widget class="QSpinBox" name="video_rotation_sb">
+                       <property name="frame">
+                        <bool>true</bool>
+                       </property>
                        <property name="maximum">
                         <number>270</number>
                        </property>
@@ -979,7 +982,14 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="hours_le"/>
+                      <widget class="QLineEdit" name="hours_le">
+                       <property name="frame">
+                        <bool>true</bool>
+                       </property>
+                       <property name="clearButtonEnabled">
+                        <bool>false</bool>
+                       </property>
+                      </widget>
                      </item>
                      <item>
                       <widget class="QLabel" name="label_25">

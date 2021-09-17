@@ -450,10 +450,6 @@ def schedule_video_recording():
     if not crontab_event:
         return {"error": True, "msg": "Video recording NOT configured. Crontab event not found"}
 
-    #file_name = datetime.datetime.now().replace(microsecond=0).isoformat().replace("T", "_").replace(":", "")
-
-    
-
     '''
     cmd = ["/usr/bin/raspivid",
                "-t", str(int(request.values.get('duration', 1)) * 1000),
@@ -470,20 +466,17 @@ def schedule_video_recording():
 
     for key in request.values:
 
-        if key in ["prefix", "annotate", "key"]:
+        if key in ["prefix", "annotate", "key", "crontab"]:
             continue
         if request.values[key] == 'True':
             command_line.extend([f"--{key}"])
         elif request.values[key] != 'False':
             command_line.extend([f"--{key}", f"{request.values[key]}"])
 
-    file_name = datetime.datetime.now().replace(microsecond=0).isoformat().replace("T", "_").replace(":", "")
     prefix = (request.values["prefix"] + "_" ) if request.values.get("prefix", "") else ""
-
     file_path = f"{cfg.VIDEO_ARCHIVE}/{socket.gethostname()}_{prefix}" + "$(/usr/bin/date_crontab_helper).h264"
 
     command_line.extend(["-o", file_path])
-
 
     logging.info(" ".join(command_line))
 

@@ -24,6 +24,8 @@ from PyQt5.QtCore import QTimer, Qt, QUrl, pyqtSignal, QObject, QThread
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 
+from qt_material import apply_stylesheet
+
 import os
 import time
 import sys
@@ -625,13 +627,13 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
 
 
         data = {"crontab": crontab_event,
-                "duration": self.raspberry_info[raspberry_id]["video duration"],
+                "timeout": self.raspberry_info[raspberry_id]["video duration"] * 1000,
                 "width": width,
                 "height": height,
                 "prefix":  "",
-                "fps": self.raspberry_info[raspberry_id]["FPS"],
+                "framerate": self.raspberry_info[raspberry_id]["FPS"],
 
-                "bitrate": self.raspberry_info[raspberry_id]["video quality"],
+                "bitrate": self.raspberry_info[raspberry_id]["video quality"] * 1000,
                 "brightness": self.raspberry_info[raspberry_id]['video brightness'],
                 "contrast": self.raspberry_info[raspberry_id]['video contrast'],
                 "saturation": self.raspberry_info[raspberry_id]['video saturation'],
@@ -1557,6 +1559,8 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     app.setApplicationName("Raspberry Pi coordinator")
     video_recording_control = Video_recording_control()
+
+    #apply_stylesheet(app, theme='light_blue.xml', invert_secondary=True,)
 
     video_recording_control.show()
     sys.exit(app.exec_())
