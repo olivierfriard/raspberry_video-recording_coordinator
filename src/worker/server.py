@@ -1,7 +1,6 @@
 """
 
-Video control server
-
+Raspberry Pi worker
 
 """
 
@@ -435,11 +434,11 @@ def stop_video():
         return {"msg": "video recording not stopped"}
 
 
-@app.route("/configure_video_recording", methods=("GET", "POST",))
+@app.route("/schedule_video_recording", methods=("GET", "POST",))
 @security_key_required
-def configure_video_recording():
+def schedule_video_recording():
     """
-    Configure the video recording scheme
+    schedule the video recording
     see https://pypi.org/project/crontab/
     """
 
@@ -465,13 +464,55 @@ def configure_video_recording():
 
     cron = CronTab(user="pi")
     job = cron.new(command=" ".join(cmd))
-    job.setall(crontab_event)
+    try:
+        job.setall(crontab_event)
+    except Exception:
+        return {"error": True, "msg": f"Video recording NOT configured. '{crontab_event}' is not valid."}
+
     cron.write()
 
     return {"error": False, "msg": "Video recording configured"}
 
 
+@app.route("/view_video_recording_schedule", methods=("GET", "POST",))
+@security_key_required
+def view_video_recording_schedule():
+    """
+    view all video recording schedule
+    """
+    cron = CronTab(user="pi")
+    output = ""
+    try:
+        for job in cron:
+            schedule = (f"minutes: {job.minutes}  "
+                        f"hours: {job.hours}  "
+                        f"day(s) of month: {job.dom}  "
+                        f"month(s): {job.month} "
+                        f"day(s) of week: {job.dow}"
+                        )
+            output += f"{schedule}\n"
+    except Exception:
+        return {"error": True, "msg": f"Error during video recording view."}
 
+    return {"error": False, "msg": output}
+
+
+
+@app.route("/delete_video_recording_schedule", methods=("GET", "POST",))
+@security_key_required
+def delete_video_recording_schedule():
+    """
+    delete all video recording schedule
+    """
+    cron = CronTab(user="pi")
+    try:
+        #cron.remove_all('/usr/bin/raspivid')
+        cron.remove_all()
+        cron.write()
+    except Exception:
+        return {"error": True, "msg": f"Video recording schedule NOT deleted."}
+
+    return {"error": False, "msg": f"Video recording schedule deleted."}
 
 
 @app.route("/video_list", methods=("GET", "POST",))
