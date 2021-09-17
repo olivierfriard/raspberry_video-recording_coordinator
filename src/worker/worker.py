@@ -6,7 +6,7 @@ to enable the service at boot:
 sudo systemctl enable worker
 """
 
-__version__ = "0.0.18"
+__version__ = "0.0.19"
 
 from crontab import CronTab
 
@@ -149,8 +149,10 @@ class Raspivid_thread(threading.Thread):
 
     def run(self):
         logging.info("start raspivid thread")
+
         file_name = datetime.datetime.now().replace(microsecond=0).isoformat().replace("T", "_").replace(":", "")
 
+        '''
         cmd = ["raspivid",
                "-t", str(int(self.parameters['duration']) * 1000),
                "-w", f"{self.parameters['width']}",
@@ -159,22 +161,42 @@ class Raspivid_thread(threading.Thread):
                "-b", str(int(self.parameters['quality']) * 1000),
                "-o", f"{cfg.VIDEO_ARCHIVE}/{socket.gethostname()}_{self.parameters['prefix']}_{file_name}.h264"
               ]
+        '''
 
-        logging.info(f"{cmd}")
+        command_line = ["/usr/bin/raspivid",
+                    ]
+
+        for key in self.parameters:
+
+            if key in ["prefix", "annotate", "key"]:
+                continue
+            if self.parameters[key] == 'True':
+                command_line.extend([f"--{key}"])
+            elif self.parameters[key] != 'False':
+                command_line.extend([f"--{key}", f"{self.parameters[key]}"])
+
+        prefix = (self.parameters["prefix"] + "_" ) if self.parameters.get("prefix", "") else ""
+
+        file_path = f"{cfg.VIDEO_ARCHIVE}/{socket.gethostname()}_{prefix}{file_name}.h264"
+
+        command_line.extend(["-o", file_path])
+
+        logging.info(" ".join(command_line))
+        print(" ".join(command_line))
 
         self.started_at = datetime.datetime.now().replace(microsecond=0).isoformat()
 
-        subprocess.run(cmd)
+        # subprocess.run(command_line)
 
         # md5sum
-        process = subprocess.run(["md5sum", f"{cfg.VIDEO_ARCHIVE}/{socket.gethostname()}_{self.parameters['prefix']}_{file_name}.h264"],
+        process = subprocess.run(["md5sum", file_path],
                                  stdout=subprocess.PIPE)
 
         try:
             with open(f"{cfg.VIDEO_ARCHIVE}/{socket.gethostname()}_{self.parameters['prefix']}_{file_name}.md5sum", "w") as f_out:
                 f_out.write(process.stdout.decode("utf-8"))
         except Exception:
-            logging.warning(f"MD5SUM writing failed for {socket.gethostname()}_{self.parameters['prefix']}_{file_name}.h264")
+            logging.warning(f"MD5SUM writing failed for {file_path}")
 
 
 
@@ -402,7 +424,7 @@ def start_video():
     if thread.is_alive():
         return {"msg": "Video already recording"}
 
-    logging.info(f"Starting video for {request.values['duration']} s ({request.values['width']}x{request.values['height']})")
+    logging.info(f"Starting video for {int(request.values['timeout']) / 1000} s ({request.values['width']}x{request.values['height']})")
     try:
         thread = Raspivid_thread(request.values)
         thread.start()

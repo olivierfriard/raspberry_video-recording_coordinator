@@ -630,7 +630,8 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
                 "height": height,
                 "prefix":  "",
                 "fps": self.raspberry_info[raspberry_id]["FPS"],
-                "quality": self.raspberry_info[raspberry_id]["video quality"],
+
+                "bitrate": self.raspberry_info[raspberry_id]["video quality"],
                 "brightness": self.raspberry_info[raspberry_id]['video brightness'],
                 "contrast": self.raspberry_info[raspberry_id]['video contrast'],
                 "saturation": self.raspberry_info[raspberry_id]['video saturation'],
@@ -1341,12 +1342,20 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
 
         width, height = self.raspberry_info[raspberry_id]["video mode"].split("x")
         data = {"key": security_key,
-                "duration": self.raspberry_info[raspberry_id]["video duration"],
+                "timeout": self.raspberry_info[raspberry_id]["video duration"]*1000,
                 "width": width,
                 "height": height,
                 "prefix":  "",
-                "fps": self.raspberry_info[raspberry_id]["FPS"],
-                "quality": self.raspberry_info[raspberry_id]["video quality"],
+                "framerate": self.raspberry_info[raspberry_id]["FPS"],
+                "bitrate": self.raspberry_info[raspberry_id]["video quality"] * 1000,
+                "brightness": self.raspberry_info[raspberry_id]['video brightness'],
+                "contrast": self.raspberry_info[raspberry_id]['video contrast'],
+                "saturation": self.raspberry_info[raspberry_id]['video saturation'],
+                "sharpness": self.raspberry_info[raspberry_id]['video sharpness'],
+                "ISO": self.raspberry_info[raspberry_id]['video iso'],
+                "rotation": self.raspberry_info[raspberry_id]['video rotation'],
+                "hflip": self.raspberry_info[raspberry_id]['video hflip'],
+                "vflip": self.raspberry_info[raspberry_id]['video vflip'],
         }
 
         self.rasp_output_lb.setText("start video recording requested")
