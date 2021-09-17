@@ -59,12 +59,23 @@ MAX_VIDEO_FPS = 30
 DEFAULT_FPS = 10
 
 DEFAULT_VIDEO_DURATION = 2400 # seconds
+VIDEO_BRIGHTNESS = 50
+VIDEO_SATURATION = 0
+VIDEO_CONTRAST = 0
+VIDEO_SHARPNESS = 0
+VIDEO_ISO = 100
+VIDEO_ROTATION = 0
+VIDEO_HFLIP = False
+VIDEO_VFLIP = False
 
 MIN_VIDEO_QUALITY = 1
 MAX_VIDEO_QUALITY = 10
 DEFAULT_VIDEO_QUALITY = 1 # Mbp/s
 
-CLIENT_PROJECT_DIRECTORY = "/home/pi/video"
+
+
+
+CLIENT_PROJECT_DIRECTORY = "/home/pi/worker"
 
 
 RPI_DEFAULTS = {"picture resolution": PICTURE_RESOLUTIONS[DEFAULT_PICTURE_RESOLUTION],
@@ -76,12 +87,22 @@ RPI_DEFAULTS = {"picture resolution": PICTURE_RESOLUTIONS[DEFAULT_PICTURE_RESOLU
                     "picture rotation": PICTURE_ROTATION,
                     "picture hflip": PICTURE_HFLIP,
                     "picture vflip": PICTURE_VFLIP,
-                    "video mode": VIDEO_MODES[DEFAULT_VIDEO_MODE],
-                    "video quality": DEFAULT_VIDEO_QUALITY,
-                    "FPS": DEFAULT_FPS,
-                    "video duration": DEFAULT_VIDEO_DURATION,
                     "time lapse": TIME_LAPSE,
                     "time lapse duration": TIME_LAPSE_DURATION,
                     "time lapse wait": TIME_LAPSE_WAIT,
                     "picture annotation": PICTURE_ANNOTATION,
+
+                    "video mode": VIDEO_MODES[DEFAULT_VIDEO_MODE],
+                    "video quality": DEFAULT_VIDEO_QUALITY,
+                    "FPS": DEFAULT_FPS,
+                    "video duration": DEFAULT_VIDEO_DURATION,
+                    "video brightness": VIDEO_BRIGHTNESS,
+                    "video contrast": VIDEO_CONTRAST,
+                    "video saturation": VIDEO_SATURATION,
+                    "video sharpness": VIDEO_SHARPNESS,
+                    "video iso": VIDEO_ISO,
+                    "video rotation": VIDEO_ROTATION,
+                    "video hflip": VIDEO_HFLIP,
+                    "video vflip": VIDEO_VFLIP,
+
                     }
