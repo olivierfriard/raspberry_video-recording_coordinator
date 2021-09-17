@@ -6,8 +6,8 @@ After=network.target
 User=pi
 Group=pi
 WorkingDirectory=/home/pi/worker
-Environment="PATH=/home/pi/video_venv/bin:/usr/bin:/usr/sbin/:/bin"
-ExecStart=/home/pi/video_venv/bin/python3 worker.py
+Environment="PATH=/home/pi/worker_venv/bin:/usr/bin:/usr/sbin/:/bin"
+ExecStart=/home/pi/worker_venv/bin/python3 worker.py
 
 [Install]
 WantedBy=multi-user.target
