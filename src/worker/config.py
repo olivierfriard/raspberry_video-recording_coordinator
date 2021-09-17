@@ -17,6 +17,6 @@ DEFAULT_VIDEO_WIDTH = 640
 DEFAULT_VIDEO_HEIGHT = 480
 DEFAULT_VIDEO_QUALITY = 1 # Mb/s
 
-LOG_PATH = "/home/pi/video/server.log"
+LOG_PATH = "/home/pi/video/worker.log"
 
 WIFI_INTERFACE = "wlan0"
