@@ -4,7 +4,7 @@ Raspberry Pi worker
 
 """
 
-__version__ = "0.0.17"
+__version__ = "0.0.18"
 
 from crontab import CronTab
 
@@ -26,7 +26,7 @@ import shutil
 
 from functools import wraps
 
-import server_config as cfg
+import config as cfg
 
 
 def is_camera_detected():
