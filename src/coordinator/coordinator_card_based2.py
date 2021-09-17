@@ -280,7 +280,7 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         self.start_video_recording_pb.clicked.connect(self.start_video_recording_clicked)
         self.stop_video_recording_pb.clicked.connect(self.stop_video_recording_clicked)
         self.download_videos_pb.clicked.connect(self.download_videos_clicked)
-        self.configure_video_recording_pb.clicked.connect(self.configure_video_recording_clicked)
+        self.configure_video_recording_pb.clicked.connect(self.schedule_video_recording_clicked)
         self.view_video_recording_schedule_pb.clicked.connect(self.view_video_recording_schedule_clicked)
         self.delete_video_recording_schedule_pb.clicked.connect(self.delete_video_recording_schedule_clicked)
 
@@ -486,16 +486,16 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         self.video_streaming(self.current_raspberry_id, action)
 
 
-    def configure_video_recording_clicked(self):
+    def schedule_video_recording_clicked(self):
         """
-        Configure the video recording scheme on the current Raspberry Pi
+        Schedule the video recording on the current Raspberry Pi
         """
-        self.configure_video_recording(self.current_raspberry_id)
+        self.schedule_video_recording(self.current_raspberry_id)
 
 
-    def configure_video_recording(self, raspberry_id):
+    def schedule_video_recording(self, raspberry_id):
         """
-        Configure the video recording scheme on the Raspberry Pi
+        Schedule the video recording on the Raspberry Pi
         """
 
         if self.hours_le.text() == "":
@@ -623,18 +623,6 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
 
         width, height = self.raspberry_info[raspberry_id]["video mode"].split("x")
 
-        '''
-                    "brightness": self.raspberry_info[raspberry_id]['picture brightness'],
-                    "contrast": self.raspberry_info[raspberry_id]['picture contrast'],
-                    "saturation": self.raspberry_info[raspberry_id]['picture saturation'],
-                    "sharpness": self.raspberry_info[raspberry_id]['picture sharpness'],
-                    "ISO": self.raspberry_info[raspberry_id]['picture iso'],
-                    "rotation": self.raspberry_info[raspberry_id]['picture rotation'],
-                    "hflip": self.raspberry_info[raspberry_id]['picture hflip'],
-                    "vflip": self.raspberry_info[raspberry_id]['picture vflip'],
-
-        '''
-
 
         data = {"crontab": crontab_event,
                 "duration": self.raspberry_info[raspberry_id]["video duration"],
@@ -643,6 +631,14 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
                 "prefix":  "",
                 "fps": self.raspberry_info[raspberry_id]["FPS"],
                 "quality": self.raspberry_info[raspberry_id]["video quality"],
+                "brightness": self.raspberry_info[raspberry_id]['video brightness'],
+                "contrast": self.raspberry_info[raspberry_id]['video contrast'],
+                "saturation": self.raspberry_info[raspberry_id]['video saturation'],
+                "sharpness": self.raspberry_info[raspberry_id]['video sharpness'],
+                "ISO": self.raspberry_info[raspberry_id]['video iso'],
+                "rotation": self.raspberry_info[raspberry_id]['video rotation'],
+                "hflip": self.raspberry_info[raspberry_id]['video hflip'],
+                "vflip": self.raspberry_info[raspberry_id]['video vflip'],
         }
 
         try:
@@ -655,9 +651,9 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
             return
 
         if response.status_code != 200:
-            self.rasp_output_lb.setText(f"Error during the video recording configuration (status code: {response.status_code})")
+            self.rasp_output_lb.setText(f"Error during the video recording scheduling (status code: {response.status_code})")
             return
-        self.rasp_output_lb.setText(response.json().get("msg", "Error during video recording configuration"))
+        self.rasp_output_lb.setText(response.json().get("msg", "Error during video recording scheduling"))
 
 
     def view_video_recording_schedule_clicked(self):
