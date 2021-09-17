@@ -190,6 +190,9 @@ class Ui_MainWindow(object):
         self.blink_pb = QtWidgets.QPushButton(self.status_tab)
         self.blink_pb.setObjectName("blink_pb")
         self.horizontalLayout_4.addWidget(self.blink_pb)
+        self.reboot_pb = QtWidgets.QPushButton(self.status_tab)
+        self.reboot_pb.setObjectName("reboot_pb")
+        self.horizontalLayout_4.addWidget(self.reboot_pb)
         self.shutdown_pb = QtWidgets.QPushButton(self.status_tab)
         self.shutdown_pb.setObjectName("shutdown_pb")
         self.horizontalLayout_4.addWidget(self.shutdown_pb)
@@ -579,7 +582,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         self.main_tw.setCurrentIndex(0)
-        self.rasp_tw.setCurrentIndex(3)
+        self.rasp_tw.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -606,6 +609,7 @@ class Ui_MainWindow(object):
         self.status_update_pb.setText(_translate("MainWindow", "Update status"))
         self.time_synchro_pb.setText(_translate("MainWindow", "Time synchronization"))
         self.blink_pb.setText(_translate("MainWindow", "Blink"))
+        self.reboot_pb.setText(_translate("MainWindow", "Reboot"))
         self.shutdown_pb.setText(_translate("MainWindow", "Shutdown"))
         self.rasp_tw.setTabText(self.rasp_tw.indexOf(self.status_tab), _translate("MainWindow", "Status"))
         self.label_4.setText(_translate("MainWindow", "Resolution"))

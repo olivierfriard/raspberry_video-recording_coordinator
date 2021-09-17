@@ -115,7 +115,7 @@
             <item>
              <widget class="QTabWidget" name="rasp_tw">
               <property name="currentIndex">
-               <number>3</number>
+               <number>0</number>
               </property>
               <widget class="QWidget" name="status_tab">
                <attribute name="title">
@@ -329,6 +329,13 @@
                      <widget class="QPushButton" name="blink_pb">
                       <property name="text">
                        <string>Blink</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="reboot_pb">
+                      <property name="text">
+                       <string>Reboot</string>
                       </property>
                      </widget>
                     </item>

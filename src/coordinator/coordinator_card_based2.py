@@ -54,7 +54,6 @@ except Exception:
         sys.exit()
 
 
-
 __version__ = "7"
 __version_date__ = "2021-09-02"
 
@@ -106,13 +105,13 @@ def get_ip():
 
 
 def get_wlan_ip_address():
-    '''
+    """
     get IP of wireless connection
-    '''
+    """
 
     for ifname in os.listdir('/sys/class/net/'):  # https://stackoverflow.com/questions/3837069/how-to-get-network-interface-card-names-in-python/58191277
         if ifname.startswith("wl"):
-            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # https://stackoverflow.com/questions/3837069/how-to-get-network-interface-card-names-in-python/58191277
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  
             try:
                 return socket.inet_ntoa(fcntl.ioctl(
                                         s.fileno(),
@@ -143,19 +142,19 @@ from coordinator_ui import Ui_MainWindow
 
 
 def md5sum(file_path):
+    """
+    Return the MD5 sum of the file content
+    """
     md5_hash = hashlib.md5()
 
-
-    a_file = open("test.txt", "rb")
-
-    content = a_file.read()
+    with open("test.txt", "rb") as a_file:
+        content = a_file.read()
 
     md5_hash.update(content)
 
-
     digest = md5_hash.hexdigest()
 
-    print(digest)
+    return digest
 
 
 class Video_recording_control(QMainWindow, Ui_MainWindow):
@@ -212,7 +211,6 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         self.setGeometry(0, 0, 1300, 768)
 
 
-
         # self.scan_network(output=True)
 
         self.status_timer = QTimer()
@@ -239,6 +237,7 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         self.time_synchro_pb.clicked.connect(self.time_synchro_clicked)
 
         self.blink_pb.clicked.connect(self.blink)
+        self.reboot_pb.clicked.connect(self.reboot_clicked)
         self.shutdown_pb.clicked.connect(self.shutdown_clicked)
 
         # picture
@@ -267,7 +266,6 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         self.time_lapse_cb.clicked.connect(self.time_lapse_changed)
         self.time_lapse_duration_sb.valueChanged.connect(self.time_lapse_duration_changed)
         self.time_lapse_wait_sb.valueChanged.connect(self.time_lapse_wait_changed)
-
 
 
         # video streaming
@@ -301,7 +299,6 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         self.video_vflip_cb.clicked.connect(self.video_vflip_changed)
 
 
-
         mediaPlayer = QMediaPlayer(None, QMediaPlayer.VideoSurface)
         self.media_list = mediaPlayer
         videoWidget = QVideoWidget()
@@ -310,7 +307,6 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         streaming_layout = QHBoxLayout()
         streaming_layout.setContentsMargins(0, 0, 0, 0)
         streaming_layout.addWidget(videoWidget)
-
 
 
         self.streaming_wdg.setLayout(streaming_layout)
@@ -327,10 +323,11 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
             self.video_mode_cb.addItem(video_mode)
         self.video_mode_cb.setCurrentIndex(cfg.DEFAULT_VIDEO_MODE)
 
-        # all
+        # commands for all Raspberry Pi
         self.all_get_status_pb.clicked.connect(self.status_for_all_rpi)
         self.all_time_synchro_pb.clicked.connect(self.time_synchro_all)
         self.all_shutdown_pb.clicked.connect(self.shutdown_all_rpi)
+
 
     def picture_resolution_changed(self, idx):
         """
@@ -402,7 +399,6 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
             self.raspberry_info[self.current_raspberry_id]["video vflip"] = self.video_vflip_cb.isChecked()
 
 
-
     def video_quality_changed(self):
         """
         update video quality in raspberry info
@@ -463,259 +459,13 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         self.update_raspberry_dashboard(self.current_raspberry_id)
         self.update_raspberry_display(self.current_raspberry_id)
 
-        #self.text_list.setText(self.raspberry_output[self.current_raspberry_id])
 
-
-    '''
-    def create_raspberry_commands(self):
-
-        hlayout1 = QHBoxLayout()
-        q1 = QWidget()
-
-        # self.download_process[rb] = QProcess()
-
-        l = QHBoxLayout()
-
-        # list of Raspberry Pi
-        rasp_list_layout = QVBoxLayout()
-        rasp_list_layout.addLayout(self.create_navigation_buttons())
-        self.rasp_list = QListWidget()
-        self.rasp_list.itemClicked.connect(self.rasp_list_clicked)
-        rasp_list_layout.addWidget(self.rasp_list)
-
-
-        output_layout = QVBoxLayout()
-
-        combo = QComboBox(self)
-        combo.addItem("view command output")
-        combo.addItem("view picture")
-        combo.addItem("video streaming")
-        combo.currentIndexChanged[int].connect(self.combo_index_changed)
-        self.combo_list = combo
-        output_layout.addWidget(self.combo_list)
-
-        self.stack_list = QStackedWidget()
-
-        self.stack1 = QWidget()
-        # command output
-        stack1_layout = QHBoxLayout()
-        self.text_list = QTextEdit()
-        self.text_list.setLineWrapMode(QTextEdit.NoWrap)
-        self.text_list.setFontFamily("Monospace")
-        stack1_layout.addWidget(self.text_list)
-        self.stack1.setLayout(stack1_layout)
-
-        # image viewer
-        self.stack2 = QWidget()
-        stack2_layout = QHBoxLayout()
-        stack2_layout.setContentsMargins(0, 0, 0, 0)
-        self.image_label = QLabel()
-        self.image_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.image_label.setAlignment(Qt.AlignCenter)
-        self.image_label.setStyleSheet("QLabel {background-color: black;}")
-
-        stack2_layout.addWidget(self.image_label)
-        self.stack2.setLayout(stack2_layout)
-
-        self.stack_list.addWidget(self.stack1)
-        self.stack_list.addWidget(self.stack2)
-
-        # video streaming viewer
-        self.stack3 = QWidget()
-        stack3_layout = QHBoxLayout()
-        stack3_layout.setContentsMargins(0, 0, 0, 0)
-
-        mediaPlayer = QMediaPlayer(None, QMediaPlayer.VideoSurface)
-        self.media_list = mediaPlayer
-        videoWidget = QVideoWidget()
-        self.media_list.setVideoOutput(videoWidget)
-
-        # Create a widget for window contents
-        wid = QWidget(self)
-        layout_video = QHBoxLayout()
-        layout_video.setContentsMargins(0, 0, 0, 0)
-        layout_video.addWidget(videoWidget)
-
-        # Set widget to contain window contents
-        wid.setLayout(layout_video)
-
-
-        stack3_layout.addWidget(wid)
-
-        self.stack3.setLayout(stack3_layout)
-
-        self.stack_list.addWidget(self.stack1)
-        self.stack_list.addWidget(self.stack2)
-        self.stack_list.addWidget(self.stack3)
-
-        output_layout.addWidget(self.stack_list)
-
-
-
-        commands_layout = QVBoxLayout()
-
-        tw_commands = QTabWidget()
-
-        self.status_tab = QWidget()
-        tw_commands.addTab(self.status_tab, "Status")
-
-
-        status_layout = QVBoxLayout()
-
-        l2 = QHBoxLayout()
-        l2.addWidget(QLabel("Raspberry Pi id: "))
-        self.lb_raspberry_id = QLabel(" ")
-        l2.addWidget(self.lb_raspberry_id)
-        status_layout.addLayout(l2)
-
-        l2 = QHBoxLayout()
-        buttons = QHBoxLayout()
-        self.status_list = QPushButton("Status", clicked=partial(self.status_one, output=True))
-        buttons.addWidget(self.status_list)
-
-        buttons.addWidget(QPushButton("Sync time", clicked=self.time_synchro))
-        buttons.addWidget(QPushButton("Get log", clicked=self.get_log))
-        buttons.addWidget(QPushButton("Clear output", clicked=self.clear_output))
-        buttons.addWidget(QPushButton("Blink", clicked=self.blink))
-        buttons.addWidget(QPushButton("Send key", clicked=self.send_public_key))
-        l2.addLayout(buttons)
-
-        status_layout.addLayout(l2)
-
-        l2 = QHBoxLayout()
-        l2.addWidget(QLabel("<b>System commands</b>"))
-
-        l2.addWidget(QPushButton("Send command", clicked=self.send_command))
-        l2.addWidget(QPushButton("Reboot", clicked=self.reboot))
-        l2.addWidget(QPushButton("Shutdown", clicked=self.shutdown_clicked))
-
-        status_layout.addLayout(l2)
-
-        verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
-        status_layout.addItem(verticalSpacer)
-
-
-        self.status_tab.setLayout(status_layout)
-
-
-        self.picture_tab = QWidget()
-        tw_commands.addTab(self.picture_tab, "Picture")
-
-        l2 = QHBoxLayout()
-
-        l2.addWidget(QLabel("<b>Picture</b>"))
-
-        l2.addWidget(QLabel("Resolution"))
-        self.resolution = QComboBox()
-        for resol in cfg.PICTURE_RESOLUTIONS:
-            self.resolution.addItem(resol)
-        self.resolution.setCurrentIndex(cfg.DEFAULT_PICTURE_RESOLUTION)
-        l2.addWidget(self.resolution)
-
-        l2.addWidget(QPushButton("Take one picture", clicked=self.one_picture))
-
-        self.picture_tab.setLayout(l2)
-
-
-        self.video_tab = QWidget()
-        tw_commands.addTab(self.video_tab, "Video")
-
-        video_layout = QVBoxLayout()
-
-        l2 = QHBoxLayout()
-
-        l2.addWidget(QLabel("<b>Video</b>"))
-
-        self.video_streaming_btn = QPushButton("Start video streaming", clicked=partial(self.video_streaming_clicked, "start"))
-        l2.addWidget(self.video_streaming_btn)
-        l2.addWidget(QPushButton("Stop video streaming", clicked=partial(self.video_streaming_clicked, "stop")))
-
-        self.record_button = QPushButton("Start video recording", clicked=self.start_video_recording)
-        l2.addWidget(self.record_button)
-        l2.addWidget(QPushButton("Stop video recording", clicked=self.stop_video_recording))
-        video_layout.addLayout(l2)
-
-
-        l2 = QHBoxLayout()
-        l2.addWidget(QLabel("Video mode"))
-        self.video_mode = QComboBox()
-        for resol in cfg.VIDEO_MODES:
-            self.video_mode.addItem(resol)
-        self.video_mode.setCurrentIndex(cfg.DEFAULT_VIDEO_MODE)
-        l2.addWidget(self.video_mode)
-
-        l2.addWidget(QLabel("Video quality Mbp/s"))
-        self.video_quality = QSpinBox()
-        self.video_quality.setMinimum(1)
-        self.video_quality.setMaximum(10)
-        self.video_quality.setValue(cfg.DEFAULT_VIDEO_QUALITY)
-        l2.addWidget(self.video_quality)
-
-        l2.addWidget(QLabel("FPS"))
-        self.fps = QSpinBox()
-        self.fps.setMinimum(1)
-        self.fps.setMaximum(30)
-        self.fps.setValue(cfg.DEFAULT_FPS)
-        l2.addWidget(self.fps)
-
-        horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-        l2.addItem(horizontalSpacer)
-
-        video_layout.addLayout(l2)
-
-        l2 = QHBoxLayout()
-        l2.addWidget(QLabel("Duration (s)"))
-        self.duration = QSpinBox()
-        self.duration.setMinimum(10)
-        self.duration.setMaximum(86400)
-        self.duration.setValue(cfg.DEFAULT_VIDEO_DURATION)
-        l2.addWidget(self.duration)
-
-        video_layout.addLayout(l2)
-
-        l2.addWidget(QLabel("Video file name prefix"))
-        self.prefix = QLineEdit("")
-        l2.addWidget(self.prefix)
-
-        video_layout.addLayout(l2)
-
-        # get video / video list
-        l2 = QHBoxLayout()
-        q = QPushButton("Get list of videos", clicked=self.get_videos_list)
-        l2.addWidget(q)
-
-        self.download_button = QPushButton("Download videos", clicked=self.download_videos_clicked)
-        l2.addWidget(self.download_button)
-
-        self.lb_download_videos = QLabel("...")
-        l2.addWidget(self.lb_download_videos)
-
-        l2.addWidget(QPushButton("Delete all video", clicked=self.delete_all_video))
-        video_layout.addLayout(l2)
-
-        self.video_tab.setLayout(video_layout)
-
-
-
-        commands_layout.addWidget(tw_commands)
-
-        l.addLayout(rasp_list_layout)
-        l.addLayout(commands_layout)
-        l.addLayout(output_layout)
-
-        hlayout1.addLayout(l)
-
-        q1.setLayout(hlayout1)
-
-        return q1
-    '''
 
     def request(self, raspberry_id, route, data= {}, time_out=None):
         """
         wrapper for contacting Raspberry Pi using requests
         """
 
-        print("request", data)
         if data:
             data_to_send =  {**{'key': security_key}, **data}
         else:
@@ -726,16 +476,6 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
                             )
 
 
-    def shutdown_clicked(self):
-        """
-        Shutdown the current Raspberry Pi
-        """
-        if self.current_raspberry_id in self.RASPBERRY_IP and self.raspberry_status[self.current_raspberry_id]:
-            text, ok = QInputDialog.getText(self, f"Shutdown Rasberry Pi {self.current_raspberry_id}", "Please confirm writing 'yes'")
-            if not ok or text != "yes":
-                return
-
-        self.shutdown(self.current_raspberry_id)
 
 
 
@@ -1035,9 +775,9 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
 
 
     def scan_raspberries(self, ip_base_address, interval):
-        '''
+        """
         Scan network {ip_base_address} for Raspberry Pi device
-        '''
+        """
 
         ip_mask = ".".join(ip_base_address.split(".")[0:3])
         ip_list = [f"{ip_mask}.{x}" for x in range(interval[0], interval[1] + 1)]
@@ -1073,7 +813,6 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         self.populate_rasp_list()
 
         self.status_for_all_rpi()
-
 
 
     def show_ip_list(self):
@@ -1127,29 +866,6 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
             self.get_raspberry_status(raspberry_id)
             self.update_raspberry_dashboard(raspberry_id)
 
-
-
-    '''
-    def send_public_key(self, rb):
-        """
-        send the public key id_rsa.pub (if any)
-        """
-        if rb in self.RASPBERRY_IP and self.raspberry_status[rb]:
-            if (pathlib.Path.home() / pathlib.Path(".ssh") / pathlib.Path("id_rsa.pub")).is_file():
-                # read content of id_rsa.pub file
-                with open(pathlib.Path.home() / pathlib.Path(".ssh") / pathlib.Path("id_rsa.pub"), "r") as f_in:
-                    file_content = f_in.read()
-
-                #print(base64.b64encode(file_content.encode("utf-8")).decode('utf-8'))
-
-                #print(f"http://{self.RASPBERRY_IP[rb]}:{SERVER_PORT}/add_key/{base64.b64encode(file_content.encode('utf-8')).decode('utf-8')}")
-
-                r = requests.get(f"http://{self.RASPBERRY_IP[rb]}{cfg.SERVER_PORT}/add_key/{base64.b64encode(file_content.encode('utf-8')).decode('utf-8')}")
-                if r.status_code == 200:
-                    self.rb_msg(rb, f"send public key: {r.text}")
-                else:
-                    self.rb_msg(rb, f"Error sending public key: {r.text}")
-        '''
 
 
     def go_left(self):
@@ -1269,16 +985,25 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
                     self.status_one(rb, output=False)
     '''
 
-    def reboot(self, raspberry_id, force_reboot=False):
+    def reboot_clicked(self):
+        """
+        Reboot the current Raspberry Pi
+        """
+        if self.current_raspberry_id in self.RASPBERRY_IP and self.raspberry_status[self.current_raspberry_id]:
+            text, ok = QInputDialog.getText(self, f"Reboot the Raspberry Pi {self.current_raspberry_id}", "Please confirm writing 'yes'")
+            if not ok or text != "yes":
+                return
+
+        self.reboot(self.current_raspberry_id)
+
+
+    def reboot(self, raspberry_id):
         """
         send reboot signal to Raspberry Pi
         """
         if raspberry_id not in self.RASPBERRY_IP:
             return
-        if not force_reboot:
-            text, ok = QInputDialog.getText(self, f"Reboot Raspberry Pi {raspberry_id}", "Please confirm writing 'yes'")
-            if not ok or text != "yes":
-                return
+
         try:
             response = self.request(raspberry_id, "/reboot")
         except requests.exceptions.ConnectionError:
@@ -1302,6 +1027,58 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
 
         for raspberry_id in self.RASPBERRY_IP:
             self.reboot(raspberry_id, force_reboot=True)
+
+
+    def time_synchro_clicked(self):
+        """
+        Set the date/time on the current raspberry
+        """
+        self.time_synchro(self.current_raspberry_id)
+
+
+    def time_synchro(self, raspberry_id):
+        """
+        Set the date/time on Raspberry Pi
+        """
+        if raspberry_id not in self.RASPBERRY_IP:
+            return
+
+        date, hour = date_iso().split(" ")
+        try:
+            response = self.request(raspberry_id, f"/sync_time/{date}/{hour}")
+        except requests.exceptions.ConnectionError:
+            self.rasp_output_lb.setText(f"Failed to establish a connection")
+            self.get_raspberry_status(raspberry_id)
+            self.update_raspberry_display(raspberry_id)
+            return
+
+        if response.status_code != 200:
+            self.rasp_output_lb.setText(f"Error during time synchronization (status code: {response.status_code})")
+            return
+        self.rasp_output_lb.setText(response.json().get("msg", "Error during time synchronization"))
+
+
+    def time_synchro_all(self):
+        """
+        Set the date/time on all Raspberry Pi
+        """
+
+        pool = ThreadPool()
+        results = pool.map_async(self.time_synchro, list(self.RASPBERRY_IP.keys()))
+        return_val = results.get()
+
+
+
+    def shutdown_clicked(self):
+        """
+        Shutdown the current Raspberry Pi
+        """
+        if self.current_raspberry_id in self.RASPBERRY_IP and self.raspberry_status[self.current_raspberry_id]:
+            text, ok = QInputDialog.getText(self, f"Shutdown Rasberry Pi {self.current_raspberry_id}", "Please confirm writing 'yes'")
+            if not ok or text != "yes":
+                return
+
+        self.shutdown(self.current_raspberry_id)
 
 
     def shutdown(self, raspberry_id):
@@ -1338,7 +1115,7 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
 
     def blink(self):
         """
-        blink the power led
+        blink the power led of the current Raspberry Pi
         """
         if self.current_raspberry_id not in self.RASPBERRY_IP:
             return
@@ -1445,43 +1222,6 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
             self.update_raspberry_display(raspberry_id)
 
 
-    def time_synchro_clicked(self):
-        """
-        Synchronize time on the current raspberry
-        """
-        self.time_synchro(self.current_raspberry_id)
-
-
-    def time_synchro(self, raspberry_id):
-        """
-        Set date/time on Raspberry Pi
-        """
-        if raspberry_id not in self.RASPBERRY_IP:
-            return
-
-        date, hour = date_iso().split(" ")
-        try:
-            response = self.request(raspberry_id, f"/sync_time/{date}/{hour}")
-        except requests.exceptions.ConnectionError:
-            self.rasp_output_lb.setText(f"Failed to establish a connection")
-            self.get_raspberry_status(raspberry_id)
-            self.update_raspberry_display(raspberry_id)
-            return
-
-        if response.status_code != 200:
-            self.rasp_output_lb.setText(f"Error during time synchronization (status code: {response.status_code})")
-            return
-        self.rasp_output_lb.setText(response.json().get("msg", "Error during time synchronization"))
-
-
-    def time_synchro_all(self):
-        """
-        synchronize all Raspberries Pi
-        """
-
-        pool = ThreadPool()
-        results = pool.map_async(self.time_synchro, list(self.RASPBERRY_IP.keys()))
-        return_val = results.get()
 
 
     def take_picture_clicked(self):
