@@ -1,5 +1,5 @@
 [Unit]
-Description=instance to serve server.py
+Description=instance to serve the Worker service from The Raspberry coordinator
 After=network.target
 
 [Service]
@@ -7,7 +7,7 @@ User=pi
 Group=pi
 WorkingDirectory=/home/pi/video
 Environment="PATH=/home/pi/video_venv/bin:/usr/bin:/usr/sbin/:/bin"
-ExecStart=/home/pi/video_venv/bin/python3 server.py
+ExecStart=/home/pi/video_venv/bin/python3 worker.py
 
 [Install]
 WantedBy=multi-user.target
