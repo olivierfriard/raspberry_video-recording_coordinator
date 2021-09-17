@@ -222,7 +222,7 @@ while True:
 
 # load security key
 try:
-    with open("/boot/security_key") as f_in:
+    with open("/boot/worker_security_key") as f_in:
         security_key = f_in.read().strip()
     logging.info("Security key loaded")
 except Exception:
