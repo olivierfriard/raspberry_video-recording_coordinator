@@ -233,15 +233,6 @@ app = Flask(__name__, static_url_path='/static')
 
 thread = threading.Thread()
 
-'''
-@app.route("/test", methods=("GET", "POST"))
-def test():
-    print(list(request.args.keys()))
-    print(request.values)
-    print(request.values['data1'])
-    return {"test": "blabla"}
-
-'''
 
 def security_key_required(f):
     @wraps(f)
@@ -257,13 +248,16 @@ def security_key_required(f):
 
 @app.route("/")
 def home():
-    return f"""<h1>Raspberry <b>{socket.gethostname()}</b></h1>
-video control server v. {__version__}<br>
+    return f"""<h1>Raspberry Pi worker</h1>
+<b>id: {socket.gethostname()}</b><br>
+<br>
+Worker version: <b>{__version__}</b><br>
 <br>
 hostname: {socket.gethostname()}<br>
 IP address: {get_ip()}<br>
 MAC Addr: {get_hw_addr(cfg.WIFI_INTERFACE)}<br>
-date time on server: {datetime_now_iso()}<br>
+date/time: {datetime_now_iso()}<br>
+CPU temperature: <b>{get_cpu_temperature()}</b><br>
 Timezone: {get_timezone()}<br>
 <br>
 <a href="/status">server status</a><br>
