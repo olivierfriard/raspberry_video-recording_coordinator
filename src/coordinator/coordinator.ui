@@ -115,7 +115,7 @@
             <item>
              <widget class="QTabWidget" name="rasp_tw">
               <property name="currentIndex">
-               <number>3</number>
+               <number>1</number>
               </property>
               <widget class="QWidget" name="status_tab">
                <attribute name="title">
@@ -973,6 +973,37 @@
                   </property>
                   <layout class="QVBoxLayout" name="verticalLayout_7">
                    <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_21">
+                     <item>
+                      <widget class="QPushButton" name="view_video_recording_schedule_pb">
+                       <property name="text">
+                        <string>View schedule on Raspberry Pi</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="delete_video_recording_schedule_pb">
+                       <property name="text">
+                        <string>Delete schedule on Raspberry Pi</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <spacer name="horizontalSpacer_13">
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>40</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
                     <layout class="QHBoxLayout" name="horizontalLayout_18">
                      <item>
                       <widget class="QLabel" name="label_24">
@@ -1081,42 +1112,11 @@
                     </layout>
                    </item>
                    <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_21">
-                     <item>
-                      <widget class="QPushButton" name="view_video_recording_schedule_pb">
-                       <property name="text">
-                        <string>View schedule on Raspberry Pi</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QPushButton" name="delete_video_recording_schedule_pb">
-                       <property name="text">
-                        <string>Delete schedule on Raspberry Pi</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QPushButton" name="configure_video_recording_pb">
-                       <property name="text">
-                        <string>Send schedule to Raspberry Pi</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <spacer name="horizontalSpacer_13">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>40</width>
-                         <height>20</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                    </layout>
+                    <widget class="QPushButton" name="configure_video_recording_pb">
+                     <property name="text">
+                      <string>Send schedule to Raspberry Pi</string>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
                  </widget>

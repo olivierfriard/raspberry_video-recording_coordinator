@@ -479,19 +479,81 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
 
 
 
-
-
     def video_streaming_clicked(self, action):
         """
         Start video streaming on the current raspberry
         """
+        if self.current_raspberry_id not in self.RASPBERRY_IP:
+            QMessageBox.information(None, "Raspberry Pi coordinator",
+                                    "Select a Raspberry Pi before",
+                                    QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+            return
+
         self.video_streaming(self.current_raspberry_id, action)
+
+
+    def video_streaming(self, raspberry_id, action):
+        """
+        start/stop video streaming on client and show output
+        see /etc/uv4l/uv4l-raspicam.conf for default configuration
+        """
+        if action == "start":
+
+            width, height = self.raspberry_info[raspberry_id]["video mode"].split("x")
+            data = {"width": width, "height": height}
+            try:
+                response = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}{cfg.SERVER_PORT}/video_streaming/start",
+                                        data=data)
+            except requests.exceptions.ConnectionError:
+                self.rasp_output_lb.setText(f"Failed to establish a connection")
+                self.get_raspberry_status(raspberry_id)
+                self.update_raspberry_display(raspberry_id)
+                return
+
+            if response.status_code != 200:
+                self.rasp_output_lb.setText(f"Error during the video streaming (status code: {response.status_code})")
+                return
+
+            if self.rasp_output_lb.setText(response.json().get("error", "")):
+                self.rasp_output_lb.setText(f"Error starting streaming")
+                return
+            self.rasp_output_lb.setText(response.json().get("msg", "Error starting streaming"))
+
+            time.sleep(1)
+            self.media_list.setMedia(QMediaContent(QUrl(f"http://{self.RASPBERRY_IP[raspberry_id]}:9090/stream/video.mjpeg")))
+            self.media_list.play()
+            self.rasp_output_lb.setText(f"Streaming active")
+
+            # generate QR code
+            try:
+                import qrcode
+                img = qrcode.make(f"http://{self.RASPBERRY_IP[raspberry_id]}:9090/stream/video.mjpeg")
+                self.picture_lb[raspberry_id].setPixmap(QPixmap.fromImage(ImageQt(img)))   #.scaled(self.picture_lb[rb].size(), Qt.KeepAspectRatio))
+            except:
+                logging.info("qrcode module not installed")
+
+        if action == "stop":
+            self.rasp_output_lb.setText("Video streaming stop requested")
+            response = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}{cfg.SERVER_PORT}/video_streaming/stop")
+            if response.status_code == 200 and response.json().get("msg", "") == "video streaming stopped":
+                self.rasp_output_lb.setText("Video streaming stopped")
+            else:
+                self.rasp_output_lb.setText(f"Error stopping video streaming (status code: {response.status_code})")
+
+        self.get_raspberry_status(raspberry_id)
+        self.update_raspberry_dashboard(raspberry_id)
+
 
 
     def schedule_video_recording_clicked(self):
         """
         Schedule the video recording on the current Raspberry Pi
         """
+        if self.current_raspberry_id not in self.RASPBERRY_IP:
+            QMessageBox.information(None, "Raspberry Pi coordinator",
+                                    "Select a Raspberry Pi before",
+                                    QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+            return
         self.schedule_video_recording(self.current_raspberry_id)
 
 
@@ -663,6 +725,12 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         """
         view schedule on current raspberry
         """
+        if self.current_raspberry_id not in self.RASPBERRY_IP:
+            QMessageBox.information(None, "Raspberry Pi coordinator",
+                                    "Select a Raspberry Pi before",
+                                    QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+
+            return
         self.view_video_recording_schedule(self.current_raspberry_id)
 
 
@@ -690,9 +758,21 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
 
 
 
-
-
     def delete_video_recording_schedule_clicked(self):
+        """
+        Delete the video recording schedule on Raspberry Pi
+        """
+
+        if self.current_raspberry_id not in self.RASPBERRY_IP:
+            QMessageBox.information(None, "Raspberry Pi coordinator",
+                                    "Select a Raspberry Pi before",
+                                    QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+            return
+
+        text, ok = QInputDialog.getText(self, "Delete the video recording schedule on the Raspberry Pi", "Please confirm writing 'yes'")
+        if not ok or text != "yes":
+            return
+
         self.delete_video_recording_schedule(self.current_raspberry_id)
 
 
@@ -720,6 +800,13 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         """
         Download videos from current Raspberry Pi
         """
+        if self.current_raspberry_id not in self.RASPBERRY_IP:
+            QMessageBox.information(None, "Raspberry Pi coordinator",
+                                    "Select a Raspberry Pi before",
+                                    QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+
+            return
+
         self.download_videos(self.current_raspberry_id, "")
 
 
@@ -816,54 +903,6 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
 
     def show_ip_list(self):
         print(" ".join([f"pi@{self.RASPBERRY_IP[x]}" for x in self.RASPBERRY_IP]))
-
-
-    def video_streaming(self, raspberry_id, action):
-        """
-        start/stop video streaming on client and show output
-        see /etc/uv4l/uv4l-raspicam.conf for default configuration
-        """
-        if raspberry_id in self.RASPBERRY_IP and self.raspberry_info[raspberry_id]["status"]["status"] == "OK":
-
-            if action == "start":
-
-                width, height = self.raspberry_info[raspberry_id]["video mode"].split("x")
-                data = {"width": width, "height": height}
-                try:
-                    response = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}{cfg.SERVER_PORT}/video_streaming/start",
-                                            data=data)
-                except requests.exceptions.ConnectionError:
-                    return
-
-                if response.status_code == 200 and response.json().get("msg", "") == "video streaming started":
-                    self.rasp_output_lb.setText(f"Video streaming started")
-                else:
-                    self.rasp_output_lb.setText(f"Error starting streaming")
-                    return
-
-                time.sleep(1)
-                self.media_list.setMedia(QMediaContent(QUrl(f"http://{self.RASPBERRY_IP[raspberry_id]}:9090/stream/video.mjpeg")))
-                self.media_list.play()
-                self.rasp_output_lb.setText(f"Streaming active")
-
-                # generate QR code
-                try:
-                    import qrcode
-                    img = qrcode.make(f"http://{self.RASPBERRY_IP[raspberry_id]}:9090/stream/video.mjpeg")
-                    self.picture_lb[raspberry_id].setPixmap(QPixmap.fromImage(ImageQt(img)))   #.scaled(self.picture_lb[rb].size(), Qt.KeepAspectRatio))
-                except:
-                    logging.info("qrcode module not installed")
-
-            if action == "stop":
-                self.rasp_output_lb.setText("Video streaming stop requested")
-                response = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}{cfg.SERVER_PORT}/video_streaming/stop")
-                if response.status_code == 200 and response.json().get("msg", "") == "video streaming stopped":
-                    self.rasp_output_lb.setText("Video streaming stopped")
-                else:
-                    self.rasp_output_lb.setText(f"Error stopping video streaming (status code: {response.status_code})")
-
-            self.get_raspberry_status(raspberry_id)
-            self.update_raspberry_dashboard(raspberry_id)
 
 
 
@@ -1330,6 +1369,15 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
 
 
     def start_video_recording_clicked(self):
+        """
+        start video recording with selected parameters
+        """
+        if self.current_raspberry_id not in self.RASPBERRY_IP:
+            QMessageBox.information(None, "Raspberry Pi coordinator",
+                                    "Select a Raspberry Pi before",
+                                    QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+
+            return
 
         self.start_video_recording(self.current_raspberry_id)
 
@@ -1338,9 +1386,6 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         """
         start video recording with selected parameters
         """
-
-        if raspberry_id not in self.RASPBERRY_IP:
-            return
 
         width, height = self.raspberry_info[raspberry_id]["video mode"].split("x")
         data = {"key": security_key,
@@ -1384,6 +1429,13 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         """
         Stop current video recording
         """
+        if self.current_raspberry_id not in self.RASPBERRY_IP:
+            QMessageBox.information(None, "Raspberry Pi coordinator",
+                                    "Select a Raspberry Pi before",
+                                    QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+
+            return
+
         self.stop_video_recording(self.current_raspberry_id)
 
 
@@ -1391,8 +1443,6 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         """
         stop video recording
         """
-        if raspberry_id not in self.RASPBERRY_IP:
-            return
 
         self.rasp_output_lb.setText("stop video recording requested")
         try:
@@ -1494,9 +1544,6 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         def thread_finished(output):
             self.rasp_output_lb.setText("Videos downloaded")
             self.my_thread1.quit
-
-        if raspberry_id not in self.RASPBERRY_IP:
-            return
 
         if download_dir == "":
             download_dir = cfg.VIDEO_ARCHIVE
