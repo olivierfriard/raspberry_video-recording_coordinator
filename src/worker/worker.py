@@ -142,6 +142,9 @@ def datetime_now_iso():
 
 
 class Raspivid_thread(threading.Thread):
+    """
+    Class for recording video using a thread
+    """
 
     def __init__(self, parameters: dict):
         threading.Thread.__init__(self)
@@ -282,6 +285,7 @@ def status():
     global thread
     try:
         logging.info(f"thread is alive: {thread.is_alive()}")
+
         server_info = {"status": "OK",
                        "server_datetime": datetime.datetime.now().replace(microsecond=0).isoformat().replace("T", " "),
                        "server_version": __version__,
@@ -299,11 +303,11 @@ def status():
 
         if thread.is_alive():
             video_info = {"video_recording": True,
-                          "duration": thread.parameters["duration"],
+                          "duration": int(thread.parameters["timeout"]) / 1000,
                           "width": thread.parameters["width"],
                           "height": thread.parameters["height"],
-                          "fps": thread.parameters["fps"],
-                          "quality": thread.parameters["quality"],
+                          "fps": thread.parameters["framerate"],
+                          "quality": int(thread.parameters["bitrate"]) / 1000,
                           "started_at": thread.started_at,
                           "server_version": __version__}
         else:
@@ -450,17 +454,6 @@ def schedule_video_recording():
     if not crontab_event:
         return {"error": True, "msg": "Video recording NOT configured. Crontab event not found"}
 
-    '''
-    cmd = ["/usr/bin/raspivid",
-               "-t", str(int(request.values.get('duration', 1)) * 1000),
-               "-w", f"{request.values.get('width', 640)}",
-               "-h", f"{request.values.get('height', 480)}",
-               "-fps", f"{request.values.get('fps', 25)}",
-               "-b", str(int(request.values.get('quality', 1)) * 1000),
-               #"-o", f"{cfg.VIDEO_ARCHIVE}/{socket.gethostname()}_{prefix}" + "`date +\%F_\%H\%M\%S`.h264"
-               "-o", f"{cfg.VIDEO_ARCHIVE}/{socket.gethostname()}_{prefix}" + "$(/usr/bin/date_crontab_helper).h264"
-              ]
-    '''
 
     command_line = ["/usr/bin/raspivid", ]
 
