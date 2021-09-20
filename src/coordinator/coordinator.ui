@@ -1153,7 +1153,7 @@
                  </layout>
                 </item>
                 <item>
-                 <widget class="QListWidget" name="video_output_lw"/>
+                 <widget class="QListWidget" name="video_list_lw"/>
                 </item>
                 <item>
                  <widget class="QPlainTextEdit" name="video_output_pte"/>
