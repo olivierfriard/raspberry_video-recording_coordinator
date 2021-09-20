@@ -159,31 +159,35 @@ def md5sum(file_path):
     return digest
 
 
-class Video_recording_control(QMainWindow, Ui_MainWindow):
+class RPI_coordinator(QMainWindow, Ui_MainWindow):
 
 
     class Download_videos_worker(QObject):
         def __init__(self, raspberry_ip):
             super().__init__()
+            # list of Raspberry Pi IP
             self.raspberry_ip = raspberry_ip
 
         start = pyqtSignal(str, list)
         finished = pyqtSignal(str)
 
         def run(self, raspberry_id, videos_list):
+
             print(raspberry_id, videos_list)
 
             output = ""
             for video_file_name in sorted(videos_list):
+
                 if not pathlib.Path(cfg.VIDEO_ARCHIVE + "/" + video_file_name).is_file():
 
                     logging.info(f"Downloading  {video_file_name} from {raspberry_id}")
 
-                    with requests.get(f"http://{self.raspberry_ip[raspberry_id]}{cfg.SERVER_PORT}/static/video_archive/{video_file_name}", stream=True) as r:
+                    with requests.get(f"http://{self.raspberry_ip[raspberry_id]}{cfg.SERVER_PORT}/static/video_archive/{video_file_name}",stream=True) as r:
                         with open(cfg.VIDEO_ARCHIVE + "/" + video_file_name, "wb") as file_out:
                             shutil.copyfileobj(r.raw, file_out)
 
                     logging.info(f"{video_file_name} downloaded from {raspberry_id}")
+
                     output += f"{video_file_name} downloaded\n"
 
             if output == "":
@@ -287,6 +291,8 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
 
         self.download_videos_pb.clicked.connect(self.download_videos_clicked)
         self.video_list_pb.clicked.connect(self.video_list_clicked)
+        self.select_all_video_cb.clicked.connect(lambda: self.select_all_video_clicked("select"))
+        self.deselect_all_video_cb.clicked.connect(lambda: self.select_all_video_clicked("deselect"))
 
 
         self.video_mode_cb.currentIndexChanged.connect(self.video_mode_changed)
@@ -858,6 +864,35 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         self.my_worker1.start.emit(raspberry_id, video_list)
 
 
+    def download_all_video_from_all(self):
+        """
+        download all video from all Raspberry Pi
+        """
+        text, ok = QInputDialog.getText(self, "Download video from all Raspberry Pi", "Please confirm writing 'yes'")
+        if not ok or text != "yes":
+            return
+
+        if not pathlib.Path(cfg.VIDEO_ARCHIVE).is_dir():
+            QMessageBox.critical(None, "Raspberry Pi coordinator",
+                                 f"Destination not found!<br>{cfg.VIDEO_ARCHIVE}<br><br>Choose another directory",
+                                 QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+
+            new_download_dir = QFileDialog().getExistingDirectory(self, "Choose a directory to download video",
+                                                                  str(pathlib.Path.home()),
+                                                                  options=QFileDialog.ShowDirsOnly)
+
+            if not new_download_dir:
+                return
+            else:
+                download_dir = new_download_dir
+        else:
+            download_dir = cfg.VIDEO_ARCHIVE
+
+        for raspberry_id in sorted(self.RASPBERRY_IP.keys()):
+            if self.raspberry_info[raspberry_id]["status"]["status"] == "OK":
+                self.download_all_video(raspberry_id, download_dir)
+
+
 
     def video_list_clicked(self):
         """
@@ -865,7 +900,50 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         """
 
         video_list = self.video_list(self.current_raspberry_id)
-        self.video_output_pte.setPlainText(" ".join(video_list))
+
+        for video_file_name in video_list:
+            item = QListWidgetItem()
+            item.setText(video_file_name)
+            item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
+            item.setCheckState(Qt.Unchecked)
+            self.video_list_lw.addItem(item)
+
+
+        # self.video_output_pte.setPlainText(" ".join(video_list))
+
+
+    def select_all_video_clicked(self, action):
+        """
+        Select od deslect all video
+        """
+
+        for idx in range(self.video_list_lw.count()):
+            self.video_list_lw.item(idx).setCheckState(Qt.Checked if action == "select" else Qt.Unchecked)
+
+            #self.video_list_lw.item(idx).checkState() == Qt.Checked:
+
+
+    def delete_all_video(self, raspberry_id):
+        """
+        delete all video from Raspberry Pi
+        """
+        text, ok = QInputDialog.getText(self, f"Delete all video on the Raspberry Pi {raspberry_id}", "Confirm writing 'yes'")
+        if not ok or text != "yes":
+            return
+        self.rasp_output_lb.setText("Deletion of all video requested")
+        try:
+            response = self.request(raspberry_id, "/delete_all_video")
+        except requests.exceptions.ConnectionError:
+            self.rasp_output_lb.setText(f"Failed to establish a connection")
+            self.get_raspberry_status(raspberry_id)
+            self.update_raspberry_display(raspberry_id)
+            return
+        if response.status_code != 200:
+            self.rasp_output_lb.setText(f"Error deleting the video (status code: {response.status_code})")
+            return
+
+        self.rasp_output_lb.setText(response.json().get("msg", "Error during delteing the video"))
+
 
 
     def populate_rasp_list(self):
@@ -1511,26 +1589,6 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         self.update_raspberry_dashboard(raspberry_id)
 
 
-    def delete_all_video(self, raspberry_id):
-        """
-        delete all video from Raspberry Pi
-        """
-        text, ok = QInputDialog.getText(self, f"Delete all video on the Raspberry Pi {raspberry_id}", "Confirm writing 'yes'")
-        if not ok or text != "yes":
-            return
-        self.rasp_output_lb.setText("Deletion of all video requested")
-        try:
-            response = self.request(raspberry_id, "/delete_all_video")
-        except requests.exceptions.ConnectionError:
-            self.rasp_output_lb.setText(f"Failed to establish a connection")
-            self.get_raspberry_status(raspberry_id)
-            self.update_raspberry_display(raspberry_id)
-            return
-        if response.status_code != 200:
-            self.rasp_output_lb.setText(f"Error deleting the video (status code: {response.status_code})")
-            return
-
-        self.rasp_output_lb.setText(response.json().get("msg", "Error during delteing the video"))
 
     '''
     def get_log(self):
@@ -1586,41 +1644,14 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
     '''
 
 
-    def download_all_video_from_all(self):
-        """
-        download all video from all Raspberry Pi
-        """
-        text, ok = QInputDialog.getText(self, "Download video from all Raspberry Pi", "Please confirm writing 'yes'")
-        if not ok or text != "yes":
-            return
-
-        if not pathlib.Path(cfg.VIDEO_ARCHIVE).is_dir():
-            QMessageBox.critical(None, "Raspberry Pi coordinator",
-                                 f"Destination not found!<br>{cfg.VIDEO_ARCHIVE}<br><br>Choose another directory",
-                                 QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
-
-            new_download_dir = QFileDialog().getExistingDirectory(self, "Choose a directory to download video",
-                                                                  str(pathlib.Path.home()),
-                                                                  options=QFileDialog.ShowDirsOnly)
-
-            if not new_download_dir:
-                return
-            else:
-                download_dir = new_download_dir
-        else:
-            download_dir = cfg.VIDEO_ARCHIVE
-
-        for raspberry_id in sorted(self.RASPBERRY_IP.keys()):
-            if self.raspberry_info[raspberry_id]["status"]["status"] == "OK":
-                self.download_all_video(raspberry_id, download_dir)
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     app.setApplicationName("Raspberry Pi coordinator")
-    video_recording_control = Video_recording_control()
+    rpi_coordinator = RPI_coordinator()
 
     #apply_stylesheet(app, theme='light_blue.xml', invert_secondary=True,)
 
-    video_recording_control.show()
+    rpi_coordinator.show()
     sys.exit(app.exec_())

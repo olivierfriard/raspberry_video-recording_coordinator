@@ -1153,10 +1153,38 @@
                  </layout>
                 </item>
                 <item>
-                 <widget class="QListWidget" name="video_list_lw"/>
+                 <layout class="QHBoxLayout" name="horizontalLayout_23">
+                  <item>
+                   <widget class="QCheckBox" name="select_all_video_cb">
+                    <property name="text">
+                     <string>Select all video</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QCheckBox" name="deselect_all_video_cb">
+                    <property name="text">
+                     <string>Deselect all video</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_15">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
                 </item>
                 <item>
-                 <widget class="QPlainTextEdit" name="video_output_pte"/>
+                 <widget class="QListWidget" name="video_list_lw"/>
                 </item>
                 <item>
                  <spacer name="verticalSpacer_2">
