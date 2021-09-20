@@ -24,7 +24,7 @@ from PyQt5.QtCore import QTimer, Qt, QUrl, pyqtSignal, QObject, QThread
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 
-from qt_material import apply_stylesheet
+# from qt_material import apply_stylesheet
 
 import os
 import time
@@ -113,7 +113,7 @@ def get_wlan_ip_address():
 
     for ifname in os.listdir('/sys/class/net/'):  # https://stackoverflow.com/questions/3837069/how-to-get-network-interface-card-names-in-python/58191277
         if ifname.startswith("wl"):
-            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             try:
                 return socket.inet_ntoa(fcntl.ioctl(
                                         s.fileno(),
