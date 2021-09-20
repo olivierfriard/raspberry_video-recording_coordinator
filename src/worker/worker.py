@@ -6,7 +6,7 @@ to enable the service at boot:
 sudo systemctl enable worker
 """
 
-__version__ = "0.0.19"
+__version__ = "0.0.20"
 
 from crontab import CronTab
 
@@ -237,8 +237,9 @@ try:
         security_key = f_in.read().strip()
     logging.info("Security key loaded")
 except Exception:
-    logging.critical("Security key not found")
-    sys.exit()
+    logging.info("Security key file not found")
+    security_key = "***NOKEY***"
+
 
 app = Flask(__name__, static_url_path='/static')
 
@@ -248,7 +249,7 @@ thread = threading.Thread()
 def security_key_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if request.values.get("key", "") != security_key:
+        if (security_key != "***NOKEY***") and (request.values.get("key", "") != security_key) :
             status_code = Response(status=204)  # 204 No Content     The server successfully processed the request, and is not returning any content.
             return status_code
 
@@ -307,7 +308,7 @@ def status():
                           "width": thread.parameters["width"],
                           "height": thread.parameters["height"],
                           "fps": thread.parameters["framerate"],
-                          "quality": int(thread.parameters["bitrate"]) / 1000,
+                          "quality": int(thread.parameters["bitrate"]) / 1000000,
                           "started_at": thread.started_at,
                           "server_version": __version__}
         else:

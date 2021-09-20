@@ -8,8 +8,11 @@ TODO:
 * raspberry uptime
 * scan network wit QThread
 
-
 """
+
+__version__ = "7"
+__version_date__ = "2021-09-02"
+
 
 from PyQt5.QtWidgets import (QApplication, QWidget, QMainWindow,
                              QVBoxLayout, QHBoxLayout, QTabWidget,
@@ -55,9 +58,6 @@ except Exception:
         print("file config_coordinator.py not found")
         sys.exit()
 
-
-__version__ = "7"
-__version_date__ = "2021-09-02"
 
 security_key = "abc123"
 
@@ -698,7 +698,7 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
                 "prefix":  "",
                 "framerate": self.raspberry_info[raspberry_id]["FPS"],
 
-                "bitrate": self.raspberry_info[raspberry_id]["video quality"] * 1000,
+                "bitrate": self.raspberry_info[raspberry_id]["video quality"] * 1_000_000,
                 "brightness": self.raspberry_info[raspberry_id]['video brightness'],
                 "contrast": self.raspberry_info[raspberry_id]['video contrast'],
                 "saturation": self.raspberry_info[raspberry_id]['video saturation'],
@@ -1443,7 +1443,7 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
                 "height": height,
                 "prefix":  "",
                 "framerate": self.raspberry_info[raspberry_id]["FPS"],
-                "bitrate": self.raspberry_info[raspberry_id]["video quality"] * 1000,
+                "bitrate": self.raspberry_info[raspberry_id]["video quality"] * 1_000_000,
                 "brightness": self.raspberry_info[raspberry_id]['video brightness'],
                 "contrast": self.raspberry_info[raspberry_id]['video contrast'],
                 "saturation": self.raspberry_info[raspberry_id]['video saturation'],
