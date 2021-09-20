@@ -281,10 +281,13 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         # video recording
         self.start_video_recording_pb.clicked.connect(self.start_video_recording_clicked)
         self.stop_video_recording_pb.clicked.connect(self.stop_video_recording_clicked)
-        self.download_videos_pb.clicked.connect(self.download_videos_clicked)
         self.configure_video_recording_pb.clicked.connect(self.schedule_video_recording_clicked)
         self.view_video_recording_schedule_pb.clicked.connect(self.view_video_recording_schedule_clicked)
         self.delete_video_recording_schedule_pb.clicked.connect(self.delete_video_recording_schedule_clicked)
+
+        self.download_videos_pb.clicked.connect(self.download_videos_clicked)
+        self.video_list_pb.clicked.connect(self.video_list_clicked)
+
 
         self.video_mode_cb.currentIndexChanged.connect(self.video_mode_changed)
         self.video_duration_sb.valueChanged.connect(self.video_duration_changed)
@@ -795,27 +798,74 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         self.rasp_output_lb.setText(response.json().get("msg", "Error during deletion of the video recording scheduling"))
 
 
-
-    def download_videos_clicked(self):
+    def check_selected_raspberry(self):
         """
-        Download videos from current Raspberry Pi
+        Check if a Raspberry Pi is selected in the list
         """
         if self.current_raspberry_id not in self.RASPBERRY_IP:
             QMessageBox.information(None, "Raspberry Pi coordinator",
                                     "Select a Raspberry Pi before",
                                     QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+            return False
 
+        return True
+
+
+    def download_videos_clicked(self):
+        """
+        Download videos from current Raspberry Pi
+        """
+        if not self.check_selected_raspberry():
             return
 
         self.download_videos(self.current_raspberry_id, "")
 
 
-    def get_videos_list(self):
+    def download_videos(self, raspberry_id, download_dir=""):
+        """
+        download all video from Raspberry Pi
+        """
+
+        def thread_finished(output):
+            self.rasp_output_lb.setText("Videos downloaded")
+            self.my_thread1.quit
+
+        if download_dir == "":
+            download_dir = cfg.VIDEO_ARCHIVE
+
+        if not pathlib.Path(download_dir).is_dir():
+            QMessageBox.critical(None, "Raspberry Pi coordinator",
+                                 f"Destination not found!<br>{cfg.VIDEO_ARCHIVE}<br><br>Choose another directory",
+                                 QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+
+            new_download_dir = QFileDialog().getExistingDirectory(self, "Choose a directory to download videos",
+                                                                  str(pathlib.Path.home()),
+                                                                  options=QFileDialog.ShowDirsOnly)
+            if new_download_dir:
+                download_dir = new_download_dir
+            else:
+                return
+
+        video_list = self.video_list(raspberry_id)
+
+        self.my_thread1 = QThread(parent=self)
+        self.my_thread1.start()
+        self.my_worker1 = self.Download_videos_worker(self.RASPBERRY_IP)
+        self.my_worker1.moveToThread(self.my_thread1)
+
+        self.my_worker1.start.connect(self.my_worker1.run) #  <---- Like this instead
+        self.my_worker1.finished.connect(thread_finished)
+        self.my_worker1.start.emit(raspberry_id, video_list)
+
+
+
+    def video_list_clicked(self):
         """
         Download list of videos from current Raspberry Pi
         """
 
-        self.video_list(self.current_raspberry_id)
+        video_list = self.video_list(self.current_raspberry_id)
+        self.video_output_pte.setPlainText(" ".join(video_list))
 
 
     def populate_rasp_list(self):
@@ -914,9 +964,9 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         pass
 
 
-    def video_list(self, raspberry_id):
+    def video_list(self, raspberry_id: str) -> list:
         """
-        request a list of video to Raspberry Pi
+        request the list of video to Raspberry Pi
         """
 
         try:
@@ -933,7 +983,6 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         if "video_list" not in response.json():
             self.rasp_output_lb.setText(f"Error requiring the list of video")
             return
-        #self.rasp_output_lb.setText(f"List of video received ({len(response.json()["video_list"])} video)")
 
         return list(response.json()["video_list"])
 
@@ -1535,42 +1584,6 @@ class Video_recording_control(QMainWindow, Ui_MainWindow):
         else:
             return output
     '''
-
-    def download_videos(self, raspberry_id, download_dir=""):
-        """
-        download all video from Raspberry Pi
-        """
-
-        def thread_finished(output):
-            self.rasp_output_lb.setText("Videos downloaded")
-            self.my_thread1.quit
-
-        if download_dir == "":
-            download_dir = cfg.VIDEO_ARCHIVE
-
-        if not pathlib.Path(download_dir).is_dir():
-            QMessageBox.critical(None, "Raspberry Pi coordinator",
-                                 f"Destination not found!<br>{cfg.VIDEO_ARCHIVE}<br><br>Choose another directory",
-                                 QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
-
-            new_download_dir = QFileDialog().getExistingDirectory(self, "Choose a directory to download videos",
-                                                                  str(pathlib.Path.home()),
-                                                                  options=QFileDialog.ShowDirsOnly)
-            if new_download_dir:
-                download_dir = new_download_dir
-            else:
-                return
-
-        video_list = self.video_list(raspberry_id)
-
-        self.my_thread1 = QThread(parent=self)
-        self.my_thread1.start()
-        self.my_worker1 = self.Download_videos_worker(self.RASPBERRY_IP)
-        self.my_worker1.moveToThread(self.my_thread1)
-
-        self.my_worker1.start.connect(self.my_worker1.run) #  <---- Like this instead
-        self.my_worker1.finished.connect(thread_finished)
-        self.my_worker1.start.emit(raspberry_id, video_list)
 
 
     def download_all_video_from_all(self):

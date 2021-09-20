@@ -115,7 +115,7 @@
             <item>
              <widget class="QTabWidget" name="rasp_tw">
               <property name="currentIndex">
-               <number>1</number>
+               <number>3</number>
               </property>
               <widget class="QWidget" name="status_tab">
                <attribute name="title">
@@ -1124,6 +1124,13 @@
                 <item>
                  <layout class="QHBoxLayout" name="horizontalLayout_19">
                   <item>
+                   <widget class="QPushButton" name="video_list_pb">
+                    <property name="text">
+                     <string>List of videos</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
                    <widget class="QPushButton" name="download_videos_pb">
                     <property name="text">
                      <string>Download videos</string>
@@ -1144,6 +1151,9 @@
                    </spacer>
                   </item>
                  </layout>
+                </item>
+                <item>
+                 <widget class="QPlainTextEdit" name="video_output_pte"/>
                 </item>
                 <item>
                  <spacer name="verticalSpacer_2">
