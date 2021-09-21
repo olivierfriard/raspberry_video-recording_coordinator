@@ -710,7 +710,7 @@ def get_log():
 @security_key_required
 def delete_video():
     """
-    Delete video records in the video archive
+    Delete the recorded video from the list in the video archive
     """
 
     if not request.values.get("video list", []):
