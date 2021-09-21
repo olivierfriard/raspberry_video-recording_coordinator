@@ -18,21 +18,21 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_12">
       <item>
-       <widget class="QPushButton" name="all_get_status_pb">
+       <widget class="QPushButton" name="get_status_all_pb">
         <property name="text">
          <string>Get status</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="all_time_synchro_pb">
+       <widget class="QPushButton" name="time_synchro_all_pb">
         <property name="text">
          <string>Synchronize time</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="all_shutdown_pb">
+       <widget class="QPushButton" name="shutdown_all_pb">
         <property name="text">
          <string>Shutdown</string>
         </property>
@@ -1126,14 +1126,7 @@
                   <item>
                    <widget class="QPushButton" name="video_list_pb">
                     <property name="text">
-                     <string>List of videos</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="download_videos_pb">
-                    <property name="text">
-                     <string>Download videos</string>
+                     <string>Get the list of videos</string>
                     </property>
                    </widget>
                   </item>
@@ -1155,16 +1148,16 @@
                 <item>
                  <layout class="QHBoxLayout" name="horizontalLayout_23">
                   <item>
-                   <widget class="QCheckBox" name="select_all_video_cb">
+                   <widget class="QCheckBox" name="all_video_cb">
                     <property name="text">
-                     <string>Select all video</string>
+                     <string>All</string>
                     </property>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QCheckBox" name="deselect_all_video_cb">
+                   <widget class="QCheckBox" name="all_new_video_cb">
                     <property name="text">
-                     <string>Deselect all video</string>
+                     <string>All new</string>
                     </property>
                    </widget>
                   </item>
@@ -1187,17 +1180,22 @@
                  <widget class="QListWidget" name="video_list_lw"/>
                 </item>
                 <item>
-                 <spacer name="verticalSpacer_2">
-                  <property name="orientation">
-                   <enum>Qt::Vertical</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>17</width>
-                    <height>206</height>
-                   </size>
-                  </property>
-                 </spacer>
+                 <layout class="QHBoxLayout" name="horizontalLayout_24">
+                  <item>
+                   <widget class="QPushButton" name="download_videos_pb">
+                    <property name="text">
+                     <string>Download selected videos</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="delete_videos_pb">
+                    <property name="text">
+                     <string>Delete selected videos</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
                 </item>
                </layout>
               </widget>

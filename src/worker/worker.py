@@ -6,11 +6,10 @@ to enable the service at boot:
 sudo systemctl enable worker
 """
 
-__version__ = "0.0.20"
+__version__ = "0.0.21"
 
 from crontab import CronTab
 
-import sys
 import threading
 import datetime
 import glob
@@ -22,9 +21,11 @@ import logging
 import fcntl
 import socket
 import struct
-import base64
+#import base64
 import pathlib
 import shutil
+import hashlib
+import json
 
 from functools import wraps
 
@@ -98,10 +99,20 @@ def video_streaming_active():
     return len([x for x in processes_list if "uv4l" in x]) > 0
 
 
+def recording_video_active():
+    """
+    check if raspivid process is present
+    """
+    process = subprocess.run(["ps", "auxwg"], stdout=subprocess.PIPE)
+    processes_list = process.stdout.decode("utf-8").split("\n")
+    return len([x for x in processes_list if "raspivid" in x]) > 0
+
+
+
 def time_lapse_active():
-    '''
+    """
     check if raspistill process is present
-    '''
+    """
     process = subprocess.run(["ps", "auxwg"], stdout=subprocess.PIPE)
     processes_list = process.stdout.decode("utf-8").split("\n")
     return len([x for x in processes_list if "raspistill" in x]) > 0
@@ -115,7 +126,7 @@ def get_cpu_temperature():
     output = process.stdout.decode("utf-8").strip()
     if output:
         try:
-            return output.split('=')[1]
+            return output.split('=')[1].replace("'", "°")
         except:
             return "not determined"
     else:
@@ -234,11 +245,11 @@ while True:
 # load security key
 try:
     with open("/boot/worker_security_key") as f_in:
-        security_key = f_in.read().strip()
+        security_key_sha256 = f_in.read().strip()
     logging.info("Security key loaded")
 except Exception:
     logging.info("Security key file not found")
-    security_key = "***NOKEY***"
+    security_key_sha256 = ""
 
 
 app = Flask(__name__, static_url_path='/static')
@@ -249,9 +260,15 @@ thread = threading.Thread()
 def security_key_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if (security_key != "***NOKEY***") and (request.values.get("key", "") != security_key) :
-            status_code = Response(status=204)  # 204 No Content     The server successfully processed the request, and is not returning any content.
-            return status_code
+        if (security_key_sha256):
+
+            if not request.values.get("key", ""):
+                status_code = Response(status=204)
+                return status_code
+
+            if hashlib.sha256(request.values.get("key", "").encode("utf-8")).hexdigest() != security_key_sha256:
+                status_code = Response(status=204)  # 204 No Content     The server successfully processed the request, and is not returning any content.
+                return status_code
 
         return f(*args, **kwargs)
 
@@ -283,9 +300,9 @@ Timezone: {get_timezone()}<br>
 @security_key_required
 def status():
 
-    global thread
+    #global thread
     try:
-        logging.info(f"thread is alive: {thread.is_alive()}")
+        #logging.info(f"thread is alive: {thread.is_alive()}")
 
         server_info = {"status": "OK",
                        "server_datetime": datetime.datetime.now().replace(microsecond=0).isoformat().replace("T", " "),
@@ -300,11 +317,14 @@ def status():
                        "camera detected": is_camera_detected(),
                        "uptime": get_uptime(),
                        "time_lapse_active": time_lapse_active(),
+                       "video_recording": recording_video_active(),
                       }
+        '''
+        #if thread.is_alive():
+        if recording_video_active():
 
-        if thread.is_alive():
             video_info = {"video_recording": True,
-                          "duration": int(thread.parameters["timeout"]) / 1000,
+                         "duration": int(thread.parameters["timeout"]) / 1000,
                           "width": thread.parameters["width"],
                           "height": thread.parameters["height"],
                           "fps": thread.parameters["framerate"],
@@ -313,8 +333,9 @@ def status():
                           "server_version": __version__}
         else:
             video_info = {"video_recording": False}
-
         return {**server_info, **video_info}
+        '''
+        return server_info
 
     except Exception:
         return {"status": "Not available"}
@@ -530,8 +551,11 @@ def delete_video_recording_schedule():
 @app.route("/video_list", methods=("GET", "POST",))
 @security_key_required
 def video_list():
-
-    return {"video_list": [x.replace(cfg.VIDEO_ARCHIVE + "/", "") for x in glob.glob(cfg.VIDEO_ARCHIVE + "/*.h264")]}
+    """
+    Return the list of recorded video
+    """
+    return {"video_list": [(x.replace(cfg.VIDEO_ARCHIVE + "/", ""), pathlib.Path(x).stat().st_size)
+                           for x in glob.glob(cfg.VIDEO_ARCHIVE + "/*.h264")]}
 
 
 @app.route("/get_video/<file_name>", methods=("GET", "POST",))
@@ -682,16 +706,22 @@ def get_log():
 
 
 
-@app.route("/delete_all_video", methods=("GET", "POST",))
+@app.route("/delete_video", methods=("GET", "POST",))
 @security_key_required
-def delete_all_video():
+def delete_video():
     """
-    Delete all video records in the video archive
+    Delete video records in the video archive
     """
-    try:
-        subprocess.run(["rm", "-f", f"{cfg.VIDEO_ARCHIVE}/*.h264"])
-    except Exception:
-        return {"error": True, "msg": "video not deleted"}
+
+    if not request.values.get("video list", []):
+        return {"error": True, "msg": "No video to delete"}
+
+    for video_file_name, _ in json.loads(request.values.get("video list", "[]")):
+        try:
+            subprocess.run(["rm", "-f", f"{cfg.VIDEO_ARCHIVE}/{video_file_name}"])
+        except Exception:
+            return {"error": True, "msg": "video not deleted"}
+
     return {"error": False, "msg": "All video deleted"}
 
 
@@ -741,6 +771,8 @@ def shutdown():
 
 
 if __name__ == '__main__':
-    logging.info("server started")
+    logging.info("worker started")
     app.debug = True
-    app.run(host = '0.0.0.0', port=cfg.PORT)
+    app.run(host = '0.0.0.0', port=cfg.PORT, ssl_context='adhoc')
+
+    # see https://blog.miguelgrinberg.com/post/running-your-flask-application-over-https for HTTPS

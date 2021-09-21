@@ -4,7 +4,7 @@
 TIME_OUT = 10
 SERVER_PORT = ":5000"
 DEBUG = True
-
+PROTOCOL = "https://"
 
 IP_RANGES = (#("192.168.1.1", [18, 18]),
              ("130.192.200.1", [160, 160]),)
