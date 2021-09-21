@@ -1044,7 +1044,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             return
 
         self.rasp_output_lb.setText(response.json().get("msg", "Error during deleting the video"))
-        self.videos_list_clicked()
+        self.video_list_clicked()
         self.get_raspberry_status(raspberry_id)
         self.update_raspberry_display(raspberry_id)
 
