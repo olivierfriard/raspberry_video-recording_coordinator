@@ -253,6 +253,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
 
         # picture
         self.take_picture_pb.clicked.connect(self.take_picture_clicked)
+        self.start_time_lapse_pb.clicked.connect(self.take_picture_clicked)
         self.stop_time_lapse_pb.clicked.connect(self.stop_time_lapse_clicked)
 
         self.picture_lb.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -381,7 +382,8 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         if self.current_raspberry_id:
             self.raspberry_info[self.current_raspberry_id]["picture annotation"] = self.picture_annotation_cb.isChecked()
     def time_lapse_changed(self):
-        self.raspberry_info[self.current_raspberry_id]["time lapse"] = self.time_lapse_cb.isChecked()
+        if self.current_raspberry_id:
+            self.raspberry_info[self.current_raspberry_id]["time lapse"] = self.time_lapse_cb.isChecked()
     def time_lapse_duration_changed(self):
         if self.current_raspberry_id:
             self.raspberry_info[self.current_raspberry_id]["time lapse duration"] = self.time_lapse_duration_sb.value()
@@ -525,8 +527,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             width, height = self.raspberry_info[raspberry_id]["video mode"].split("x")
             data = {"width": width, "height": height}
 
-
-            response = self.request("/video_streaming/start", data=data)
+            response = self.request(raspberry_id, "/video_streaming/start", data=data)
             if response == None:
                 return
 
@@ -545,16 +546,18 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             self.rasp_output_lb.setText(f"Streaming active")
 
             # generate QR code
+            '''
             try:
                 import qrcode
                 img = qrcode.make(f"http://{self.RASPBERRY_IP[raspberry_id]}:9090/stream/video.mjpeg")
                 self.picture_lb[raspberry_id].setPixmap(QPixmap.fromImage(ImageQt(img)))   #.scaled(self.picture_lb[rb].size(), Qt.KeepAspectRatio))
             except:
                 logging.info("qrcode module not installed")
+            '''
 
         if action == "stop":
             self.rasp_output_lb.setText("Video streaming stop requested")
-            response = self.request("/video_streaming/stop")
+            response = self.request(raspberry_id, "/video_streaming/stop")
             if response == None:
                 return
 
@@ -562,20 +565,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
                 self.rasp_output_lb.setText(f"Error stopping the video streaming (status code: {response.status_code})")
                 return
 
-            if self.rasp_output_lb.setText(response.json().get("error", "")):
-                self.rasp_output_lb.setText(f"Error stopping the video streaming")
-                return
             self.rasp_output_lb.setText(response.json().get("msg", "Error stopping the video streaming"))
-
-            '''
-            response = requests.get(f"http://{self.RASPBERRY_IP[raspberry_id]}{cfg.SERVER_PORT}/video_streaming/stop")
-
-            if response.status_code == 200 and response.json().get("msg", "") == "video streaming stopped":
-                self.rasp_output_lb.setText("Video streaming stopped")
-            else:
-                self.rasp_output_lb.setText(f"Error stopping video streaming (status code: {response.status_code})")
-            '''
-
 
         self.get_raspberry_status(raspberry_id)
         self.update_raspberry_dashboard(raspberry_id)
@@ -995,6 +985,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
 
         for idx in range(self.video_list_lw.count()):
             self.video_list_lw.item(idx).setCheckState(Qt.Checked if self.all_video_cb.isChecked() else Qt.Unchecked)
+        self.all_new_video_cb.setCheckState(False)
 
 
     def all_new_video_clicked(self):
@@ -1006,6 +997,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             if not self.video_list_lw.item(idx).font().bold():
                 continue
             self.video_list_lw.item(idx).setCheckState(Qt.Checked if self.all_new_video_cb.isChecked() else Qt.Unchecked)
+        self.all_video_cb.setCheckState(False)
 
 
     def delete_videos_clicked(self):
@@ -1166,13 +1158,34 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         self.ip_address_lb.setText(self.raspberry_info[raspberry_id]["status"].get("IP_address", "Not detected"))
 
         self.video_recording_active_lb.setText("Yes" if self.raspberry_info[raspberry_id]["status"].get("video_recording", False) else "No")
-
         self.video_streaming_active_lb.setText("Yes" if self.raspberry_info[raspberry_id]["status"].get("video_streaming_active", False) else "No")
-
         self.time_lapse_active_lb.setText("Yes" if self.raspberry_info[raspberry_id]["status"].get("time_lapse_active", False) else "No")
 
+        # buttons
         self.start_video_recording_pb.setEnabled(not self.raspberry_info[raspberry_id]["status"].get("video_recording", False))
         self.stop_video_recording_pb.setEnabled(self.raspberry_info[raspberry_id]["status"].get("video_recording", False))
+
+        self.start_time_lapse_pb.setEnabled(not self.raspberry_info[raspberry_id]["status"].get("time_lapse_active", False))
+        self.stop_time_lapse_pb.setEnabled(self.raspberry_info[raspberry_id]["status"].get("time_lapse_active", False))
+        self.take_picture_pb.setEnabled(not self.raspberry_info[raspberry_id]["status"].get("time_lapse_active", False))
+
+        # tabs icon
+        if self.raspberry_info[raspberry_id]["status"].get("video_recording", False):
+            self.rasp_tw.setTabIcon(cfg.VIDEO_REC_TAB_INDEX, QIcon(f"red.png"))
+        else:
+            self.rasp_tw.setTabIcon(cfg.VIDEO_REC_TAB_INDEX, QIcon())
+
+        if self.raspberry_info[raspberry_id]["status"].get("video_streaming_active", False):
+            self.rasp_tw.setTabIcon(cfg.VIDEO_STREAMING_TAB_INDEX, QIcon(f"red.png"))
+        else:
+            self.rasp_tw.setTabIcon(cfg.VIDEO_STREAMING_TAB_INDEX, QIcon())
+
+        if self.raspberry_info[raspberry_id]["status"].get("time_lapse_active", False):
+            self.rasp_tw.setTabIcon(cfg.TIME_LAPSE_TAB_INDEX, QIcon(f"red.png"))
+        else:
+            self.rasp_tw.setTabIcon(cfg.TIME_LAPSE_TAB_INDEX, QIcon())
+
+
 
     '''
     def send_command(self, rb):
@@ -1415,15 +1428,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         update the Raspberry pi status in the list
         """
 
-        if self.raspberry_info[raspberry_id]["status"]["status"] == "OK":
-            color = "green"
-            if self.raspberry_info[raspberry_id]["status"].get("video_recording", False):
-                color = "orange"
-            if self.raspberry_info[raspberry_id]["status"].get("video_streaming_active", False):
-                color = "yellow"
-        else:
-            color = "red"
-
+        color = "green" if (self.raspberry_info[raspberry_id]["status"]["status"] == "OK") else "red"
         for x in range(self.rasp_list.count()):
             if self.rasp_list.item(x).text() == raspberry_id:
                 self.rasp_list.item(x).setIcon(QIcon(f"{color}.png"))
@@ -1466,7 +1471,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
 
     def take_picture(self, raspberry_id):
         """
-        ask Raspberry Pi to take a picture and display it
+        start time lapse or take a picture and display it
         """
 
         if raspberry_id not in self.RASPBERRY_IP:
@@ -1513,6 +1518,9 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             # time lapse
             if self.raspberry_info[raspberry_id]['time lapse wait'] and self.raspberry_info[raspberry_id]['time lapse duration']:
                 self.rasp_output_lb.setText(response.json().get("msg", "Undefined error"))
+                self.get_raspberry_status(raspberry_id)
+                self.update_raspberry_display(raspberry_id)
+                self.update_raspberry_dashboard(raspberry_id)
                 return
 
             try:
@@ -1532,6 +1540,11 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
 
             self.picture_lb.setPixmap(QPixmap(f"live_{raspberry_id}.jpg").scaled(self.picture_lb.size(), Qt.KeepAspectRatio))
             self.rasp_output_lb.setText(f"Picture taken")
+
+            self.get_raspberry_status(raspberry_id)
+            self.update_raspberry_display(raspberry_id)
+            self.update_raspberry_dashboard(raspberry_id)
+
 
 
     def stop_time_lapse_clicked(self):
@@ -1557,6 +1570,9 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             self.rasp_output_lb.setText(f"Error trying to stop time lapse (status code: {response.status_code})")
             return
         self.rasp_output_lb.setText(response.json().get("msg", "Error during stopping time lapse"))
+        self.get_raspberry_status(raspberry_id)
+        self.update_raspberry_display(raspberry_id)
+        self.update_raspberry_dashboard(raspberry_id)
 
 
 
@@ -1602,17 +1618,6 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         if response == None:
             return
 
-        '''
-        try:
-            response = requests.get(f"{cfg.PROTOCOL}{self.RASPBERRY_IP[raspberry_id]}{cfg.SERVER_PORT}/start_video",
-                                    data=data,
-                                    verify=False)
-        except requests.exceptions.ConnectionError:
-            self.rasp_output_lb.setText(f"Failed to establish a connection")
-            self.get_raspberry_status(raspberry_id)
-            self.update_raspberry_display(raspberry_id)
-            return
-        '''
         if response.status_code != 200:
             self.rasp_output_lb.setText(f"Failed to start recording video (status code: {response.status_code})")
             return

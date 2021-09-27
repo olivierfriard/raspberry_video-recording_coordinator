@@ -6,7 +6,7 @@ to enable the service at boot:
 sudo systemctl enable worker
 """
 
-__version__ = "0.0.21"
+__version__ = "0.0.22"
 
 from crontab import CronTab
 
@@ -91,9 +91,9 @@ def get_wifi_ssid():
 
 
 def video_streaming_active():
-    '''
+    """
     check if uv4l process is present
-    '''
+    """
     process = subprocess.run(["ps", "auxwg"], stdout=subprocess.PIPE)
     processes_list = process.stdout.decode("utf-8").split("\n")
     return len([x for x in processes_list if "uv4l" in x]) > 0
@@ -430,13 +430,23 @@ def add_key(key):
 @app.route("/start_video", methods=("GET", "POST",))
 @security_key_required
 def start_video():
+    """
+    Start video recording
+    """
 
     global thread
 
-    if thread.is_alive():
+    if recording_video_active():
         return {"msg": "Video already recording"}
 
-    logging.info(f"Starting video for {int(request.values['timeout']) / 1000} s ({request.values['width']}x{request.values['height']})")
+    if time_lapse_active():
+        return {"msg": "The video cannot be recorded because the time lapse is active"}
+
+    if video_streaming_active():
+        return {"msg": "The video cannot be recorded because the video streaming is active"}
+
+
+    logging.info(f"Starting video recording for {int(request.values['timeout']) / 1000} s ({request.values['width']}x{request.values['height']})")
     try:
         thread = Raspivid_thread(request.values)
         thread.start()
@@ -458,7 +468,7 @@ def stop_video():
     subprocess.run(["sudo", "killall", "raspivid"])
     time.sleep(2)
 
-    if not thread.is_alive():
+    if not recording_video_active():
         return {"msg": "video recording stopped"}
     else:
         return {"msg": "video recording not stopped"}
@@ -618,6 +628,19 @@ def sync_time(date, hour):
 @security_key_required
 def take_picture():
 
+    if video_streaming_active():
+        return {"error": True,
+                "msg": "Time lapse cannot be started because the video streaming is active"}
+
+    if recording_video_active():
+        return {"error": True,
+                "msg": "Time lapse cannot be started because the video recording is active"}
+
+    if time_lapse_active():
+        return {"error": True,
+                "msg": "The time lapse is already active"}
+
+
     # delete previous picture
     try:
         completed = subprocess.run(["sudo", "rm", "-f" ,"static/live.jpg"])
@@ -660,7 +683,7 @@ def take_picture():
     else:
 
         command_line.extend(["-o", "static/live.jpg"])
-        logging.info(" ".join(command_line))
+        logging.info("command:" + (" ".join(command_line)))
         try:
             completed = subprocess.run(command_line)
         except:

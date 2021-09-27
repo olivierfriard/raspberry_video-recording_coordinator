@@ -108,3 +108,9 @@ RPI_DEFAULTS = {"picture resolution": PICTURE_RESOLUTIONS[DEFAULT_PICTURE_RESOLU
                     "video vflip": VIDEO_VFLIP,
 
                     }
+
+
+
+TIME_LAPSE_TAB_INDEX = 1
+VIDEO_STREAMING_TAB_INDEX = 2
+VIDEO_REC_TAB_INDEX = 3

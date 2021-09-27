@@ -115,7 +115,7 @@
             <item>
              <widget class="QTabWidget" name="rasp_tw">
               <property name="currentIndex">
-               <number>3</number>
+               <number>1</number>
               </property>
               <widget class="QWidget" name="status_tab">
                <attribute name="title">
@@ -557,7 +557,11 @@
                    </widget>
                   </item>
                   <item>
-                   <widget class="QSpinBox" name="time_lapse_duration_sb"/>
+                   <widget class="QSpinBox" name="time_lapse_duration_sb">
+                    <property name="maximum">
+                     <number>99999</number>
+                    </property>
+                   </widget>
                   </item>
                   <item>
                    <widget class="QLabel" name="label_21">
@@ -587,16 +591,23 @@
                 <item>
                  <layout class="QHBoxLayout" name="horizontalLayout_15">
                   <item>
-                   <widget class="QPushButton" name="stop_time_lapse_pb">
+                   <widget class="QPushButton" name="take_picture_pb">
                     <property name="text">
-                     <string>Stop time lapse</string>
+                     <string>Take a picture</string>
                     </property>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QPushButton" name="take_picture_pb">
+                   <widget class="QPushButton" name="start_time_lapse_pb">
                     <property name="text">
-                     <string>Take picture(s)</string>
+                     <string>Start time lapse</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="stop_time_lapse_pb">
+                    <property name="text">
+                     <string>Stop time lapse</string>
                     </property>
                    </widget>
                   </item>
