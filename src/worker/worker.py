@@ -524,17 +524,13 @@ def view_video_recording_schedule():
     view all video recording schedule
     """
     cron = CronTab(user="pi")
-    output = ""
+    output = []
     try:
         for job in cron:
-            schedule = (f"minutes: {job.minutes}  "
-                        f"hours: {job.hours}  "
-                        f"day(s) of month: {job.dom}  "
-                        f"month(s): {job.month} "
-                        f"day(s) of week: {job.dow}"
-                        )
-            output += f"{schedule}\n"
+            output.append([str(job.minutes), str(job.hours), str(job.dom), str(job.month), str(job.dow)])
+        print(output)
     except Exception:
+        raise
         return {"error": True, "msg": f"Error during video recording view."}
 
     return {"error": False, "msg": output}

@@ -21,6 +21,7 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QMainWindow,
                              QLineEdit, QMessageBox, QFileDialog,
                              QInputDialog, QStackedWidget,
                              QListWidget, QListWidgetItem,
+                             QTableWidgetItem,
                              QAction, QMenu)
 from PyQt5.QtGui import QPixmap, QIcon, QFont
 from PyQt5.QtCore import (QTimer, Qt, QUrl, pyqtSignal, QObject, QThread)
@@ -771,11 +772,31 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             self.rasp_output_lb.setText(f"Error during view of the video recording scheduling (status code: {response.status_code})")
             return
 
+        '''
         QMessageBox.information(None, "Raspberry Pi coordinator",
                                       response.json().get("msg", "Error during view of the video recording scheduling"),
                                       QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+        '''
+        crontab_content = response.json().get("msg", "")
+        print(crontab_content)
 
-        #self.rasp_output_lb.setText(response.json().get("msg", "Error during view of the video recording scheduling"))
+        self.video_rec_schedule_table.setRowCount(len(crontab_content))
+        for i in range(0, len(crontab_content)):
+            tokens = crontab_content[i]
+
+            '''
+            minute = QTableWidgetItem(tokens[0])
+            hour = QTableWidgetItem(tokens[1])
+            dom = QTableWidgetItem(tokens[2])
+            month = QTableWidgetItem(tokens[3])
+            dow = QTableWidgetItem(tokens[4])
+            '''
+            for j in range(0, 4 +1):
+                self.video_rec_schedule_table.setItem(i, j, QTableWidgetItem(tokens[j]))
+
+        self.video_rec_schedule_table.resizeColumnsToContents()
+
+
 
 
 
