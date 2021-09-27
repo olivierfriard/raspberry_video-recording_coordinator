@@ -627,6 +627,9 @@ def sync_time(date, hour):
 @app.route("/take_picture", methods=("GET", "POST",))
 @security_key_required
 def take_picture():
+    """
+    Start time lapse or take a picture and send it
+    """
 
     if video_streaming_active():
         return {"error": True,
