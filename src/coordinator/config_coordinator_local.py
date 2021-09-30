@@ -17,7 +17,7 @@ IP_RANGES = (#("192.168.1.1", [18, 18]),
 VIDEO_ARCHIVE  = "/tmp"
 
 
-REFRESH_INTERVAL = 300 # seconds -> 10 min
+REFRESH_INTERVAL = 60 # seconds -> 10 min
 
 # seconds between 2 pictures in time lapse mode
 DEFAULT_INTERVAL = 20
@@ -110,7 +110,7 @@ RPI_DEFAULTS = {"picture resolution": PICTURE_RESOLUTIONS[DEFAULT_PICTURE_RESOLU
                     }
 
 
-
+STATUS_TAB_INDEX = 0
 TIME_LAPSE_TAB_INDEX = 1
 VIDEO_STREAMING_TAB_INDEX = 2
 VIDEO_REC_TAB_INDEX = 3

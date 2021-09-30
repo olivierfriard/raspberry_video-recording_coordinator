@@ -6,7 +6,9 @@ to enable the service at boot:
 sudo systemctl enable worker
 """
 
-__version__ = "0.0.22"
+__version__ = "0.0.24"
+__version_date__ = "2021-09-30"
+
 
 from crontab import CronTab
 
@@ -277,23 +279,37 @@ def security_key_required(f):
 
 @app.route("/")
 def home():
-    return f"""<h1>Raspberry Pi worker</h1>
+    return f"""<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Raspberry Pi worker service">
+<meta name="author" content="Olivier Friard">
+<title>Raspberry Pi worker</title>
+</head>
+<style>body {{font-family: Arial, Helvetica, sans-serif;}}</style>
+</body>
+<h1>Raspberry Pi worker</h1>
 <b>id: {socket.gethostname()}</b><br>
 <br>
-Worker version: <b>{__version__}</b><br>
+Worker version: <b>{__version__}</b> ({__version_date__})<br>
 <br>
-hostname: {socket.gethostname()}<br>
 IP address: {get_ip()}<br>
 MAC Addr: {get_hw_addr(cfg.WIFI_INTERFACE)}<br>
-date/time: {datetime_now_iso()}<br>
+date/time: {datetime_now_iso()} timezone:{get_timezone()} <br>
 CPU temperature: <b>{get_cpu_temperature()}</b><br>
-Timezone: {get_timezone()}<br>
+Uptime: <b>{get_uptime()}</b><br>
+<!--
 <br>
 <a href="/status">server status</a><br>
 <a href="/shutdown">shutdown server</a><br>
 <br>
 <a href="/video_list">list of video on server</a><br>
+-->
+</body>
+</html>
 """
+
 
 
 @app.route("/status", methods=("GET", "POST",))
@@ -319,22 +335,7 @@ def status():
                        "time_lapse_active": time_lapse_active(),
                        "video_recording": recording_video_active(),
                       }
-        '''
-        #if thread.is_alive():
-        if recording_video_active():
 
-            video_info = {"video_recording": True,
-                         "duration": int(thread.parameters["timeout"]) / 1000,
-                          "width": thread.parameters["width"],
-                          "height": thread.parameters["height"],
-                          "fps": thread.parameters["framerate"],
-                          "quality": int(thread.parameters["bitrate"]) / 1000000,
-                          "started_at": thread.started_at,
-                          "server_version": __version__}
-        else:
-            video_info = {"video_recording": False}
-        return {**server_info, **video_info}
-        '''
         return server_info
 
     except Exception:
@@ -521,16 +522,16 @@ def schedule_video_recording():
 @security_key_required
 def view_video_recording_schedule():
     """
-    view all video recording schedule
+    send all video recording schedule
     """
     cron = CronTab(user="pi")
     output = []
     try:
         for job in cron:
-            output.append([str(job.minutes), str(job.hours), str(job.dom), str(job.month), str(job.dow)])
-        print(output)
+            if "/usr/bin/raspivid" in job.command:
+                output.append([str(job.minutes), str(job.hours), str(job.dom), str(job.month), str(job.dow)])
+
     except Exception:
-        raise
         return {"error": True, "msg": f"Error during video recording view."}
 
     return {"error": False, "msg": output}

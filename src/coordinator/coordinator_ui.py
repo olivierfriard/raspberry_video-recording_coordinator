@@ -83,6 +83,7 @@ class Ui_MainWindow(object):
         self.raspberry_id_lb.setObjectName("raspberry_id_lb")
         self.verticalLayout_3.addWidget(self.raspberry_id_lb)
         self.rasp_tw = QtWidgets.QTabWidget(self.layoutWidget1)
+        self.rasp_tw.setEnabled(False)
         self.rasp_tw.setObjectName("rasp_tw")
         self.status_tab = QtWidgets.QWidget()
         self.status_tab.setObjectName("status_tab")
@@ -645,7 +646,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         self.main_tw.setCurrentIndex(0)
-        self.rasp_tw.setCurrentIndex(3)
+        self.rasp_tw.setCurrentIndex(0)
         self.video_rec_schedule_tw.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
