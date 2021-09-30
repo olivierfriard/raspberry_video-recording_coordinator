@@ -18,6 +18,20 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_12">
       <item>
+       <widget class="QLabel" name="label_34">
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Commands for all detected Raspberry Pi:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="get_status_all_pb">
         <property name="text">
          <string>Get status</string>
@@ -37,6 +51,19 @@
          <string>Shutdown</string>
         </property>
        </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_16">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
      </layout>
     </item>
@@ -188,7 +215,7 @@
                     <item row="3" column="0">
                      <widget class="QLabel" name="label_3">
                       <property name="text">
-                       <string>CPU temperature (°C)</string>
+                       <string>CPU temperature</string>
                       </property>
                      </widget>
                     </item>
@@ -989,7 +1016,7 @@
                    <item>
                     <widget class="QTabWidget" name="video_rec_schedule_tw">
                      <property name="currentIndex">
-                      <number>0</number>
+                      <number>1</number>
                      </property>
                      <widget class="QWidget" name="add_video_rec_schedule_tab">
                       <attribute name="title">

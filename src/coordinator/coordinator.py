@@ -837,9 +837,8 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
 
     def delete_video_recording_schedule(self, raspberry_id):
         """
-        delete all video recording scheduling
+        delete all video recording schedule
         """
-
 
         response = self.request(raspberry_id, f"/delete_video_recording_schedule")
         if response == None:
@@ -849,6 +848,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             self.rasp_output_lb.setText(f"Error during deletion of the video recording scheduling (status code: {response.status_code})")
             return
         self.rasp_output_lb.setText(response.json().get("msg", "Error during deletion of the video recording scheduling"))
+        self.view_video_recording_schedule_clicked()
 
 
     def check_selected_raspberry(self):

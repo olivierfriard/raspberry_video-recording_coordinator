@@ -546,8 +546,9 @@ def delete_video_recording_schedule():
     """
     cron = CronTab(user="pi")
     try:
-        #cron.remove_all('/usr/bin/raspivid')
-        cron.remove_all()
+        for job in cron:
+            if "/usr/bin/raspivid" in job.command:
+                cron.remove(job)
         cron.write()
     except Exception:
         return {"error": True, "msg": f"Video recording schedule NOT deleted."}
