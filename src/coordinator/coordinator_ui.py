@@ -620,6 +620,8 @@ class Ui_MainWindow(object):
         self.delete_videos_pb = QtWidgets.QPushButton(self.video_tab)
         self.delete_videos_pb.setObjectName("delete_videos_pb")
         self.horizontalLayout_24.addWidget(self.delete_videos_pb)
+        spacerItem18 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_24.addItem(spacerItem18)
         self.verticalLayout_12.addLayout(self.horizontalLayout_24)
         self.rasp_tw.addTab(self.video_tab, "")
         self.verticalLayout_3.addWidget(self.rasp_tw)
@@ -656,7 +658,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         self.main_tw.setCurrentIndex(0)
-        self.rasp_tw.setCurrentIndex(0)
+        self.rasp_tw.setCurrentIndex(3)
         self.video_rec_schedule_tw.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 

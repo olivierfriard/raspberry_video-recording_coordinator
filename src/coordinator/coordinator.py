@@ -656,7 +656,6 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             minutes_str = minutes
         else:
             minutes_splt = minutes.split(",")
-            print(minutes_splt)
             try:
                 int_minutes_list = [int(x) for x in minutes_splt]
                 for x in int_minutes_list:
@@ -694,7 +693,6 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             month_str = month
         else:
             month_splt = month.split(",")
-            print(month_splt)
             try:
                 int_month_list = [int(x) for x in month_splt]
                 for x in int_month_list:
@@ -752,7 +750,6 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
                 "vflip": self.raspberry_info[raspberry_id]['video vflip'],
         }
 
-
         response = self.request(raspberry_id, f"/schedule_video_recording",
                                 data=data)
         if response == None:
@@ -761,7 +758,9 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         if response.status_code != 200:
             self.rasp_output_lb.setText(f"Error during the video recording scheduling (status code: {response.status_code})")
             return
+
         self.rasp_output_lb.setText(response.json().get("msg", "Error during video recording scheduling"))
+        self.view_video_recording_schedule_clicked()
 
 
     def view_video_recording_schedule_clicked(self):
@@ -789,32 +788,15 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             self.rasp_output_lb.setText(f"Error during view of the video recording scheduling (status code: {response.status_code})")
             return
 
-        '''
-        QMessageBox.information(None, "Raspberry Pi coordinator",
-                                      response.json().get("msg", "Error during view of the video recording scheduling"),
-                                      QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
-        '''
         crontab_content = response.json().get("msg", "")
-        print(crontab_content)
 
         self.video_rec_schedule_table.setRowCount(len(crontab_content))
         for i in range(0, len(crontab_content)):
             tokens = crontab_content[i]
-
-            '''
-            minute = QTableWidgetItem(tokens[0])
-            hour = QTableWidgetItem(tokens[1])
-            dom = QTableWidgetItem(tokens[2])
-            month = QTableWidgetItem(tokens[3])
-            dow = QTableWidgetItem(tokens[4])
-            '''
             for j in range(0, 4 +1):
                 self.video_rec_schedule_table.setItem(i, j, QTableWidgetItem(tokens[j]))
 
         self.video_rec_schedule_table.resizeColumnsToContents()
-
-
-
 
 
     def delete_video_recording_schedule_clicked(self):
@@ -1157,8 +1139,6 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             self.scan_raspberries(ip_base_address, interval)
 
             self.message_box.setText(f"Scanning done: {len(self.raspberry_ip)} Raspberry Pi found on {ip_config[0]}")
-
-        # print("self.raspberry_ip", self.raspberry_ip)
 
         self.populate_rasp_list()
 
