@@ -454,24 +454,16 @@ def schedule_time_lapse():
         elif request.values[key] != 'False':
             command_line.extend([f"--{key}", f"{request.values[key]}"])
 
+    # use Epoch time for file name
+    command_line.extend(["--timestamp"])
+
     if ("timeout" in request.values and request.values["timeout"] != '0'
         and "timelapse" in request.values and request.values["timelapse"] != '0'):
         command_line.extend([f"--timeout", str(int(request.values["timeout"]) * 1000)])
         command_line.extend([f"--timelapse", str(int(request.values["timelapse"]) * 1000)])
-        command_line.extend(["--timestamp"])
+        comment = f'time-lapse for {request.values["timeout"]} s (every {request.values["timelapse"]} s)'
 
-        command_line.extend(["-o", str(pathlib.Path(cfg.TIME_LAPSE_ARCHIVE) / pathlib.Path(f"{socket.gethostname()}_" + "%04d.jpg"))])
-
-        # command_line.extend(["-o", f"static/pictures_archive/{socket.gethostname()}_" + "%04d.jpg"])
-
-        '''
-        try:
-            subprocess.Popen(command_line)
-        except:
-            logging.warning("Error scheduling time lapse (wrong command line option)")
-            return {"error": 1, "msg": "Error running time lapse (wrong command line option)"}
-        return {"error": False, "msg": "Time lapse running"}
-        '''
+    command_line.extend(["-o", str(pathlib.Path(cfg.TIME_LAPSE_ARCHIVE) / pathlib.Path(f"{socket.gethostname()}_%d").with_suffix(".jpg"))])
 
     '''
     prefix = (request.values["prefix"] + "_" ) if request.values.get("prefix", "") else ""
@@ -482,7 +474,7 @@ def schedule_time_lapse():
     logging.info(" ".join(command_line))
 
     cron = CronTab(user="pi")
-    job = cron.new(command=" ".join(command_line))
+    job = cron.new(command=" ".join(command_line), comment=comment)
     try:
         job.setall(crontab_event)
     except Exception:
@@ -504,7 +496,7 @@ def view_time_lapse_schedule():
     try:
         for job in cron:
             if "/usr/bin/raspistill" in job.command:
-                output.append([str(job.minutes), str(job.hours), str(job.dom), str(job.month), str(job.dow)])
+                output.append([str(job.minutes), str(job.hours), str(job.dom), str(job.month), str(job.dow), job.comment])
 
     except Exception:
         return {"error": True, "msg": f"Error during time lapse schedule view."}
@@ -776,7 +768,7 @@ def take_picture():
         command_line.extend([f"--timelapse", str(int(request.values["timelapse"]) * 1000)])
         command_line.extend(["--timestamp"])
 
-        command_line.extend(["-o", pathlib.Path(cfg.TIME_LAPSE_ARCHIVE) / pathlib.Path(f"{socket.gethostname()}_" + "%04d.jpg")])
+        command_line.extend(["-o", pathlib.Path(cfg.TIME_LAPSE_ARCHIVE) / pathlib.Path(f"{socket.gethostname()}_%d").with_suffix(".jpg")])
 
         # command_line.extend(["-o", f"static/pictures_archive/{socket.gethostname()}_" + "%04d.jpg"])
 

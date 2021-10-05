@@ -145,7 +145,7 @@
                <bool>false</bool>
               </property>
               <property name="currentIndex">
-               <number>1</number>
+               <number>3</number>
               </property>
               <widget class="QWidget" name="status_tab">
                <attribute name="title">
@@ -681,7 +681,7 @@
                     <item>
                      <widget class="QTabWidget" name="picture_schedule_tw">
                       <property name="currentIndex">
-                       <number>0</number>
+                       <number>1</number>
                       </property>
                       <widget class="QWidget" name="add_picture_schedule_tab">
                        <attribute name="title">
@@ -878,27 +878,32 @@
                             </property>
                             <column>
                              <property name="text">
-                              <string>minute</string>
+                              <string>Minute</string>
                              </property>
                             </column>
                             <column>
                              <property name="text">
-                              <string>hour</string>
+                              <string>Hour</string>
                              </property>
                             </column>
                             <column>
                              <property name="text">
-                              <string>day of month</string>
+                              <string>Day of month</string>
                              </property>
                             </column>
                             <column>
                              <property name="text">
-                              <string>month</string>
+                              <string>Month</string>
                              </property>
                             </column>
                             <column>
                              <property name="text">
-                              <string>day of week</string>
+                              <string>Day of week</string>
+                             </property>
+                            </column>
+                            <column>
+                             <property name="text">
+                              <string>Type</string>
                              </property>
                             </column>
                            </widget>
@@ -1475,27 +1480,27 @@
                            </property>
                            <column>
                             <property name="text">
-                             <string>minute</string>
+                             <string>Minute</string>
                             </property>
                            </column>
                            <column>
                             <property name="text">
-                             <string>hour</string>
+                             <string>Hour</string>
                             </property>
                            </column>
                            <column>
                             <property name="text">
-                             <string>day of month</string>
+                             <string>Day of month</string>
                             </property>
                            </column>
                            <column>
                             <property name="text">
-                             <string>month</string>
+                             <string>Month</string>
                             </property>
                            </column>
                            <column>
                             <property name="text">
-                             <string>day of week</string>
+                             <string>Day of week</string>
                             </property>
                            </column>
                           </widget>
