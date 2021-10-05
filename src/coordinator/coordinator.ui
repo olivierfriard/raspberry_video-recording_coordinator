@@ -742,7 +742,7 @@
                            </widget>
                           </item>
                           <item>
-                           <widget class="QLineEdit" name="picutre_days_of_week_le"/>
+                           <widget class="QLineEdit" name="picture_days_of_week_le"/>
                           </item>
                           <item>
                            <spacer name="horizontalSpacer_20">
@@ -797,7 +797,7 @@
                          </layout>
                         </item>
                         <item>
-                         <widget class="QPushButton" name="configure_picutre_pb">
+                         <widget class="QPushButton" name="configure_picture_pb">
                           <property name="text">
                            <string>Add schedule to Raspberry Pi</string>
                           </property>
@@ -820,7 +820,7 @@
                       </widget>
                       <widget class="QWidget" name="view_picture_schedule">
                        <attribute name="title">
-                        <string>Existing video recording schedule</string>
+                        <string>Time lapse schedule</string>
                        </attribute>
                        <layout class="QVBoxLayout" name="verticalLayout_18">
                         <item>
@@ -857,7 +857,7 @@
                            </layout>
                           </item>
                           <item>
-                           <widget class="QTableWidget" name="picture_schedule_table">
+                           <widget class="QTableWidget" name="time_lapse_schedule_table">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                               <horstretch>0</horstretch>
@@ -1429,7 +1429,7 @@
                      </widget>
                      <widget class="QWidget" name="view_video_rec_schedule">
                       <attribute name="title">
-                       <string>Existing video recording schedule</string>
+                       <string>Video recording schedule</string>
                       </attribute>
                       <layout class="QVBoxLayout" name="verticalLayout_15">
                        <item>

@@ -53,6 +53,7 @@ import shutil
 import hashlib
 
 import video_recording
+import time_lapse
 
 try:
     import config_coordinator_local as cfg
@@ -283,6 +284,10 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         self.time_lapse_duration_sb.valueChanged.connect(self.time_lapse_duration_changed)
         self.time_lapse_wait_sb.valueChanged.connect(self.time_lapse_wait_changed)
 
+        self.configure_picture_pb.clicked.connect(self.schedule_time_lapse_clicked)
+        self.view_picture_schedule_pb.clicked.connect(self.view_time_lapse_schedule_clicked)
+        self.delete_picture_schedule_pb.clicked.connect(self.delete_time_lapse_schedule_clicked)
+
 
         # video streaming
         self.pb_start_video_streaming.clicked.connect(partial(self.video_streaming_clicked, "start"))
@@ -295,6 +300,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         # video recording
         self.start_video_recording_pb.clicked.connect(self.start_video_recording_clicked)
         self.stop_video_recording_pb.clicked.connect(self.stop_video_recording_clicked)
+
         self.configure_video_recording_pb.clicked.connect(self.schedule_video_recording_clicked)
         self.view_video_recording_schedule_pb.clicked.connect(self.view_video_recording_schedule_clicked)
         self.delete_video_recording_schedule_pb.clicked.connect(self.delete_video_recording_schedule_clicked)
@@ -356,12 +362,16 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         raspberry Pi tablewidget change index
         """
 
-
-        if index == cfg.VIDEO_REC_TAB_INDEX:  # video rec is activated
+        if index == cfg.VIDEO_REC_TAB_INDEX:  # video rec tab is activated
             # update list of videos
             self.video_list_clicked()
             # update crontab content
             self.view_video_recording_schedule_clicked()
+
+        if index == cfg.TIME_LAPSE_TAB_INDEX:  # time lapse tab is activated
+            # update crontab content
+            self.view_time_lapse_schedule_clicked()
+
 
 
 
@@ -592,6 +602,51 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         self.update_raspberry_display(raspberry_id)
 
 
+    def schedule_time_lapse_clicked(self):
+        """
+        Schedule picture taking on the current Raspberry Pi
+        """
+        if self.current_raspberry_id not in self.raspberry_ip:
+            QMessageBox.information(None, "Raspberry Pi coordinator",
+                                    "Select a Raspberry Pi before",
+                                    QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+            return
+
+        time_lapse.schedule_time_lapse(self, self.current_raspberry_id)
+
+
+    def view_time_lapse_schedule_clicked(self):
+        """
+        view time lapse schedule on current Raspberry Pi
+        """
+        if self.current_raspberry_id not in self.raspberry_ip:
+            QMessageBox.information(None, "Raspberry Pi coordinator",
+                                    "Select a Raspberry Pi before",
+                                    QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+
+            return
+
+        time_lapse.view_time_lapse_schedule(self, self.current_raspberry_id)
+
+
+    def delete_time_lapse_schedule_clicked(self):
+        """
+        Delete the time lapse schedule on Raspberry Pi
+        """
+
+        if self.current_raspberry_id not in self.raspberry_ip:
+            QMessageBox.information(None, "Raspberry Pi coordinator",
+                                    "Select a Raspberry Pi before",
+                                    QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+            return
+
+        text, ok = QInputDialog.getText(self, "Delete the time lapse schedule on the Raspberry Pi", "Please confirm writing 'yes'")
+        if not ok or text != "yes":
+            return
+
+        time_lapse.delete_time_lapse_schedule(self, self.current_raspberry_id)
+
+
 
     def schedule_video_recording_clicked(self):
         """
@@ -636,8 +691,6 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             return
 
         video_recording.delete_video_recording_schedule(self, self.current_raspberry_id)
-
-
 
 
     def check_selected_raspberry(self):

@@ -6,8 +6,8 @@ to enable the service at boot:
 sudo systemctl enable worker
 """
 
-__version__ = "0.0.24"
-__version_date__ = "2021-09-30"
+__version__ = "0.0.25"
+__version_date__ = "2021-10-05"
 
 
 from crontab import CronTab
@@ -428,6 +428,109 @@ def add_key(key):
         return {"msg": "error"}
 '''
 
+
+@app.route("/schedule_time_lapse", methods=("GET", "POST",))
+@security_key_required
+def schedule_time_lapse():
+    """
+    schedule the time lapse using crontab of user pi
+    see https://pypi.org/project/crontab/
+    """
+
+    crontab_event = request.values.get("crontab", "")
+    if not crontab_event:
+        return {"error": True, "msg": "Time lapse NOT configured. Crontab event not found"}
+
+
+    command_line = ["/usr/bin/raspistill",
+                    "-q", "90",]
+
+    for key in request.values:
+
+        if key in ["timelapse", "timeout", "prefix", "annotate", "key", "crontab"]:
+            continue
+        if request.values[key] == 'True':
+            command_line.extend([f"--{key}"])
+        elif request.values[key] != 'False':
+            command_line.extend([f"--{key}", f"{request.values[key]}"])
+
+    if ("timeout" in request.values and request.values["timeout"] != '0'
+        and "timelapse" in request.values and request.values["timelapse"] != '0'):
+        command_line.extend([f"--timeout", str(int(request.values["timeout"]) * 1000)])
+        command_line.extend([f"--timelapse", str(int(request.values["timelapse"]) * 1000)])
+        command_line.extend(["--timestamp"])
+
+        command_line.extend(["-o", str(pathlib.Path(cfg.TIME_LAPSE_ARCHIVE) / pathlib.Path(f"{socket.gethostname()}_" + "%04d.jpg"))])
+
+        # command_line.extend(["-o", f"static/pictures_archive/{socket.gethostname()}_" + "%04d.jpg"])
+
+        '''
+        try:
+            subprocess.Popen(command_line)
+        except:
+            logging.warning("Error scheduling time lapse (wrong command line option)")
+            return {"error": 1, "msg": "Error running time lapse (wrong command line option)"}
+        return {"error": False, "msg": "Time lapse running"}
+        '''
+
+    '''
+    prefix = (request.values["prefix"] + "_" ) if request.values.get("prefix", "") else ""
+    file_path = f"{cfg.VIDEO_ARCHIVE}/{socket.gethostname()}_{prefix}" + "$(/usr/bin/date_crontab_helper).h264"
+    command_line.extend(["-o", file_path])
+    '''
+
+    logging.info(" ".join(command_line))
+
+    cron = CronTab(user="pi")
+    job = cron.new(command=" ".join(command_line))
+    try:
+        job.setall(crontab_event)
+    except Exception:
+        return {"error": True, "msg": f"Time lapse NOT scheduled. '{crontab_event}' is not valid."}
+
+    cron.write()
+
+    return {"error": False, "msg": "Time lapse  scheduled"}
+
+
+@app.route("/view_time_lapse_schedule", methods=("GET", "POST",))
+@security_key_required
+def view_time_lapse_schedule():
+    """
+    send all time lapse crontab schedule
+    """
+    cron = CronTab(user="pi")
+    output = []
+    try:
+        for job in cron:
+            if "/usr/bin/raspistill" in job.command:
+                output.append([str(job.minutes), str(job.hours), str(job.dom), str(job.month), str(job.dow)])
+
+    except Exception:
+        return {"error": True, "msg": f"Error during time lapse schedule view."}
+
+    return {"error": False, "msg": output}
+
+
+@app.route("/delete_time_lapse_schedule", methods=("GET", "POST",))
+@security_key_required
+def delete_time_lapse_schedule():
+    """
+    delete all time lapse schedule
+    """
+    cron = CronTab(user="pi")
+    try:
+        for job in cron:
+            if "/usr/bin/raspistill" in job.command:
+                cron.remove(job)
+        cron.write()
+    except Exception:
+        return {"error": True, "msg": f"Time lapse schedule NOT deleted."}
+
+    return {"error": False, "msg": f"Time lapse schedule deleted."}
+
+
+
 @app.route("/start_video", methods=("GET", "POST",))
 @security_key_required
 def start_video():
@@ -648,7 +751,7 @@ def take_picture():
     except Exception:
         pass
 
-    command_line = ["raspistill",
+    command_line = ["/usr/bin/raspistill",
                     #"--timeout", "5",
                     "--nopreview",
                     "-q", "90",
@@ -672,7 +775,10 @@ def take_picture():
         command_line.extend([f"--timeout", str(int(request.values["timeout"]) * 1000)])
         command_line.extend([f"--timelapse", str(int(request.values["timelapse"]) * 1000)])
         command_line.extend(["--timestamp"])
-        command_line.extend(["-o", f"static/pictures_archive/{socket.gethostname()}_" + "%04d.jpg"])
+
+        command_line.extend(["-o", pathlib.Path(cfg.TIME_LAPSE_ARCHIVE) / pathlib.Path(f"{socket.gethostname()}_" + "%04d.jpg")])
+
+        # command_line.extend(["-o", f"static/pictures_archive/{socket.gethostname()}_" + "%04d.jpg"])
 
         try:
             subprocess.Popen(command_line)

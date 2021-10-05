@@ -11,6 +11,7 @@ DEFAULT_PICTURE_WIDTH = 640
 DEFAULT_PICTURE_HEIGHT = 480
 
 VIDEO_ARCHIVE = "/home/pi/worker/static/video_archive"
+TIME_LAPSE_ARCHIVE = "/home/pi/worker/static/pictures_archive"
 DEFAULT_VIDEO_DURATION = 10 # seconds
 DEFAULT_FPS = 10
 DEFAULT_VIDEO_WIDTH = 640
