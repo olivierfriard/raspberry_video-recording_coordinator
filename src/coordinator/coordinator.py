@@ -48,6 +48,7 @@ import hashlib
 
 import video_recording
 # import time_lapse
+import output_window
 
 try:
     import config_coordinator_local as cfg
@@ -254,7 +255,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         # commands
         self.status_update_pb.clicked.connect(self.status_update_pb_clicked)
         self.time_synchro_pb.clicked.connect(self.time_synchro_clicked)
-
+        self.get_log_pb.clicked.connect(self.get_log_clicked)
         self.blink_pb.clicked.connect(self.blink)
         self.reboot_pb.clicked.connect(self.reboot_clicked)
         self.shutdown_pb.clicked.connect(self.shutdown_clicked)
@@ -536,6 +537,21 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             self.get_raspberry_status(raspberry_id)
             self.update_raspberry_display(raspberry_id)
             return None
+
+
+    def verif(func):
+        """
+        check if there is current Raspberry Pi
+        """
+        def wrapper(*args, **kwargs):
+            if args[0].current_raspberry_id not in args[0].raspberry_ip:
+                QMessageBox.information(None, "Raspberry Pi coordinator", "Select a Raspberry Pi before",
+                                        QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+            else:
+                func(args[0])
+
+        return wrapper
+
 
     def video_streaming_clicked(self, action):
         """
@@ -979,7 +995,18 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         self.get_status_for_all_rpi()
 
     def show_ip_list(self):
-        print(" ".join([f"pi@{self.raspberry_ip[x]}" for x in self.raspberry_ip]))
+        """
+        show the IP for all Raspberry Pi
+        """
+
+        self.results = output_window.ResultsWidget()
+        self.results.setWindowTitle("IP addresses")
+        self.results.ptText.clear()
+        self.results.ptText.setReadOnly(True)
+        self.results.ptText.appendHtml(" ".join([f"{self.raspberry_ip[x]}" for x in self.raspberry_ip]))
+        self.results.show()
+
+
 
     def go_left(self):
         pass
@@ -1398,90 +1425,32 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         self.update_raspberry_display(raspberry_id)
         self.update_raspberry_dashboard(raspberry_id)
 
+
+    @verif
     def start_video_recording_clicked(self):
         """
         start video recording with selected parameters
         """
-        if self.current_raspberry_id not in self.raspberry_ip:
-            QMessageBox.information(None, "Raspberry Pi coordinator", "Select a Raspberry Pi before",
-                                    QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
 
-            return
+        video_recording.start_video_recording(self, self.current_raspberry_id)
 
-        self.start_video_recording(self.current_raspberry_id)
-
-    def start_video_recording(self, raspberry_id):
-        """
-        start video recording with selected parameters
-        """
-
-        width, height = self.raspberry_info[raspberry_id]["video mode"].split("x")
-        data = {
-            "key": self.security_key,
-            "timeout": self.raspberry_info[raspberry_id]["video duration"] * 1000,
-            "width": width,
-            "height": height,
-            "prefix": "",
-            "framerate": self.raspberry_info[raspberry_id]["FPS"],
-            "bitrate": self.raspberry_info[raspberry_id]["video quality"] * 1_000_000,
-            "brightness": self.raspberry_info[raspberry_id]['video brightness'],
-            "contrast": self.raspberry_info[raspberry_id]['video contrast'],
-            "saturation": self.raspberry_info[raspberry_id]['video saturation'],
-            "sharpness": self.raspberry_info[raspberry_id]['video sharpness'],
-            "ISO": self.raspberry_info[raspberry_id]['video iso'],
-            "rotation": self.raspberry_info[raspberry_id]['video rotation'],
-            "hflip": self.raspberry_info[raspberry_id]['video hflip'],
-            "vflip": self.raspberry_info[raspberry_id]['video vflip'],
-        }
-
-        self.rasp_output_lb.setText("start video recording requested")
-        response = self.request(raspberry_id, "/start_video", data=data)
-        if response == None:
-            return
-
-        if response.status_code != 200:
-            self.rasp_output_lb.setText(f"Failed to start recording video (status code: {response.status_code})")
-            return
-
-        self.rasp_output_lb.setText(response.json().get("msg", "Error recording video"))
-
-        self.get_raspberry_status(raspberry_id)
-        self.update_raspberry_display(raspberry_id)
-        self.update_raspberry_dashboard(raspberry_id)
-
+    @verif
     def stop_video_recording_clicked(self):
         """
         Stop current video recording
         """
+
+        video_recording.stop_video_recording(self, self.current_raspberry_id)
+
+
+
+    def get_log_clicked(self):
+
         if self.current_raspberry_id not in self.raspberry_ip:
             QMessageBox.information(None, "Raspberry Pi coordinator", "Select a Raspberry Pi before",
                                     QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
 
             return
-
-        self.stop_video_recording(self.current_raspberry_id)
-
-    def stop_video_recording(self, raspberry_id):
-        """
-        stop video recording
-        """
-
-        self.rasp_output_lb.setText("stop video recording requested")
-        response = self.request(raspberry_id, "/stop_video")
-        if response == None:
-            return
-
-        if response.status_code != 200:
-            self.rasp_output_lb.setText(f"Failed to stop recording video (status code: {response.status_code})")
-            return
-        self.rasp_output_lb.setText(response.json().get("msg", "Failed to stop recording video"))
-
-        self.get_raspberry_status(raspberry_id)
-        self.update_raspberry_display(raspberry_id)
-        self.update_raspberry_dashboard(raspberry_id)
-
-    '''
-    def get_log(self):
 
         if self.current_raspberry_id in self.raspberry_ip and self.raspberry_info[raspberry_id]["status"]["status"] == "OK":
             try:
@@ -1489,7 +1458,9 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
                 self.rb_msg(self.current_raspberry_id, r.text)
             except Exception:
                 self.rb_msg(self.current_raspberry_id, "Error")
-    '''
+
+
+
     '''
     def update_all(self):
         """

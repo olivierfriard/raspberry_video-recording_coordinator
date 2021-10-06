@@ -145,7 +145,7 @@
                <bool>false</bool>
               </property>
               <property name="currentIndex">
-               <number>3</number>
+               <number>0</number>
               </property>
               <widget class="QWidget" name="status_tab">
                <attribute name="title">
@@ -352,6 +352,13 @@
                      <widget class="QPushButton" name="time_synchro_pb">
                       <property name="text">
                        <string>Time synchronization</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="get_log_pb">
+                      <property name="text">
+                       <string>Get log</string>
                       </property>
                      </widget>
                     </item>

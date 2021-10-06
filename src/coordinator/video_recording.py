@@ -12,6 +12,69 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow,
                              QTableWidgetItem,
                              QAction, QMenu)
 
+
+
+def start_video_recording(self, raspberry_id):
+    """
+    start video recording with selected parameters
+    """
+
+    width, height = self.raspberry_info[raspberry_id]["video mode"].split("x")
+    data = {
+        "key": self.security_key,
+        "timeout": self.raspberry_info[raspberry_id]["video duration"] * 1000,
+        "width": width,
+        "height": height,
+        "prefix": "",
+        "framerate": self.raspberry_info[raspberry_id]["FPS"],
+        "bitrate": self.raspberry_info[raspberry_id]["video quality"] * 1_000_000,
+        "brightness": self.raspberry_info[raspberry_id]['video brightness'],
+        "contrast": self.raspberry_info[raspberry_id]['video contrast'],
+        "saturation": self.raspberry_info[raspberry_id]['video saturation'],
+        "sharpness": self.raspberry_info[raspberry_id]['video sharpness'],
+        "ISO": self.raspberry_info[raspberry_id]['video iso'],
+        "rotation": self.raspberry_info[raspberry_id]['video rotation'],
+        "hflip": self.raspberry_info[raspberry_id]['video hflip'],
+        "vflip": self.raspberry_info[raspberry_id]['video vflip'],
+    }
+
+    self.rasp_output_lb.setText("start video recording requested")
+    response = self.request(raspberry_id, "/start_video", data=data)
+    if response == None:
+        return
+
+    if response.status_code != 200:
+        self.rasp_output_lb.setText(f"Failed to start recording video (status code: {response.status_code})")
+        return
+
+    self.rasp_output_lb.setText(response.json().get("msg", "Error recording video"))
+
+    self.get_raspberry_status(raspberry_id)
+    self.update_raspberry_display(raspberry_id)
+    self.update_raspberry_dashboard(raspberry_id)
+
+
+def stop_video_recording(self, raspberry_id):
+    """
+    stop video recording
+    """
+
+    self.rasp_output_lb.setText("stop video recording requested")
+    response = self.request(raspberry_id, "/stop_video")
+    if response == None:
+        return
+
+    if response.status_code != 200:
+        self.rasp_output_lb.setText(f"Failed to stop recording video (status code: {response.status_code})")
+        return
+    self.rasp_output_lb.setText(response.json().get("msg", "Failed to stop recording video"))
+
+    self.get_raspberry_status(raspberry_id)
+    self.update_raspberry_display(raspberry_id)
+    self.update_raspberry_dashboard(raspberry_id)
+
+
+
 def schedule_video_recording(self, raspberry_id):
     """
     Schedule the video recording on the Raspberry Pi
