@@ -2,9 +2,18 @@
 Raspberry Pi coordinator
 
 """
-from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QSizePolicy, QPlainTextEdit, QSpacerItem,
-                             QMessageBox, QFileDialog,
-                             )
+from PyQt5.QtWidgets import (
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QPushButton,
+    QLabel,
+    QSizePolicy,
+    QPlainTextEdit,
+    QSpacerItem,
+    QMessageBox,
+    QFileDialog,
+)
 
 
 class ResultsWidget(QWidget):
@@ -28,7 +37,7 @@ class ResultsWidget(QWidget):
         hbox2 = QHBoxLayout()
         hbox2.addItem(QSpacerItem(241, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
 
-        self.pbSave = QPushButton("Save results", clicked=self.save_results)
+        self.pbSave = QPushButton("Save output", clicked=self.save_results)
         hbox2.addWidget(self.pbSave)
 
         self.pbOK = QPushButton("OK", clicked=self.close)
@@ -45,7 +54,7 @@ class ResultsWidget(QWidget):
         save content of self.ptText
         """
 
-        fn = QFileDialog().getSaveFileName(self, "Save results", "", "Text files (*.txt *.tsv);;All files (*)")
+        fn = QFileDialog().getSaveFileName(self, "Save output", "", "Text files (*.txt *.tsv);;All files (*)")
         file_name = fn[0] if type(fn) is tuple else fn
 
         if file_name:

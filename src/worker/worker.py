@@ -6,8 +6,8 @@ to enable the service at boot:
 sudo systemctl enable worker
 """
 
-__version__ = "0.0.25"
-__version_date__ = "2021-10-05"
+__version__ = "0.0.26"
+__version_date__ = "2021-10-06"
 
 
 from crontab import CronTab
@@ -810,21 +810,18 @@ def command(command_to_run):
         return str({"status": "error"})
 '''
 
-'''
+
 @app.route("/get_log")
+@security_key_required
 def get_log():
     """
-    return server log
+    return worker log
     """
-    if request.values.get('key', '') != security_key:
-        status_code = Response(status=204)  # 204 No Content     The server successfully processed the request, and is not returning any content.
-        return status_code
-
     try:
         return {"error": False, "msg": open(cfg.LOG_PATH).read()}
     except Exception:
         return {"error": True}
-'''
+
 
 
 
