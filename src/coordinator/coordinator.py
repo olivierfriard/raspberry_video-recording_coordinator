@@ -177,15 +177,18 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             self.raspberry_ip = raspberry_ip
 
         start = pyqtSignal(str, list)
-        finished = pyqtSignal(str)
+        progress = pyqtSignal(str)
+        finished = pyqtSignal(list)
 
         def run(self, raspberry_id, videos_list):
 
-            output = ""
+            downloaded_video = []
+            count = 0
             for video_file_name, video_size in sorted(videos_list):
 
                 if (pathlib.Path(cfg.VIDEO_ARCHIVE) / pathlib.Path(video_file_name)).is_file():
                     if (pathlib.Path(cfg.VIDEO_ARCHIVE) / pathlib.Path(video_file_name)).stat().st_size == video_size:
+                        count += 1
                         continue
 
                 logging.info(f"Downloading  {video_file_name} from {raspberry_id}")
@@ -199,12 +202,12 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
 
                 logging.info(f"{video_file_name} downloaded from {raspberry_id}")
 
-                output += f"{video_file_name} downloaded\n"
+                downloaded_video.append(video_file_name)
+                count += 1
+                self.progress.emit(f"{count}/{len(videos_list)} video downloaded")
 
-            if output == "":
-                self.finished.emit("No video to download")
-            else:
-                self.finished.emit(output)
+            self.finished.emit(downloaded_video)
+
 
     raspberry_ip = {}
     raspberry_info = {}
@@ -663,10 +666,14 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         download all video from Raspberry Pi
         """
 
-        def thread_finished(output):
-            self.rasp_output_lb.setText(f"Videos downloaded in {download_dir}")
+        def thread_progress(output):
+            self.rasp_output_lb.setText(output)
+
+        def thread_finished(downloaded_video_list):
+            self.rasp_output_lb.setText(f"{len(downloaded_video_list)} videos downloaded in <b>{download_dir}</b>")
             self.video_list_clicked()
             self.my_thread1.quit
+
 
         if download_dir == "":
             download_dir = cfg.VIDEO_ARCHIVE
@@ -700,11 +707,12 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         self.my_worker1 = self.Download_videos_worker(self.raspberry_ip)
         self.my_worker1.moveToThread(self.my_thread1)
 
-        self.my_worker1.start.connect(self.my_worker1.run)  #  <---- Like this instead
+        self.my_worker1.start.connect(self.my_worker1.run)
+        self.my_worker1.progress.connect(thread_progress)
         self.my_worker1.finished.connect(thread_finished)
         self.my_worker1.start.emit(raspberry_id, video_list)
 
-
+    '''
     def download_all_video_from_all(self):
         """
         download all video from all Raspberry Pi
@@ -733,6 +741,8 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         for raspberry_id in sorted(self.raspberry_ip.keys()):
             if self.raspberry_info[raspberry_id]["status"]["status"] == "OK":
                 self.download_all_video(raspberry_id, download_dir)
+    '''
+
 
     @verif
     def video_list_clicked(self):
@@ -777,14 +787,14 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
 
         return sorted(list(response.json()["video_list"]))
 
-
+    '''
     def video_list_from_all(self):
         """
         request a list of video to all raspberries
         """
         for rb in sorted(self.raspberry_ip.keys()):
             self.video_list(rb)
-
+    '''
 
     def all_video_clicked(self):
         """
@@ -814,6 +824,25 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         delete video from Raspberry Pi
         """
 
+        if not self.video_list_lw.count():
+            QMessageBox.information(None, "Raspberry Pi coordinator", "No video to download",
+                                    QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+            return
+
+        for idx in range(self.video_list_lw.count()):
+            if self.video_list_lw.item(idx).checkState() == Qt.Checked:
+                break
+        else:
+            QMessageBox.information(None, "Raspberry Pi coordinator", "Select the video to download",
+                                    QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+            return
+
+
+        text, ok = QInputDialog.getText(self, f"Delete videos on the Raspberry Pi {self.current_raspberry_id}",
+                                        "Confirm writing 'yes'")
+        if not ok or text != "yes":
+            return
+
         self.delete_videos(self.current_raspberry_id)
 
 
@@ -821,10 +850,6 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         """
         delete video from Raspberry Pi
         """
-        text, ok = QInputDialog.getText(self, f"Delete videos on the Raspberry Pi {raspberry_id}",
-                                        "Confirm writing 'yes'")
-        if not ok or text != "yes":
-            return
         self.rasp_output_lb.setText("Deletion of videos requested")
 
         remote_video_list = self.video_list(raspberry_id)

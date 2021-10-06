@@ -66,6 +66,8 @@ def stop_video_recording(self, raspberry_id):
     self.update_raspberry_display(raspberry_id)
     self.update_raspberry_dashboard(raspberry_id)
 
+    self.video_list_clicked()
+
 
 def schedule_video_recording(self, raspberry_id):
     """
@@ -241,7 +243,7 @@ def view_video_recording_schedule(self, raspberry_id):
     self.video_rec_schedule_table.setRowCount(len(crontab_content))
     for i in range(0, len(crontab_content)):
         tokens = crontab_content[i]
-        for j in range(0, 4 + 1):
+        for j in range(0, 5 + 1):
             self.video_rec_schedule_table.setItem(i, j, QTableWidgetItem(tokens[j]))
 
     self.video_rec_schedule_table.resizeColumnsToContents()

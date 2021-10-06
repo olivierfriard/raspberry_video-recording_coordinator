@@ -35,19 +35,20 @@ import config as cfg
 
 
 def is_camera_detected():
-    '''
+    """
     check if camera is plugged
-    '''
+    """
     process = subprocess.run(["/opt/vc/bin/vcgencmd", "get_camera"], stdout=subprocess.PIPE)
     output = process.stdout.decode("utf-8").strip()
     return (output == "supported=1 detected=1")
 
 
 def get_hw_addr(ifname):
-    '''
+    """
     return hw addr
     get_hw_addr(WIFI_INTERFACE)
-    '''
+    """
+
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         info = fcntl.ioctl(s.fileno(), 0x8927,  struct.pack("256s", bytes(ifname, "utf-8")[:15]))
@@ -57,10 +58,11 @@ def get_hw_addr(ifname):
 
 
 def get_ip():
-    '''
+    """
     return IP address. Does not need to be connected to internet
     https://stackoverflow.com/questions/166506/finding-local-ip-addresses-using-pythons-stdlib
-    '''
+    """
+
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
         # doesn't even have to be reachable
@@ -81,6 +83,10 @@ def get_timezone():
 
 
 def get_wifi_ssid():
+    """
+    Get the WiFi name
+    """
+
     process = subprocess.run(["/usr/sbin/iwgetid"], stdout=subprocess.PIPE)
     output = process.stdout.decode("utf-8").strip()
     if output:
@@ -96,6 +102,7 @@ def video_streaming_active():
     """
     check if uv4l process is present
     """
+
     process = subprocess.run(["ps", "auxwg"], stdout=subprocess.PIPE)
     processes_list = process.stdout.decode("utf-8").split("\n")
     return len([x for x in processes_list if "uv4l" in x]) > 0
@@ -474,7 +481,8 @@ def schedule_time_lapse():
     logging.info(" ".join(command_line))
 
     cron = CronTab(user="pi")
-    job = cron.new(command=" ".join(command_line), comment=comment)
+    job = cron.new(command=" ".join(command_line),
+                   comment=comment)
     try:
         job.setall(crontab_event)
     except Exception:
@@ -601,8 +609,11 @@ def schedule_video_recording():
 
     logging.info(" ".join(command_line))
 
+    comment = f'recording for {round(int(request.values["timeout"]) / 1000)} s'
+
     cron = CronTab(user="pi")
-    job = cron.new(command=" ".join(command_line))
+    job = cron.new(command=" ".join(command_line),
+                   comment=comment)
     try:
         job.setall(crontab_event)
     except Exception:
@@ -624,7 +635,7 @@ def view_video_recording_schedule():
     try:
         for job in cron:
             if "/usr/bin/raspivid" in job.command:
-                output.append([str(job.minutes), str(job.hours), str(job.dom), str(job.month), str(job.dow)])
+                output.append([str(job.minutes), str(job.hours), str(job.dom), str(job.month), str(job.dow), job.comment])
 
     except Exception:
         return {"error": True, "msg": f"Error during video recording view."}
