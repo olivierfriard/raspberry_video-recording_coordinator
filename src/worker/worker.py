@@ -6,8 +6,8 @@ to enable the service at boot:
 sudo systemctl enable worker
 """
 
-__version__ = "0.0.26"
-__version_date__ = "2021-10-06"
+__version__ = "27"
+__version_date__ = "2021-10-07"
 
 
 from crontab import CronTab
@@ -261,7 +261,7 @@ except Exception:
     security_key_sha256 = ""
 
 
-app = Flask(__name__, static_url_path='/static')
+app = Flask(__name__, static_url_path='/' + cfg.STATIC_DIR)
 
 thread = threading.Thread()
 
@@ -384,19 +384,19 @@ def video_streaming(action):
 
         try:
             subprocess.run(["sudo",
-                                  "uv4l",
-                                  "-nopreview",
-                                  "--auto-video_nr",
-                                  "--driver", "raspicam",
-                                  "--encoding", "mjpeg",
-                                  "--width", str(width),
-                                  "--height", str(height),
-                                  "--framerate", "5",
-                                  "--server-option", "--port=9090",
-                                  "--server-option", "--max-queued-connections=30",
-                                  "--server-option", "--max-streams=25",
-                                  "--server-option", "--max-threads=29",
-                                  ])
+                            "uv4l",
+                            "-nopreview",
+                            "--auto-video_nr",
+                            "--driver", "raspicam",
+                            "--encoding", "mjpeg",
+                            "--width", str(width),
+                            "--height", str(height),
+                            "--framerate", "5",
+                            "--server-option", "--port=9090",
+                            "--server-option", "--max-queued-connections=30",
+                            "--server-option", "--max-streams=25",
+                            "--server-option", "--max-threads=29",
+                            ])
             return {"msg": "video streaming started"}
         except Exception:
             return {"msg": "video streaming not started"}
@@ -672,6 +672,16 @@ def video_list():
                            for x in glob.glob(cfg.VIDEO_ARCHIVE + "/*.h264")]}
 
 
+@app.route("/pictures_list", methods=("GET", "POST",))
+@security_key_required
+def pictures_list():
+    """
+    Return the list of recorded pictures
+    """
+    return {"pictures_list": [(x.replace(cfg.TIME_LAPSE_ARCHIVE + "/", ""), pathlib.Path(x).stat().st_size)
+                           for x in glob.glob(cfg.TIME_LAPSE_ARCHIVE + "/*.jpg")]}
+
+
 @app.route("/get_video/<file_name>", methods=("GET", "POST",))
 @security_key_required
 def get_video(file_name):
@@ -750,7 +760,7 @@ def take_picture():
 
     # delete previous picture
     try:
-        completed = subprocess.run(["sudo", "rm", "-f" ,"static/live.jpg"])
+        completed = subprocess.run(["sudo", "rm", "-f" , pathlib.Path(cfg.STATIC_DIR) / pathlib.Path("live.jpg")])
     except Exception:
         pass
 
@@ -781,8 +791,6 @@ def take_picture():
 
         command_line.extend(["-o", pathlib.Path(cfg.TIME_LAPSE_ARCHIVE) / pathlib.Path(f"{socket.gethostname()}_%d").with_suffix(".jpg")])
 
-        # command_line.extend(["-o", f"static/pictures_archive/{socket.gethostname()}_" + "%04d.jpg"])
-
         try:
             subprocess.Popen(command_line)
         except:
@@ -792,7 +800,7 @@ def take_picture():
 
     else:
 
-        command_line.extend(["-o", "static/live.jpg"])
+        command_line.extend(["-o", pathlib.Path(cfg.STATIC_DIR) / pathlib.Path("live.jpg")])
         logging.info("command:" + (" ".join(command_line)))
         try:
             completed = subprocess.run(command_line)
@@ -833,6 +841,28 @@ def get_log():
     except Exception:
         return {"error": True}
 
+
+@app.route("/video_archive_dir")
+@security_key_required
+def video_archive_dir():
+    """
+    return the video archive dir
+    """
+    try:
+        return {"error": False, "msg": str(pathlib.Path("/") / pathlib.Path(cfg.STATIC_DIR) / pathlib.Path(cfg.VIDEO_ARCHIVE_DIR))}
+    except Exception:
+        return {"error": True}
+
+@app.route("/pictures_archive_dir")
+@security_key_required
+def pictures_archive_dir():
+    """
+    return the pictures archive dir
+    """
+    try:
+        return {"error": False, "msg": str(pathlib.Path("/") / pathlib.Path(cfg.STATIC_DIR) / pathlib.Path(cfg.PICTURES_ARCHIVE_DIR))}
+    except Exception:
+        return {"error": True}
 
 
 

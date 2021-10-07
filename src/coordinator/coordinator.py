@@ -16,7 +16,6 @@ from PyQt5.QtWidgets import (
     QApplication,
     QMainWindow,
     QHBoxLayout,
-    QPushButton,
     QSizePolicy,
     QMessageBox,
     QFileDialog,
@@ -56,7 +55,7 @@ import hashlib
 import platform
 
 import video_recording
-# import time_lapse
+import time_lapse
 import output_window
 
 try:
@@ -176,28 +175,28 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             # list of Raspberry Pi IP
             self.raspberry_ip = raspberry_ip
 
-        start = pyqtSignal(str, list)
+        start = pyqtSignal(str, list, str, str)
         progress = pyqtSignal(str)
         finished = pyqtSignal(list)
 
-        def run(self, raspberry_id, videos_list):
+        def run(self, raspberry_id, videos_list, download_dir, video_archive_dir):
 
             downloaded_video = []
             count = 0
             for video_file_name, video_size in sorted(videos_list):
 
-                if (pathlib.Path(cfg.VIDEO_ARCHIVE) / pathlib.Path(video_file_name)).is_file():
-                    if (pathlib.Path(cfg.VIDEO_ARCHIVE) / pathlib.Path(video_file_name)).stat().st_size == video_size:
+                if (pathlib.Path(download_dir) / pathlib.Path(video_file_name)).is_file():
+                    if (pathlib.Path(download_dir) / pathlib.Path(video_file_name)).stat().st_size == video_size:
                         count += 1
                         continue
 
                 logging.info(f"Downloading  {video_file_name} from {raspberry_id}")
 
                 with requests.get(
-                        f"{cfg.PROTOCOL}{self.raspberry_ip[raspberry_id]}{cfg.SERVER_PORT}/static/video_archive/{video_file_name}",
+                        f"{cfg.PROTOCOL}{self.raspberry_ip[raspberry_id]}{cfg.SERVER_PORT}{video_archive_dir}/{video_file_name}",
                         stream=True,
                         verify=False) as r:
-                    with open((pathlib.Path(cfg.VIDEO_ARCHIVE) / pathlib.Path(video_file_name)), "wb") as file_out:
+                    with open((pathlib.Path(download_dir) / pathlib.Path(video_file_name)), "wb") as file_out:
                         shutil.copyfileobj(r.raw, file_out)
 
                 logging.info(f"{video_file_name} downloaded from {raspberry_id}")
@@ -257,14 +256,14 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         Define connections between widget and functions
         """
         self.pb_scan_network.clicked.connect(self.scan_network)
-        self.rasp_list.itemClicked.connect(self.rasp_list_clicked)
+        self.rpi_list.itemClicked.connect(self.rpi_list_clicked)
 
         # menu
         self.actionExit.triggered.connect(sys.exit)
         self.actionShow_IP_address.triggered.connect(self.show_ip_list)
 
-        self.rasp_tw.setCurrentIndex(0)
-        self.rasp_tw.currentChanged.connect(self.rasp_tw_changed)
+        self.rpi_tw.setCurrentIndex(0)
+        self.rpi_tw.currentChanged.connect(self.rpi_tw_changed)
 
         # commands
         self.status_update_pb.clicked.connect(self.status_update_pb_clicked)
@@ -287,24 +286,11 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             self.picture_resolution_cb.addItem(resolution)
         self.picture_resolution_cb.setCurrentIndex(cfg.DEFAULT_PICTURE_RESOLUTION)
 
-        #self.picture_resolution_cb.currentIndexChanged.connect(self.picture_resolution_changed)
-        self.picture_brightness_sb.valueChanged.connect(self.picture_brightness_changed)
-        self.picture_contrast_sb.valueChanged.connect(self.picture_contrast_changed)
-        self.picture_sharpness_sb.valueChanged.connect(self.picture_sharpness_changed)
-        self.picture_saturation_sb.valueChanged.connect(self.picture_saturation_changed)
-        self.picture_iso_sb.valueChanged.connect(self.picture_iso_changed)
-        self.picture_rotation_sb.valueChanged.connect(self.picture_rotation_changed)
-        self.picture_hflip_cb.clicked.connect(self.picture_hflip_changed)
-        self.picture_vflip_cb.clicked.connect(self.picture_vflip_changed)
-        self.picture_annotation_cb.clicked.connect(self.picture_annotation_changed)
-
-        self.time_lapse_cb.clicked.connect(self.time_lapse_changed)
-        self.time_lapse_duration_sb.valueChanged.connect(self.time_lapse_duration_changed)
-        self.time_lapse_wait_sb.valueChanged.connect(self.time_lapse_wait_changed)
-
         self.configure_picture_pb.clicked.connect(self.schedule_time_lapse_clicked)
         self.view_picture_schedule_pb.clicked.connect(self.view_time_lapse_schedule_clicked)
         self.delete_picture_schedule_pb.clicked.connect(self.delete_time_lapse_schedule_clicked)
+
+        self.download_pictures_pb.clicked.connect(self.download_pictures_clicked)
 
         # video streaming
         self.pb_start_video_streaming.clicked.connect(partial(self.video_streaming_clicked, "start"))
@@ -327,21 +313,6 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         self.all_video_cb.clicked.connect(self.all_video_clicked)
         self.all_new_video_cb.clicked.connect(self.all_new_video_clicked)
 
-        '''
-        self.video_mode_cb.currentIndexChanged.connect(self.video_mode_changed)
-        self.video_duration_sb.valueChanged.connect(self.video_duration_changed)
-        self.video_quality_sb.valueChanged.connect(self.video_quality_changed)
-        self.video_fps_sb.valueChanged.connect(self.video_fps_changed)
-
-        # self.video_brightness_sb.valueChanged.connect(self.video_brightness_changed)
-        self.video_contrast_sb.valueChanged.connect(self.video_contrast_changed)
-        self.video_sharpness_sb.valueChanged.connect(self.video_sharpness_changed)
-        self.video_saturation_sb.valueChanged.connect(self.video_saturation_changed)
-        self.video_iso_sb.valueChanged.connect(self.video_iso_changed)
-        self.video_rotation_sb.valueChanged.connect(self.video_rotation_changed)
-        self.video_hflip_cb.clicked.connect(self.video_hflip_changed)
-        self.video_vflip_cb.clicked.connect(self.video_vflip_changed)
-        '''
         mediaPlayer = QMediaPlayer(None, QMediaPlayer.VideoSurface)
         self.media_list = mediaPlayer
         videoWidget = QVideoWidget()
@@ -370,7 +341,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         self.time_synchro_all_pb.clicked.connect(self.time_synchro_all)
         self.shutdown_all_pb.clicked.connect(self.shutdown_all_rpi)
 
-    def rasp_tw_changed(self, index):
+    def rpi_tw_changed(self, index):
         """
         raspberry Pi tablewidget change index
         """
@@ -385,64 +356,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             # update crontab content
             self.view_time_lapse_schedule_clicked()
 
-    '''
-    def picture_resolution_changed(self, idx):
-        """
-        update picture resolution in raspberry info
-        """
-        if self.current_raspberry_id:
-            self.raspberry_info[
-                self.current_raspberry_id]["picture resolution"] = self.picture_resolution_cb.currentText()
-    '''
 
-    def picture_brightness_changed(self):
-        if self.current_raspberry_id:
-            self.raspberry_info[self.current_raspberry_id]["picture brightness"] = self.picture_brightness_sb.value()
-
-    def picture_contrast_changed(self):
-        if self.current_raspberry_id:
-            self.raspberry_info[self.current_raspberry_id]["picture contrast"] = self.picture_contrast_sb.value()
-
-    def picture_sharpness_changed(self):
-        if self.current_raspberry_id:
-            self.raspberry_info[self.current_raspberry_id]["picture sharpness"] = self.picture_sharpness_sb.value()
-
-    def picture_saturation_changed(self):
-        if self.current_raspberry_id:
-            self.raspberry_info[self.current_raspberry_id]["picture saturation"] = self.picture_saturation_sb.value()
-
-    def picture_iso_changed(self):
-        if self.current_raspberry_id:
-            self.raspberry_info[self.current_raspberry_id]["picture iso"] = self.picture_iso_sb.value()
-
-    def picture_rotation_changed(self):
-        if self.current_raspberry_id:
-            self.raspberry_info[self.current_raspberry_id]["picture rotation"] = self.picture_rotation_sb.value()
-
-    def picture_hflip_changed(self):
-        if self.current_raspberry_id:
-            self.raspberry_info[self.current_raspberry_id]["picture hflip"] = self.picture_hflip_cb.isChecked()
-
-    def picture_vflip_changed(self):
-        if self.current_raspberry_id:
-            self.raspberry_info[self.current_raspberry_id]["picture vflip"] = self.picture_vflip_cb.isChecked()
-
-    def picture_annotation_changed(self):
-        if self.current_raspberry_id:
-            self.raspberry_info[
-                self.current_raspberry_id]["picture annotation"] = self.picture_annotation_cb.isChecked()
-
-    def time_lapse_changed(self):
-        if self.current_raspberry_id:
-            self.raspberry_info[self.current_raspberry_id]["time lapse"] = self.time_lapse_cb.isChecked()
-
-    def time_lapse_duration_changed(self):
-        if self.current_raspberry_id:
-            self.raspberry_info[self.current_raspberry_id]["time lapse duration"] = self.time_lapse_duration_sb.value()
-
-    def time_lapse_wait_changed(self):
-        if self.current_raspberry_id:
-            self.raspberry_info[self.current_raspberry_id]["time lapse wait"] = self.time_lapse_wait_sb.value()
 
 
     '''
@@ -462,7 +376,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         return hlayout_all_buttons
     '''
 
-    def rasp_list_clicked(self, item):
+    def rpi_list_clicked(self, item):
         """
         update the current Raspberry Pi
         """
@@ -473,7 +387,8 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         self.update_raspberry_dashboard(self.current_raspberry_id)
         self.update_raspberry_display(self.current_raspberry_id)
 
-        self.rasp_tw.setEnabled(True)
+        self.rpi_tw.setEnabled(True)
+
 
     def request(self, raspberry_id, route, data={}, time_out=None):
         """
@@ -661,6 +576,22 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         self.download_videos(self.current_raspberry_id, download_dir=directory_path)
 
 
+    @verif
+    def download_pictures_clicked(self):
+        """
+        Download pictures on current Raspberry Pi
+        """
+
+        # select a directory to save pictures
+        directory_path = str(QFileDialog.getExistingDirectory(self, "Select Directory",
+                                                              str(pathlib.Path.home()),
+                                                              options=QFileDialog.ShowDirsOnly))
+
+
+        time_lapse.download_pictures(self, self.current_raspberry_id, directory_path)
+
+
+
     def download_videos(self, raspberry_id, download_dir=""):
         """
         download all video from Raspberry Pi
@@ -702,6 +633,20 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
                         video_list.append((video_file_name, video_size))
                         break
 
+        # get video archive dir
+        response = self.request(raspberry_id, "/video_archive_dir")
+        if response == None:
+            return
+        if response.status_code != 200:
+            self.rasp_output_lb.setText(
+                f"Error requiring the video_archive_dir (status code: {response.status_code})")
+            return
+        if response.json().get("error", True):
+            self.rasp_output_lb.setText(f"Error requiring the video_archive_dir")
+            return
+        video_archive_dir = response.json().get("msg", "")
+
+
         self.my_thread1 = QThread(parent=self)
         self.my_thread1.start()
         self.my_worker1 = self.Download_videos_worker(self.raspberry_ip)
@@ -710,7 +655,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         self.my_worker1.start.connect(self.my_worker1.run)
         self.my_worker1.progress.connect(thread_progress)
         self.my_worker1.finished.connect(thread_finished)
-        self.my_worker1.start.emit(raspberry_id, video_list)
+        self.my_worker1.start.emit(raspberry_id, video_list, download_dir, video_archive_dir)
 
     '''
     def download_all_video_from_all(self):
@@ -876,15 +821,21 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         self.update_raspberry_display(raspberry_id)
 
 
-    def populate_rasp_list(self):
+    def populate_rpi_list(self):
         """
         Populate the list widget with the Raspberry Pi that were found
         """
         self.raspberry_info = {}
-        self.rasp_list.clear()
+        self.rpi_list.clear()
         for raspberry_id in sorted(self.raspberry_ip.keys()):
-            self.rasp_list.addItem(QListWidgetItem(raspberry_id))
+            item = QListWidgetItem(raspberry_id)
+            self.rpi_list.addItem(item)
+            # if one Raspberry Pi found select it
             self.raspberry_info[raspberry_id] = dict(cfg.RPI_DEFAULTS)
+            if len(self.raspberry_ip) == 1:
+                self.rpi_list.setCurrentItem(item)
+                # self.rpi_tw.setEnabled(True)
+                self.rpi_list_clicked(item)
 
 
     def connect(self, ip_address):
@@ -950,9 +901,12 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             ip_base_address, interval = ip_config[0], ip_config[1]
             self.scan_raspberries(ip_base_address, interval)
 
-            self.message_box.setText(f"Scanning done: {len(self.raspberry_ip)} Raspberry Pi found on {ip_config[0]}")
+            if len(self.raspberry_ip):
+                self.message_box.setText(f"Scanning done: {len(self.raspberry_ip)} Raspberry Pi found on {ip_config[0]}")
+            else:
+                self.message_box.setText(f"Scanning done. No Raspberry Pi found were found on {ip_config[0]}")
 
-        self.populate_rasp_list()
+        self.populate_rpi_list()
 
         self.get_status_for_all_rpi()
 
@@ -1018,19 +972,19 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
 
         # tabs icon
         if self.raspberry_info[raspberry_id]["status"].get("video_recording", False):
-            self.rasp_tw.setTabIcon(cfg.VIDEO_REC_TAB_INDEX, QIcon(f"red.png"))
+            self.rpi_tw.setTabIcon(cfg.VIDEO_REC_TAB_INDEX, QIcon(f"red.png"))
         else:
-            self.rasp_tw.setTabIcon(cfg.VIDEO_REC_TAB_INDEX, QIcon())
+            self.rpi_tw.setTabIcon(cfg.VIDEO_REC_TAB_INDEX, QIcon())
 
         if self.raspberry_info[raspberry_id]["status"].get("video_streaming_active", False):
-            self.rasp_tw.setTabIcon(cfg.VIDEO_STREAMING_TAB_INDEX, QIcon(f"red.png"))
+            self.rpi_tw.setTabIcon(cfg.VIDEO_STREAMING_TAB_INDEX, QIcon(f"red.png"))
         else:
-            self.rasp_tw.setTabIcon(cfg.VIDEO_STREAMING_TAB_INDEX, QIcon())
+            self.rpi_tw.setTabIcon(cfg.VIDEO_STREAMING_TAB_INDEX, QIcon())
 
         if self.raspberry_info[raspberry_id]["status"].get("time_lapse_active", False):
-            self.rasp_tw.setTabIcon(cfg.TIME_LAPSE_TAB_INDEX, QIcon(f"red.png"))
+            self.rpi_tw.setTabIcon(cfg.TIME_LAPSE_TAB_INDEX, QIcon(f"red.png"))
         else:
-            self.rasp_tw.setTabIcon(cfg.TIME_LAPSE_TAB_INDEX, QIcon())
+            self.rpi_tw.setTabIcon(cfg.TIME_LAPSE_TAB_INDEX, QIcon())
 
     '''
     def send_command(self, rb):
@@ -1261,9 +1215,9 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         """
 
         color = "green" if (self.raspberry_info[raspberry_id]["status"]["status"] == "OK") else "red"
-        for x in range(self.rasp_list.count()):
-            if self.rasp_list.item(x).text() == raspberry_id:
-                self.rasp_list.item(x).setIcon(QIcon(f"{color}.png"))
+        for x in range(self.rpi_list.count()):
+            if self.rpi_list.item(x).text() == raspberry_id:
+                self.rpi_list.item(x).setIcon(QIcon(f"{color}.png"))
 
 
     def get_status_for_all_rpi(self):

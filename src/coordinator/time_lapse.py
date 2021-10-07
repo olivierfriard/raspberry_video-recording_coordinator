@@ -1,8 +1,18 @@
 """
+Raspberry Pi coordinator
+
 time lapse module
 """
 
 from PyQt5.QtWidgets import (QMessageBox, QTableWidgetItem, )
+from PyQt5.QtCore import (QThread, pyqtSignal, QObject)
+
+import pathlib as pl
+import config_coordinator_local as cfg
+import logging
+import shutil
+import requests
+
 
 def schedule_time_lapse(self, raspberry_id):
     """
@@ -199,3 +209,108 @@ def delete_time_lapse_schedule(self, raspberry_id):
     self.rasp_output_lb.setText(response.json().get("msg", "Error during deletion of the time lapse scheduling"))
 
     self.view_time_lapse_schedule_clicked()
+
+
+def get_pictures_list(self, raspberry_id):
+    """
+    request the list of recorded pictures to Raspberry Pi
+    """
+
+    response = self.request(raspberry_id, "/pictures_list")
+    if response == None:
+        return
+
+    if response.status_code != 200:
+        self.rasp_output_lb.setText(
+            f"Error requiring the list of recorded pictures (status code: {response.status_code})")
+        return
+    if "pictures_list" not in response.json():
+        self.rasp_output_lb.setText(f"Error requiring the list of recorded pictures")
+        return
+
+    return sorted(list(response.json()["pictures_list"]))
+
+
+class Download_pict_worker(QObject):
+
+    def __init__(self, raspberry_ip):
+        super().__init__()
+        # list of Raspberry Pi IP
+        self.raspberry_ip = raspberry_ip
+
+    start = pyqtSignal(str, list, str, str)
+    progress = pyqtSignal(str)
+    finished = pyqtSignal(list)
+
+    def run(self, raspberry_id, pictures_list, download_dir, remote_pictures_archive_dir):
+
+        downloaded_pictures = []
+        count = 0
+        for picture_file_name, picture_size in sorted(pictures_list):
+
+            if (pl.Path(download_dir) / pl.Path(picture_file_name)).is_file():
+                if (pl.Path(download_dir) / pl.Path(picture_file_name)).stat().st_size == picture_size:
+                    count += 1
+                    continue
+
+            logging.info(f"Downloading {picture_file_name} from {raspberry_id}")
+
+            with requests.get(
+                    f"{cfg.PROTOCOL}{self.raspberry_ip[raspberry_id]}{cfg.SERVER_PORT}{remote_pictures_archive_dir}/{picture_file_name}",
+                    stream=True,
+                    verify=False) as r:
+                with open((pl.Path(download_dir) / pl.Path(picture_file_name)), "wb") as file_out:
+                    shutil.copyfileobj(r.raw, file_out)
+
+            logging.info(f"{picture_file_name} downloaded from {raspberry_id}")
+
+            downloaded_pictures.append(picture_file_name)
+            count += 1
+            self.progress.emit(f"{count}/{len(pictures_list)} pictures downloaded")
+
+        self.finished.emit(downloaded_pictures)
+
+
+
+def download_pictures(self, raspberry_id, download_dir):
+    """
+    Download pictures from Raspberry Pi
+    """
+
+    def thread_progress(output):
+        self.rasp_output_lb.setText(output)
+
+    def thread_finished(downloaded_pictures_list):
+        self.rasp_output_lb.setText(f"{len(downloaded_pictures_list)} pictures downloaded in <b>{download_dir}</b>")
+        self.video_list_clicked()
+        self.pict_download_thread.quit
+
+    remote_pictures_list = get_pictures_list(self, raspberry_id)
+    if len(remote_pictures_list) == 0:
+        self.rasp_output_lb.setText(f"No pictures to download")
+        return
+
+    # get pictures archive directory
+    response = self.request(raspberry_id, "/pictures_archive_dir")
+    if response == None:
+        return
+    if response.status_code != 200:
+        self.rasp_output_lb.setText(
+            f"Error requiring the pictures archive directory (status code: {response.status_code})")
+        return
+    if response.json().get("error", True):
+        self.rasp_output_lb.setText(f"Error requiring the pictures archive directory")
+        return
+    remote_pictures_archive_dir = response.json().get("msg", "")
+
+
+    self.pict_download_thread = QThread(parent=self)
+    self.pict_download_thread.start()
+    self.pict_download_worker = Download_pict_worker(self.raspberry_ip)
+    self.pict_download_worker.moveToThread(self.pict_download_thread)
+
+    self.pict_download_worker.start.connect(self.pict_download_worker.run)
+    self.pict_download_worker.progress.connect(thread_progress)
+    self.pict_download_worker.finished.connect(thread_finished)
+    self.pict_download_worker.start.emit(raspberry_id, remote_pictures_list, download_dir, remote_pictures_archive_dir)
+

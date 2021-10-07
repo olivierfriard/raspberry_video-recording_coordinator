@@ -116,7 +116,7 @@
              </layout>
             </item>
             <item>
-             <widget class="QListWidget" name="rasp_list"/>
+             <widget class="QListWidget" name="rpi_list"/>
             </item>
             <item>
              <widget class="QLineEdit" name="message_box"/>
@@ -140,12 +140,12 @@
              </widget>
             </item>
             <item>
-             <widget class="QTabWidget" name="rasp_tw">
+             <widget class="QTabWidget" name="rpi_tw">
               <property name="enabled">
                <bool>false</bool>
               </property>
               <property name="currentIndex">
-               <number>3</number>
+               <number>1</number>
               </property>
               <widget class="QWidget" name="status_tab">
                <attribute name="title">
@@ -804,11 +804,28 @@
                          </layout>
                         </item>
                         <item>
-                         <widget class="QPushButton" name="configure_picture_pb">
-                          <property name="text">
-                           <string>Add schedule to Raspberry Pi</string>
-                          </property>
-                         </widget>
+                         <layout class="QHBoxLayout" name="horizontalLayout_30">
+                          <item>
+                           <widget class="QPushButton" name="configure_picture_pb">
+                            <property name="text">
+                             <string>Add schedule to Raspberry Pi</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <spacer name="horizontalSpacer_24">
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                             <size>
+                              <width>40</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                           </spacer>
+                          </item>
+                         </layout>
                         </item>
                         <item>
                          <spacer name="verticalSpacer_3">
@@ -917,33 +934,33 @@
                           </item>
                          </layout>
                         </item>
-                        <item>
-                         <layout class="QHBoxLayout" name="horizontalLayout_29">
-                          <item>
-                           <widget class="QPushButton" name="download_pictures_pb">
-                            <property name="text">
-                             <string>Download pictures</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item>
-                           <spacer name="horizontalSpacer_23">
-                            <property name="orientation">
-                             <enum>Qt::Horizontal</enum>
-                            </property>
-                            <property name="sizeHint" stdset="0">
-                             <size>
-                              <width>40</width>
-                              <height>20</height>
-                             </size>
-                            </property>
-                           </spacer>
-                          </item>
-                         </layout>
-                        </item>
                        </layout>
                       </widget>
                      </widget>
+                    </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_29">
+                      <item>
+                       <widget class="QPushButton" name="download_pictures_pb">
+                        <property name="text">
+                         <string>Download pictures</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <spacer name="horizontalSpacer_23">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>40</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                     </layout>
                     </item>
                    </layout>
                   </widget>
@@ -1326,7 +1343,7 @@
                    <item>
                     <widget class="QTabWidget" name="video_rec_schedule_tw">
                      <property name="currentIndex">
-                      <number>1</number>
+                      <number>0</number>
                      </property>
                      <widget class="QWidget" name="add_video_rec_schedule_tab">
                       <attribute name="title">
@@ -1442,11 +1459,28 @@
                         </layout>
                        </item>
                        <item>
-                        <widget class="QPushButton" name="configure_video_recording_pb">
-                         <property name="text">
-                          <string>Add schedule to Raspberry Pi</string>
-                         </property>
-                        </widget>
+                        <layout class="QHBoxLayout" name="horizontalLayout_23">
+                         <item>
+                          <widget class="QPushButton" name="configure_video_recording_pb">
+                           <property name="text">
+                            <string>Add schedule to Raspberry Pi</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <spacer name="horizontalSpacer_15">
+                           <property name="orientation">
+                            <enum>Qt::Horizontal</enum>
+                           </property>
+                           <property name="sizeHint" stdset="0">
+                            <size>
+                             <width>40</width>
+                             <height>20</height>
+                            </size>
+                           </property>
+                          </spacer>
+                         </item>
+                        </layout>
                        </item>
                        <item>
                         <spacer name="verticalSpacer_2">
@@ -1628,6 +1662,13 @@
             </item>
             <item>
              <widget class="QLabel" name="rasp_output_lb">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="text">
                <string/>
               </property>
