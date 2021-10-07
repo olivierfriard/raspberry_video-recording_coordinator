@@ -639,12 +639,12 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             return
         if response.status_code != 200:
             self.rasp_output_lb.setText(
-                f"Error requiring the video_archive_dir (status code: {response.status_code})")
+                f"Error requiring the video archive dir (status code: {response.status_code})")
             return
         if response.json().get("error", True):
-            self.rasp_output_lb.setText(f"Error requiring the video_archive_dir")
+            self.rasp_output_lb.setText(f"Error requiring the video archive dir")
             return
-        video_archive_dir = response.json().get("msg", "")
+        remote_video_archive_dir = response.json().get("msg", "")
 
 
         self.my_thread1 = QThread(parent=self)
@@ -655,7 +655,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         self.my_worker1.start.connect(self.my_worker1.run)
         self.my_worker1.progress.connect(thread_progress)
         self.my_worker1.finished.connect(thread_finished)
-        self.my_worker1.start.emit(raspberry_id, video_list, download_dir, video_archive_dir)
+        self.my_worker1.start.emit(raspberry_id, video_list, download_dir, remote_video_archive_dir)
 
     '''
     def download_all_video_from_all(self):
