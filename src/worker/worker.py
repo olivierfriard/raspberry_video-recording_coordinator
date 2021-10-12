@@ -846,7 +846,7 @@ def get_log():
 @security_key_required
 def video_archive_dir():
     """
-    return the video archive dir
+    return the video archive directory
     """
     try:
         return {"error": False, "msg": str(pathlib.Path("/") / pathlib.Path(cfg.STATIC_DIR) / pathlib.Path(cfg.VIDEO_ARCHIVE_DIR))}
@@ -857,7 +857,7 @@ def video_archive_dir():
 @security_key_required
 def pictures_archive_dir():
     """
-    return the pictures archive dir
+    return the pictures archive directory
     """
     try:
         return {"error": False, "msg": str(pathlib.Path("/") / pathlib.Path(cfg.STATIC_DIR) / pathlib.Path(cfg.PICTURES_ARCHIVE_DIR))}

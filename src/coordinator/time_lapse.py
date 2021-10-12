@@ -235,7 +235,7 @@ class Download_pict_worker(QObject):
 
     def __init__(self, raspberry_ip):
         super().__init__()
-        # list of Raspberry Pi IP
+        # list of Raspberry Pi IP addresses
         self.raspberry_ip = raspberry_ip
 
     start = pyqtSignal(str, list, str, str)

@@ -4,7 +4,6 @@ Raspberry Pi coordinator (via TCP/IP)
 
 TODO:
 
-* CLIENT_PROJECT_DIRECTORY: ask to raspberry
 * scan network with QThread
 
 """
