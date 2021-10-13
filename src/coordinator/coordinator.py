@@ -876,7 +876,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         else:
             self.rpi_tw.setTabIcon(cfg.TIME_LAPSE_TAB_INDEX, QIcon())
 
-        connections.update_rpi_settings(self)
+        connections.update_rpi_settings(self, raspberry_id)
 
 
     '''
