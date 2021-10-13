@@ -175,3 +175,13 @@ def video_mode_changed(self):
     """
     if self.current_raspberry_id:
         self.raspberry_info[self.current_raspberry_id]["video mode"] = self.video_mode_cb.currentText()
+
+
+def update_rpi_settings(self, raspberry_id):
+    # video settings
+
+    self.video_quality_sb.setValue(self.raspberry_info[raspberry_id]["video quality"])
+    self.video_fps_sb.setValue(self.raspberry_info[raspberry_id]["FPS"])
+    self.video_duration_sb.setValue(self.raspberry_info[raspberry_id]["video duration"])
+    self.video_mode_cb.setCurrentText(self.raspberry_info[raspberry_id]["video mode"])
+
