@@ -180,6 +180,7 @@ def video_mode_changed(self):
 def update_rpi_settings(self, raspberry_id):
     # video settings
 
+    self.video_vflip_cb.setChecked(self.raspberry_info[raspberry_id]["video vflip"])
     self.video_quality_sb.setValue(self.raspberry_info[raspberry_id]["video quality"])
     self.video_fps_sb.setValue(self.raspberry_info[raspberry_id]["FPS"])
     self.video_duration_sb.setValue(self.raspberry_info[raspberry_id]["video duration"])
