@@ -41,10 +41,7 @@ def get_widgets_list(self):
 def connect(self):
 
     for w in get_widgets_list(self):
-        print('1', w.accessibleName())
-        print(w.objectName())
         if w.accessibleName():
-            print(isinstance(w, QComboBox))
             if isinstance(w, QComboBox):
                 w.currentIndexChanged.connect(lambda: widget_value_changed(self))
             elif isinstance(w, QSpinBox):

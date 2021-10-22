@@ -6,8 +6,8 @@ to enable the service at boot:
 sudo systemctl enable worker
 """
 
-__version__ = "27"
-__version_date__ = "2021-10-07"
+__version__ = "28"
+__version_date__ = "2021-10-22"
 
 
 from crontab import CronTab
@@ -800,7 +800,7 @@ def take_picture():
 
     else:
 
-        command_line.extend(["-o", pathlib.Path(cfg.STATIC_DIR) / pathlib.Path("live.jpg")])
+        command_line.extend(["-o", str(pathlib.Path(cfg.STATIC_DIR) / pathlib.Path("live.jpg"))])
         logging.info("command:" + (" ".join(command_line)))
         try:
             completed = subprocess.run(command_line)

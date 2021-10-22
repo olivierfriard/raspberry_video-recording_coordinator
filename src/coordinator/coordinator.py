@@ -46,12 +46,13 @@ import socket
 import fcntl
 import struct
 import base64
-import json
 from PIL.ImageQt import ImageQt
 from multiprocessing.pool import ThreadPool
 import shutil
 import hashlib
 import platform
+
+import argparse
 
 import video_recording
 import time_lapse
@@ -181,7 +182,6 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         #super(MainWindow, self).__init__(parent)
         self.setupUi(self)
 
-
         connections.connect(self)
 
         self.define_connections()
@@ -193,14 +193,17 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
 
         self.setGeometry(0, 0, 1300, 768)
 
-        # read security key from environment
-        try:
-            self.security_key = os.environ["RPI_CONFIG_SECURITY_KEY"]
-        except KeyError:
-            self.security_key, ok = QInputDialog.getText(self, "Security key to access the Raspberry Pi",
-                                                         "Security key")
-            if not ok:
-                sys.exit()
+        if app.password is not None:
+            self.security_key = app.password
+        else:
+            # read security key from environment
+            try:
+                self.security_key = os.environ["RPI_CONFIG_SECURITY_KEY"]
+            except KeyError:
+                self.security_key, ok = QInputDialog.getText(self, "Security key to access the Raspberry Pi",
+                                                            "Security key")
+                if not ok:
+                    sys.exit()
 
         self.scan_network()
 
@@ -401,8 +404,9 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             return response
         except requests.exceptions.ConnectionError:
             self.rasp_output_lb.setText(f"Failed to establish a connection")
-            self.get_raspberry_status(raspberry_id)
-            self.update_raspberry_display(raspberry_id)
+            #self.get_raspberry_status(raspberry_id)
+            self.scan_network()
+            #self.update_raspberry_display(raspberry_id)
             return None
 
     def verif(func):
@@ -709,17 +713,38 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         """
         Populate the list widget with the Raspberry Pi that were found
         """
-        self.raspberry_info = {}
+
+        raspberry_info_updated = {}
+
+        # self.raspberry_info = {}
+
+
+
         self.rpi_list.clear()
         for raspberry_id in sorted(self.raspberry_ip.keys()):
             item = QListWidgetItem(raspberry_id)
             self.rpi_list.addItem(item)
             # if one Raspberry Pi found select it
-            self.raspberry_info[raspberry_id] = dict(cfg.RPI_DEFAULTS)
+            raspberry_info_updated[raspberry_id] = dict(cfg.RPI_DEFAULTS)
             if len(self.raspberry_ip) == 1:
                 self.rpi_list.setCurrentItem(item)
-                # self.rpi_tw.setEnabled(True)
-                self.rpi_list_clicked(item)
+
+                # self.rpi_list_clicked(item)
+
+        # remove rpi that does not respond
+        rpi_id_to_remove = []
+        for id in self.raspberry_info:
+            if id not in raspberry_info_updated:
+                rpi_id_to_remove.append(id)
+
+        for id in rpi_id_to_remove:
+            del self.raspberry_info[id]
+        
+        # add new discovered rpi
+        for id in self.raspberry_ip:
+            if id not in self.raspberry_info:
+                self.raspberry_info[id] = dict(cfg.RPI_DEFAULTS)
+
 
 
     def connect(self, ip_address):
@@ -776,6 +801,8 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
     def scan_network(self):
         """
         scan all networks defined in IP_RANGES
+        populate the raspberry pi list
+        ask status
         """
         self.message_box.setText("Scanning network...")
         app.processEvents()
@@ -1069,7 +1096,8 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
 
         response = self.request(raspberry_id, "/status", time_out=cfg.TIME_OUT)
         if response == None:
-            self.raspberry_info[raspberry_id]["status"] = {"status": "not reachable"}
+            if raspberry_id in self.raspberry_info:
+                self.raspberry_info[raspberry_id]["status"] = {"status": "not reachable"}
             return {"status": "not reachable"}
         if response.status_code != 200:
             self.raspberry_info[raspberry_id]["status"] = {
@@ -1077,8 +1105,11 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             }
             return {"status": f"not available (status code: {response.status_code})"}
 
+        print(f"{self.raspberry_info = }")
+
         self.raspberry_info[raspberry_id]["status"] = response.json()
         return response.json()
+
 
     def status_update_pb_clicked(self):
         """
@@ -1112,12 +1143,16 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         get status for all Raspberries Pi
         """
 
+        print("get_status_for_all_rpi")
+
         threads = []
         for raspberry_id in self.raspberry_ip:
             threads.append(threading.Thread(target=self.get_raspberry_status, args=(raspberry_id,)))
             threads[-1].start()
         for x in threads:
             x.join()
+
+        print("thread finished")
 
         for raspberry_id in self.raspberry_ip:
             self.update_raspberry_display(raspberry_id)
@@ -1143,26 +1178,8 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         Stop the time lapse
         """
 
-        self.stop_time_lapse(self.current_raspberry_id)
+        time_lapse.stop_time_lapse(self, self.current_raspberry_id)
 
-    def stop_time_lapse(self, raspberry_id):
-        """
-        Stop the time lapse
-        """
-        if raspberry_id not in self.raspberry_ip:
-            return
-
-        response = self.request(raspberry_id, "/stop_time_lapse")
-        if response == None:
-            return
-
-        if response.status_code != 200:
-            self.rasp_output_lb.setText(f"Error trying to stop time lapse (status code: {response.status_code})")
-            return
-        self.rasp_output_lb.setText(response.json().get("msg", "Error during stopping time lapse"))
-        self.get_raspberry_status(raspberry_id)
-        self.update_raspberry_display(raspberry_id)
-        self.update_raspberry_dashboard(raspberry_id)
 
     @verif
     def start_video_recording_clicked(self):
@@ -1240,11 +1257,20 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
 
 
 if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser(description="",)
+    parser.add_argument('-p', "--password", action="store", dest="password")
+    parser.add_argument("-v", "--version", action='version', version=f"%(prog)s v.{__version__} {__version_date__} (c) Olivier Friard 2021", help="Display the help")
+    args = parser.parse_args()
+
     app = QApplication(sys.argv)
     app.setApplicationName("Raspberry Pi coordinator")
+    app.password = args.password
     rpi_coordinator = RPI_coordinator()
 
+
     #apply_stylesheet(app, theme='light_blue.xml', invert_secondary=True,)
+
 
     rpi_coordinator.show()
     sys.exit(app.exec_())

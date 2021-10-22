@@ -98,6 +98,26 @@ def take_picture(self, raspberry_id: str, mode: str):
         self.update_raspberry_dashboard(raspberry_id)
 
 
+def stop_time_lapse(self, raspberry_id):
+    """
+    Stop the time lapse
+    """
+    if raspberry_id not in self.raspberry_ip:
+        return
+
+    response = self.request(raspberry_id, "/stop_time_lapse")
+    if response == None:
+        return
+
+    if response.status_code != 200:
+        self.rasp_output_lb.setText(f"Error trying to stop time lapse (status code: {response.status_code})")
+        return
+    self.rasp_output_lb.setText(response.json().get("msg", "Error during stopping time lapse"))
+    self.get_raspberry_status(raspberry_id)
+    self.update_raspberry_display(raspberry_id)
+    self.update_raspberry_dashboard(raspberry_id)
+
+
 
 def schedule_time_lapse(self, raspberry_id):
     """
@@ -277,6 +297,8 @@ def view_time_lapse_schedule(self, raspberry_id):
             self.time_lapse_schedule_table.setItem(i, j, QTableWidgetItem(tokens[j]))
 
     self.time_lapse_schedule_table.resizeColumnsToContents()
+
+
 
 
 def delete_time_lapse_schedule(self, raspberry_id):
