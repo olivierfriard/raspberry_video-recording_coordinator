@@ -3,186 +3,91 @@ Raspberry Pi coordinator
 
 connections
 """
+from PyQt5.QtWidgets import (QSpinBox, QCheckBox, QComboBox)
+import pprint
+
+
+def get_widgets_list(self):
+
+    return [
+            self.video_mode_cb,
+            self.video_duration_sb,
+            self.video_quality_sb,
+            self.video_fps_sb,
+            self.video_rotation_sb,
+            self.video_hflip_cb,
+            self.video_vflip_cb,
+            self.video_brightness_sb,
+            self.video_contrast_sb,
+            self.video_sharpness_sb,
+            self.video_saturation_sb,
+            self.video_iso_sb,
+            self.picture_resolution_cb,
+            self.picture_rotation_sb,
+            self.picture_hflip_cb,
+            self.picture_vflip_cb,
+            self.picture_brightness_sb,
+            self.picture_contrast_sb,
+            self.picture_sharpness_sb,
+            self.picture_saturation_sb,
+            self.picture_iso_sb,
+            self.picture_annotation_cb,
+            self.time_lapse_cb,
+            self.time_lapse_wait_sb,
+            self.time_lapse_duration_sb,
+            ]
 
 
 
 def connect(self):
 
-    self.picture_resolution_cb.currentIndexChanged.connect(lambda: picture_resolution_changed(self))
-    self.picture_brightness_sb.valueChanged.connect(lambda: picture_brightness_changed(self))
-    self.picture_contrast_sb.valueChanged.connect(lambda: picture_contrast_changed(self))
-    self.picture_sharpness_sb.valueChanged.connect(lambda: picture_sharpness_changed(self))
-    self.picture_saturation_sb.valueChanged.connect(lambda: picture_saturation_changed(self))
-    self.picture_iso_sb.valueChanged.connect(lambda: picture_iso_changed(self))
-    self.picture_rotation_sb.valueChanged.connect(lambda: picture_rotation_changed(self))
-    self.picture_hflip_cb.clicked.connect(lambda: picture_hflip_changed(self))
-    self.picture_vflip_cb.clicked.connect(lambda: picture_vflip_changed(self))
-    self.picture_annotation_cb.clicked.connect(lambda: picture_annotation_changed(self))
+    for w in get_widgets_list(self):
+        print('1', w.accessibleName())
+        print(w)
+        if w.accessibleName():
+            print(isinstance(w, QComboBox))
+            if isinstance(w, QComboBox):
+                w.currentIndexChanged.connect(lambda: widget_value_changed(self))
+            elif isinstance(w, QSpinBox):
+                w.valueChanged.connect(lambda: widget_value_changed(self))
+            elif isinstance(w, QCheckBox):
+                w.clicked.connect(lambda: widget_value_changed(self))
+            else:
+                raise
+        else:
+            raise        
 
-    self.time_lapse_cb.clicked.connect(lambda: time_lapse_changed(self))
-    self.time_lapse_duration_sb.valueChanged.connect(lambda: time_lapse_duration_changed(self))
-    self.time_lapse_wait_sb.valueChanged.connect(lambda: time_lapse_wait_changed(self))
-
-    self.video_brightness_sb.valueChanged.connect(lambda: video_brightness_changed(self))
-    self.video_contrast_sb.valueChanged.connect(lambda: video_contrast_changed(self))
-    self.video_sharpness_sb.valueChanged.connect(lambda: video_sharpness_changed(self))
-    self.video_saturation_sb.valueChanged.connect(lambda: video_saturation_changed(self))
-    self.video_iso_sb.valueChanged.connect(lambda: video_iso_changed(self))
-    self.video_rotation_sb.valueChanged.connect(lambda: video_rotation_changed(self))
-    self.video_hflip_cb.clicked.connect(lambda: video_hflip_changed(self))
-    self.video_vflip_cb.clicked.connect(lambda: video_vflip_changed(self))
-    self.video_quality_sb.valueChanged.connect(lambda: video_quality_changed(self))
-    self.video_fps_sb.valueChanged.connect(lambda: video_fps_changed(self))
-    self.video_duration_sb.valueChanged.connect(lambda: video_duration_changed(self))
-    self.video_mode_cb.currentIndexChanged.connect(lambda: video_mode_changed(self))
-
-
-def picture_brightness_changed(self):
-    if self.current_raspberry_id:
-        self.raspberry_info[self.current_raspberry_id]["picture brightness"] = self.picture_brightness_sb.value()
-
-
-def picture_contrast_changed(self):
-    if self.current_raspberry_id:
-        self.raspberry_info[self.current_raspberry_id]["picture contrast"] = self.picture_contrast_sb.value()
-
-
-def picture_sharpness_changed(self):
-    if self.current_raspberry_id:
-        self.raspberry_info[self.current_raspberry_id]["picture sharpness"] = self.picture_sharpness_sb.value()
-
-
-def picture_saturation_changed(self):
-    if self.current_raspberry_id:
-        self.raspberry_info[self.current_raspberry_id]["picture saturation"] = self.picture_saturation_sb.value()
-
-
-def picture_iso_changed(self):
-    if self.current_raspberry_id:
-        self.raspberry_info[self.current_raspberry_id]["picture iso"] = self.picture_iso_sb.value()
-
-
-def picture_rotation_changed(self):
-    if self.current_raspberry_id:
-        self.raspberry_info[self.current_raspberry_id]["picture rotation"] = self.picture_rotation_sb.value()
-
-
-def picture_hflip_changed(self):
-    if self.current_raspberry_id:
-        self.raspberry_info[self.current_raspberry_id]["picture hflip"] = self.picture_hflip_cb.isChecked()
-
-
-def picture_vflip_changed(self):
-    if self.current_raspberry_id:
-        self.raspberry_info[self.current_raspberry_id]["picture vflip"] = self.picture_vflip_cb.isChecked()
-
-
-def picture_annotation_changed(self):
-    if self.current_raspberry_id:
-        self.raspberry_info[self.current_raspberry_id]["picture annotation"] = self.picture_annotation_cb.isChecked()
-
-
-def time_lapse_changed(self):
-    if self.current_raspberry_id:
-        self.raspberry_info[self.current_raspberry_id]["time lapse"] = self.time_lapse_cb.isChecked()
-
-
-def time_lapse_duration_changed(self):
-    if self.current_raspberry_id:
-        self.raspberry_info[self.current_raspberry_id]["time lapse duration"] = self.time_lapse_duration_sb.value()
-
-
-def time_lapse_wait_changed(self):
-    if self.current_raspberry_id:
-        self.raspberry_info[self.current_raspberry_id]["time lapse wait"] = self.time_lapse_wait_sb.value()
-
-
-def picture_resolution_changed(self):
+def widget_value_changed(self):
     """
-    update picture resolution in raspberry info
+    update raspberry_info dictionary when widget value changed
     """
+
     if self.current_raspberry_id:
-        self.raspberry_info[self.current_raspberry_id]["picture resolution"] = self.picture_resolution_cb.currentText()
+        if isinstance(self.sender(), QComboBox):
+            self.raspberry_info[self.current_raspberry_id][self.sender().accessibleName()] = self.sender().currentText()
+        if isinstance(self.sender(), QSpinBox):
+            self.raspberry_info[self.current_raspberry_id][self.sender().accessibleName()] = self.sender().value()
+        if isinstance(self.sender(), QCheckBox):
+            self.raspberry_info[self.current_raspberry_id][self.sender().accessibleName()] = self.sender().isChecked()
 
+        # pprint.pprint(self.raspberry_info[self.current_raspberry_id])
 
-def video_brightness_changed(self):
-    if self.current_raspberry_id:
-        self.raspberry_info[self.current_raspberry_id]["video brightness"] = self.video_brightness_sb.value()
-
-
-def video_contrast_changed(self):
-    if self.current_raspberry_id:
-        self.raspberry_info[self.current_raspberry_id]["video contrast"] = self.video_contrast_sb.value()
-
-
-def video_sharpness_changed(self):
-    if self.current_raspberry_id:
-        self.raspberry_info[self.current_raspberry_id]["video sharpness"] = self.video_sharpness_sb.value()
-
-
-def video_saturation_changed(self):
-    if self.current_raspberry_id:
-        self.raspberry_info[self.current_raspberry_id]["video saturation"] = self.video_saturation_sb.value()
-
-
-def video_iso_changed(self):
-    if self.current_raspberry_id:
-        self.raspberry_info[self.current_raspberry_id]["video iso"] = self.video_iso_sb.value()
-
-
-def video_rotation_changed(self):
-    if self.current_raspberry_id:
-        self.raspberry_info[self.current_raspberry_id]["video rotation"] = self.video_rotation_sb.value()
-
-
-def video_hflip_changed(self):
-    if self.current_raspberry_id:
-        self.raspberry_info[self.current_raspberry_id]["video hflip"] = self.video_hflip_cb.isChecked()
-
-
-def video_vflip_changed(self):
-    if self.current_raspberry_id:
-        self.raspberry_info[self.current_raspberry_id]["video vflip"] = self.video_vflip_cb.isChecked()
-
-
-def video_quality_changed(self):
-    """
-    update video quality in raspberry info
-    """
-    if self.current_raspberry_id:
-        self.raspberry_info[self.current_raspberry_id]["video quality"] = self.video_quality_sb.value()
-
-
-def video_fps_changed(self):
-    """
-    update video FPS in raspberry info
-    """
-    if self.current_raspberry_id:
-        self.raspberry_info[self.current_raspberry_id]["FPS"] = self.video_fps_sb.value()
-
-
-def video_duration_changed(self):
-    """
-    update video duration in raspberry info
-    """
-    if self.current_raspberry_id:
-        self.raspberry_info[self.current_raspberry_id]["video duration"] = self.video_duration_sb.value()
-
-
-def video_mode_changed(self):
-    """
-    update video mode in raspberry info
-    """
-    if self.current_raspberry_id:
-        self.raspberry_info[self.current_raspberry_id]["video mode"] = self.video_mode_cb.currentText()
 
 
 def update_rpi_settings(self, raspberry_id):
-    # video settings
+    """
+    update widget values with raspberry_info values
+    """
 
-    self.video_vflip_cb.setChecked(self.raspberry_info[raspberry_id]["video vflip"])
-    self.video_quality_sb.setValue(self.raspberry_info[raspberry_id]["video quality"])
-    self.video_fps_sb.setValue(self.raspberry_info[raspberry_id]["FPS"])
-    self.video_duration_sb.setValue(self.raspberry_info[raspberry_id]["video duration"])
-    self.video_mode_cb.setCurrentText(self.raspberry_info[raspberry_id]["video mode"])
-
+    for w in get_widgets_list(self):
+        if w.accessibleName():
+            if isinstance(w, QComboBox):
+                w.setCurrentText(self.raspberry_info[raspberry_id][w.accessibleName()])
+            elif isinstance(w, QSpinBox):
+                w.setValue(self.raspberry_info[raspberry_id][w.accessibleName()])
+            elif isinstance(w, QCheckBox):
+                w.setChecked(self.raspberry_info[raspberry_id][w.accessibleName()])
+            else:
+                raise
+        else:
+            raise

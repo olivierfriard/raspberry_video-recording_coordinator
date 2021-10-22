@@ -4,14 +4,99 @@ Raspberry Pi coordinator
 time lapse module
 """
 
-from PyQt5.QtWidgets import (QMessageBox, QTableWidgetItem, )
-from PyQt5.QtCore import (QThread, pyqtSignal, QObject)
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import (QMessageBox, QTableWidgetItem)
+from PyQt5.QtCore import (Qt, QThread, pyqtSignal, QObject)
 
 import pathlib as pl
 import config_coordinator_local as cfg
 import logging
 import shutil
 import requests
+
+
+def take_picture(self, raspberry_id: str, mode: str):
+    """
+    start time lapse or take a picture and display it
+    """
+
+    if raspberry_id not in self.raspberry_ip:
+        return
+    if self.raspberry_info[raspberry_id]["status"]["status"] == "OK":  # and self.raspberry_status[raspberry_id]:
+
+        self.rasp_output_lb.setText(f"Picture requested")
+
+        width, height = self.raspberry_info[raspberry_id]['picture resolution'].split("x")
+        data = {
+            "key": self.security_key,
+            "width": width,
+            "height": height,
+            "brightness": self.raspberry_info[raspberry_id]['picture brightness'],
+            "contrast": self.raspberry_info[raspberry_id]['picture contrast'],
+            "saturation": self.raspberry_info[raspberry_id]['picture saturation'],
+            "sharpness": self.raspberry_info[raspberry_id]['picture sharpness'],
+            "ISO": self.raspberry_info[raspberry_id]['picture iso'],
+            "rotation": self.raspberry_info[raspberry_id]['picture rotation'],
+            "hflip": self.raspberry_info[raspberry_id]['picture hflip'],
+            "vflip": self.raspberry_info[raspberry_id]['picture vflip'],
+            "timelapse": self.raspberry_info[raspberry_id]['time lapse wait'] if mode == "time lapse" else 0,
+            "timeout": self.raspberry_info[raspberry_id]['time lapse duration'] if mode == "time lapse" else 0,
+            "annotate": self.raspberry_info[raspberry_id]['picture annotation'],
+        }
+
+        try:
+            response = requests.get(
+                f"{cfg.PROTOCOL}{self.raspberry_ip[raspberry_id]}{cfg.SERVER_PORT}/take_picture",
+                data=data,
+                verify=False)
+        except requests.exceptions.ConnectionError:
+            self.rasp_output_lb.setText(f"Failed to establish a connection")
+            self.get_raspberry_status(raspberry_id)
+            self.update_raspberry_display(raspberry_id)
+            return
+
+        if response.status_code != 200:
+            self.rasp_output_lb.setText(f"Error taking picture (status code: {response.status_code})")
+            return
+
+        if response.json().get("error", True):
+            self.rasp_output_lb.setText(
+                f'{response.json().get("msg", "Undefined error")}  returncode: {response.json().get("error", "-")}')
+            return
+
+        # time lapse
+        if (self.raspberry_info[raspberry_id]['time lapse wait'] 
+            and self.raspberry_info[raspberry_id]['time lapse duration']):
+                self.rasp_output_lb.setText(response.json().get("msg", "Undefined error"))
+                self.get_raspberry_status(raspberry_id)
+                self.update_raspberry_display(raspberry_id)
+                self.update_raspberry_dashboard(raspberry_id)
+                return
+
+        try:
+            response2 = requests.get(
+                f"{cfg.PROTOCOL}{self.raspberry_ip[raspberry_id]}{cfg.SERVER_PORT}/static/live.jpg",
+                stream=True,
+                verify=False)
+        except Exception:
+            self.rasp_output_lb.setText(f"Error contacting the Raspberry Pi {raspberry_id}")
+            return
+        if response2.status_code != 200:
+            self.rasp_output_lb.setText(f"Error retrieving the picture. Server status code: {response.status_code}")
+            return
+
+        with open(f"live_{raspberry_id}.jpg", "wb") as f:
+            response2.raw.decode_content = True
+            shutil.copyfileobj(response2.raw, f)
+
+        self.picture_lb.setPixmap(
+            QPixmap(f"live_{raspberry_id}.jpg").scaled(self.picture_lb.size(), Qt.KeepAspectRatio))
+        self.rasp_output_lb.setText(f"Picture taken")
+
+        self.get_raspberry_status(raspberry_id)
+        self.update_raspberry_display(raspberry_id)
+        self.update_raspberry_dashboard(raspberry_id)
+
 
 
 def schedule_time_lapse(self, raspberry_id):
