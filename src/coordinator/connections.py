@@ -32,7 +32,6 @@ def get_widgets_list(self):
             self.picture_saturation_sb,
             self.picture_iso_sb,
             self.picture_annotation_cb,
-            self.time_lapse_cb,
             self.time_lapse_wait_sb,
             self.time_lapse_duration_sb,
             ]
@@ -43,7 +42,7 @@ def connect(self):
 
     for w in get_widgets_list(self):
         print('1', w.accessibleName())
-        print(w)
+        print(w.objectName())
         if w.accessibleName():
             print(isinstance(w, QComboBox))
             if isinstance(w, QComboBox):
