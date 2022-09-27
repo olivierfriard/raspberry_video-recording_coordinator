@@ -250,6 +250,8 @@ while True:
     except FileNotFoundError:
         print("log file path not found. Use server.log")
         LOG_PATH = "server.log"
+        break
+
 
 # load security key
 try:
