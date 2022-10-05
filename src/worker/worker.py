@@ -6,8 +6,8 @@ to enable the service at boot:
 sudo systemctl enable worker
 """
 
-__version__ = "28"
-__version_date__ = "2021-10-22"
+__version__ = "29"
+__version_date__ = "2022-10-05"
 
 
 from crontab import CronTab
