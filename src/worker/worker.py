@@ -256,13 +256,14 @@ while True:
 
 
 # load security key
-try:
-    with open("/boot/worker_security_key") as f_in:
+if pl.Path("/boot/worker_security_key").is_file():
+    with pl.Path("/boot/worker_security_key").open() as f_in:
         security_key_sha256 = f_in.read().strip()
     logging.info("Security key loaded")
-except Exception:
-    logging.info("Security key file not found")
+else:
     security_key_sha256 = ""
+    logging.info("Security key file not found")
+
 
 # create static directory
 pl.Path(cfg.STATIC_DIR).mkdir(parents=True, exist_ok=True)
@@ -1115,6 +1116,9 @@ def shutdown():
 if __name__ == "__main__":
     logging.info("worker started")
     app.debug = True
-    app.run(host="0.0.0.0", port=cfg.PORT, ssl_context="adhoc")
+    if security_key_sha256:
+        app.run(host="0.0.0.0", port=cfg.PORT, ssl_context="adhoc")
+    else:
+        app.run(host="0.0.0.0", port=cfg.PORT)
 
     # see https://blog.miguelgrinberg.com/post/running-your-flask-application-over-https for HTTPS

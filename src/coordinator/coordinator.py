@@ -82,7 +82,7 @@ def date_iso():
     """
     return datetime.datetime.now().isoformat().split(".")[0].replace("T", " ")
 
-
+'''
 def md5sum(file_path):
     """
     Return the MD5 sum of the file content
@@ -95,7 +95,7 @@ def md5sum(file_path):
     md5_hash.update(content)
     digest = md5_hash.hexdigest()
     return digest
-
+'''
 
 def ping(host):
     """
