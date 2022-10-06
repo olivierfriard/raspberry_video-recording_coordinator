@@ -130,7 +130,7 @@ def time_lapse_active():
     return len([x for x in processes_list if "raspistill" in x]) > 0
 
 
-def get_cpu_temperature():
+def get_cpu_temperature() -> str:
     """
     get temperature of the CPU
     """
@@ -145,7 +145,7 @@ def get_cpu_temperature():
         return "not determined"
 
 
-def get_free_space():
+def get_free_space() -> str:
     """
     free disk space in Gb
     """
@@ -946,6 +946,8 @@ def take_picture():
                 pl.Path(cfg.TIME_LAPSE_ARCHIVE) / pl.Path(f"{socket.gethostname()}_%d").with_suffix(".jpg"),
             ]
         )
+
+        print(f"{command_line}")
 
         try:
             subprocess.Popen(command_line)
