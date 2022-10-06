@@ -918,6 +918,9 @@ def take_picture():
     ]
 
     for key in request.values:
+        logging.info(f"{key}: {request.values[key]}")
+
+    for key in request.values:
 
         if key in ["timelapse", "timeout", "annotate", "key"]:
             continue
@@ -930,7 +933,7 @@ def take_picture():
         command_line.extend(["-a", "4", "-a", f'"{socket.gethostname()} %Y-%m-%d %X"'])
 
     # check time lapse
-    logging.info(f"{request.values}")
+    
     if (
         "timeout" in request.values
         and request.values["timeout"] != "0"
