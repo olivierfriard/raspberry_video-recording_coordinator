@@ -930,6 +930,7 @@ def take_picture():
         command_line.extend(["-a", "4", "-a", f'"{socket.gethostname()} %Y-%m-%d %X"'])
 
     # check time lapse
+    logging.info(f"{request.values}")
     if (
         "timeout" in request.values
         and request.values["timeout"] != "0"
