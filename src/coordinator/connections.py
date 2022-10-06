@@ -3,39 +3,38 @@ Raspberry Pi coordinator
 
 connections
 """
-from PyQt5.QtWidgets import (QSpinBox, QCheckBox, QComboBox)
+from PyQt5.QtWidgets import QSpinBox, QCheckBox, QComboBox
 import pprint
 
 
 def get_widgets_list(self):
 
     return [
-            self.video_mode_cb,
-            self.video_duration_sb,
-            self.video_quality_sb,
-            self.video_fps_sb,
-            self.video_rotation_sb,
-            self.video_hflip_cb,
-            self.video_vflip_cb,
-            self.video_brightness_sb,
-            self.video_contrast_sb,
-            self.video_sharpness_sb,
-            self.video_saturation_sb,
-            self.video_iso_sb,
-            self.picture_resolution_cb,
-            self.picture_rotation_sb,
-            self.picture_hflip_cb,
-            self.picture_vflip_cb,
-            self.picture_brightness_sb,
-            self.picture_contrast_sb,
-            self.picture_sharpness_sb,
-            self.picture_saturation_sb,
-            self.picture_iso_sb,
-            self.picture_annotation_cb,
-            self.time_lapse_wait_sb,
-            self.time_lapse_duration_sb,
-            ]
-
+        self.video_mode_cb,
+        self.video_duration_sb,
+        self.video_quality_sb,
+        self.video_fps_sb,
+        self.video_rotation_sb,
+        self.video_hflip_cb,
+        self.video_vflip_cb,
+        self.video_brightness_sb,
+        self.video_contrast_sb,
+        self.video_sharpness_sb,
+        self.video_saturation_sb,
+        self.video_iso_sb,
+        self.picture_resolution_cb,
+        self.picture_rotation_sb,
+        self.picture_hflip_cb,
+        self.picture_vflip_cb,
+        self.picture_brightness_sb,
+        self.picture_contrast_sb,
+        self.picture_sharpness_sb,
+        self.picture_saturation_sb,
+        self.picture_gain_sb,
+        self.picture_annotation_cb,
+        self.time_lapse_wait_sb,
+        self.time_lapse_duration_sb,
+    ]
 
 
 def connect(self):
@@ -51,7 +50,8 @@ def connect(self):
             else:
                 raise
         else:
-            raise        
+            raise
+
 
 def widget_value_changed(self):
     """
@@ -67,7 +67,6 @@ def widget_value_changed(self):
             self.raspberry_info[self.current_raspberry_id][self.sender().accessibleName()] = self.sender().isChecked()
 
         # pprint.pprint(self.raspberry_info[self.current_raspberry_id])
-
 
 
 def update_rpi_settings(self, raspberry_id):

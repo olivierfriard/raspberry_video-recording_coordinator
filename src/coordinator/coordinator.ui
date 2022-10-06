@@ -145,7 +145,7 @@
                <bool>false</bool>
               </property>
               <property name="currentIndex">
-               <number>3</number>
+               <number>1</number>
               </property>
               <widget class="QWidget" name="status_tab">
                <attribute name="title">
@@ -436,10 +436,10 @@
                      <string>picture rotation</string>
                     </property>
                     <property name="maximum">
-                     <number>270</number>
+                     <number>180</number>
                     </property>
                     <property name="singleStep">
-                     <number>90</number>
+                     <number>180</number>
                     </property>
                    </widget>
                   </item>
@@ -488,15 +488,15 @@
                    </widget>
                   </item>
                   <item>
-                   <widget class="QSpinBox" name="picture_brightness_sb">
+                   <widget class="QDoubleSpinBox" name="picture_brightness_sb">
                     <property name="accessibleName">
                      <string>picture brightness</string>
                     </property>
                     <property name="maximum">
-                     <number>100</number>
+                     <double>1.000000000000000</double>
                     </property>
-                    <property name="value">
-                     <number>50</number>
+                    <property name="singleStep">
+                     <double>0.100000000000000</double>
                     </property>
                    </widget>
                   </item>
@@ -518,6 +518,9 @@
                     <property name="maximum">
                      <number>100</number>
                     </property>
+                    <property name="value">
+                     <number>1</number>
+                    </property>
                    </widget>
                   </item>
                   <item>
@@ -538,6 +541,9 @@
                     <property name="maximum">
                      <number>100</number>
                     </property>
+                    <property name="value">
+                     <number>1</number>
+                    </property>
                    </widget>
                   </item>
                   <item>
@@ -553,33 +559,39 @@
                      <string>picture saturation</string>
                     </property>
                     <property name="minimum">
-                     <number>-100</number>
+                     <number>0</number>
                     </property>
                     <property name="maximum">
                      <number>100</number>
+                    </property>
+                    <property name="value">
+                     <number>1</number>
                     </property>
                    </widget>
                   </item>
                   <item>
                    <widget class="QLabel" name="label_18">
                     <property name="text">
-                     <string>ISO</string>
+                     <string>Gain</string>
                     </property>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QSpinBox" name="picture_iso_sb">
+                   <widget class="QSpinBox" name="picture_gain_sb">
                     <property name="accessibleName">
                      <string>picture iso</string>
                     </property>
                     <property name="minimum">
-                     <number>100</number>
+                     <number>0</number>
                     </property>
                     <property name="maximum">
-                     <number>800</number>
+                     <number>100</number>
                     </property>
                     <property name="singleStep">
-                     <number>50</number>
+                     <number>1</number>
+                    </property>
+                    <property name="value">
+                     <number>1</number>
                     </property>
                    </widget>
                   </item>
