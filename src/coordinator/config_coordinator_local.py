@@ -3,10 +3,10 @@
 TIME_OUT = 10
 SERVER_PORT = ":5000"
 DEBUG = True
-PROTOCOL = "https://"
+PROTOCOL = "http://"
 
 IP_RANGES = (
-    ("192.168.1.1", [6, 6]),
+    ("192.168.1.1", [12, 12]),
     #("130.192.200.1", [160, 160]),
     )
 

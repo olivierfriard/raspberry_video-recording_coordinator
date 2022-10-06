@@ -910,7 +910,7 @@ def take_picture():
         pass
 
     command_line = [
-        "/usr/bin/raspistill",
+        "libcamera-still",
         # "--timeout", "5",
         "--nopreview",
         "-q",
@@ -947,9 +947,8 @@ def take_picture():
             ]
         )
 
-        print(f"{command_line}")
-
         try:
+            logging.info("command: " + (" ".join(command_line)))
             subprocess.Popen(command_line)
         except:
             logging.warning("Error running time lapse (wrong command line option)")
