@@ -10,6 +10,8 @@ __version__ = "29"
 __version_date__ = "2022-10-05"
 
 
+VCGENCMD_PATH = "/usr/bin/vcgencmd"
+
 from crontab import CronTab
 
 import threading
@@ -40,7 +42,7 @@ def is_camera_detected():
     """
     check if camera is plugged
     """
-    process = subprocess.run(["/usr/bin/vcgencmd", "get_camera"], stdout=subprocess.PIPE)
+    process = subprocess.run([VCGENCMD_PATH, "get_camera"], stdout=subprocess.PIPE)
     output = process.stdout.decode("utf-8").strip()
     return output == "supported=1 detected=1"
 
@@ -132,7 +134,7 @@ def get_cpu_temperature():
     """
     get temperature of the CPU
     """
-    process = subprocess.run(["/usr/bin/vcgencmd", "measure_temp"], stdout=subprocess.PIPE)
+    process = subprocess.run([VCGENCMD_PATH, "measure_temp"], stdout=subprocess.PIPE)
     output = process.stdout.decode("utf-8").strip()
     if output:
         try:
