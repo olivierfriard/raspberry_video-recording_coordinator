@@ -918,15 +918,8 @@ def take_picture():
         "-q",
         "90",
     ]
-    print()
-    print(request.values)
-    print()
-    logging.info(f"{len(request.values)=}")
-
-    #print(f"{request.get_json()=}")
 
     for key in request.values:
-        print(f"{key}: {request.values[key]}")
         logging.info(f"{key}: {request.values[key]}")
 
     for key in request.values:
@@ -959,9 +952,9 @@ def take_picture():
                 pl.Path(cfg.TIME_LAPSE_ARCHIVE) / pl.Path(f"{socket.gethostname()}_%d").with_suffix(".jpg"),
             ]
         )
-
+        logging.info("command: " + (" ".join(command_line)))
         try:
-            logging.info("command: " + (" ".join(command_line)))
+            
             subprocess.Popen(command_line)
         except:
             logging.warning("Error running time lapse (wrong command line option)")

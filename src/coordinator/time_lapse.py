@@ -44,9 +44,8 @@ def take_picture(self, raspberry_id: str, mode: str):
             "annotate": self.raspberry_info[raspberry_id]['picture annotation'],
         }
 
-        print(data)
         try:
-            response = requests.get(
+            response = requests.post(
                 f"{cfg.PROTOCOL}{self.raspberry_ip[raspberry_id]}{cfg.SERVER_PORT}/take_picture",
                 data=data,
                 verify=False)
