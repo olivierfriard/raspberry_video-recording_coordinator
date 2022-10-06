@@ -145,7 +145,7 @@
                <bool>false</bool>
               </property>
               <property name="currentIndex">
-               <number>1</number>
+               <number>3</number>
               </property>
               <widget class="QWidget" name="status_tab">
                <attribute name="title">
@@ -579,7 +579,7 @@
                   <item>
                    <widget class="QSpinBox" name="picture_gain_sb">
                     <property name="accessibleName">
-                     <string>picture iso</string>
+                     <string>picture gain</string>
                     </property>
                     <property name="minimum">
                      <number>0</number>
@@ -1346,12 +1346,12 @@
                      <item>
                       <widget class="QLabel" name="label_33">
                        <property name="text">
-                        <string>ISO</string>
+                        <string>Gain</string>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QSpinBox" name="video_iso_sb">
+                      <widget class="QSpinBox" name="video_gain_sb">
                        <property name="accessibleName">
                         <string>video iso</string>
                        </property>

@@ -3,7 +3,7 @@ Raspberry Pi coordinator
 
 connections
 """
-from PyQt5.QtWidgets import QSpinBox, QCheckBox, QComboBox
+from PyQt5.QtWidgets import QSpinBox, QCheckBox, QComboBox, QDoubleSpinBox
 import pprint
 
 
@@ -21,7 +21,7 @@ def get_widgets_list(self):
         self.video_contrast_sb,
         self.video_sharpness_sb,
         self.video_saturation_sb,
-        self.video_iso_sb,
+        self.video_gain_sb,
         self.picture_resolution_cb,
         self.picture_rotation_sb,
         self.picture_hflip_cb,
@@ -43,7 +43,7 @@ def connect(self):
         if w.accessibleName():
             if isinstance(w, QComboBox):
                 w.currentIndexChanged.connect(lambda: widget_value_changed(self))
-            elif isinstance(w, QSpinBox):
+            elif isinstance(w, QSpinBox) or isinstance(w, QDoubleSpinBox):
                 w.valueChanged.connect(lambda: widget_value_changed(self))
             elif isinstance(w, QCheckBox):
                 w.clicked.connect(lambda: widget_value_changed(self))
@@ -78,7 +78,7 @@ def update_rpi_settings(self, raspberry_id):
         if w.accessibleName():
             if isinstance(w, QComboBox):
                 w.setCurrentText(self.raspberry_info[raspberry_id][w.accessibleName()])
-            elif isinstance(w, QSpinBox):
+            elif isinstance(w, QSpinBox) or isinstance(w, QDoubleSpinBox):
                 w.setValue(self.raspberry_info[raspberry_id][w.accessibleName()])
             elif isinstance(w, QCheckBox):
                 w.setChecked(self.raspberry_info[raspberry_id][w.accessibleName()])
