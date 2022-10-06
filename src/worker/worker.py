@@ -923,7 +923,7 @@ def take_picture():
     print()
     logging.info(f"{len(request.values)=}")
 
-    print(f"{request.get_json()=}")
+    #print(f"{request.get_json()=}")
 
     for key in request.values:
         print(f"{key}: {request.values[key]}")
