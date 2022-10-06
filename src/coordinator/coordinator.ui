@@ -1271,15 +1271,18 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QSpinBox" name="video_brightness_sb">
+                      <widget class="QDoubleSpinBox" name="video_brightness_sb">
                        <property name="accessibleName">
                         <string>video brightness</string>
                        </property>
-                       <property name="maximum">
-                        <number>100</number>
+                       <property name="minimum">
+                        <double>-1.000000000000000</double>
                        </property>
-                       <property name="value">
-                        <number>50</number>
+                       <property name="maximum">
+                        <double>1.000000000000000</double>
+                       </property>
+                       <property name="singleStep">
+                        <double>0.010000000000000</double>
                        </property>
                       </widget>
                      </item>
@@ -1296,10 +1299,13 @@
                         <string>video contrast</string>
                        </property>
                        <property name="minimum">
-                        <number>-100</number>
+                        <number>0</number>
                        </property>
                        <property name="maximum">
                         <number>100</number>
+                       </property>
+                       <property name="value">
+                        <number>1</number>
                        </property>
                       </widget>
                      </item>
@@ -1316,10 +1322,13 @@
                         <string>video sharpness</string>
                        </property>
                        <property name="minimum">
-                        <number>-100</number>
+                        <number>0</number>
                        </property>
                        <property name="maximum">
                         <number>100</number>
+                       </property>
+                       <property name="value">
+                        <number>1</number>
                        </property>
                       </widget>
                      </item>
@@ -1336,10 +1345,13 @@
                         <string>video saturation</string>
                        </property>
                        <property name="minimum">
-                        <number>-100</number>
+                        <number>0</number>
                        </property>
                        <property name="maximum">
                         <number>100</number>
+                       </property>
+                       <property name="value">
+                        <number>1</number>
                        </property>
                       </widget>
                      </item>
@@ -1356,13 +1368,16 @@
                         <string>video gain</string>
                        </property>
                        <property name="minimum">
-                        <number>100</number>
+                        <number>0</number>
                        </property>
                        <property name="maximum">
-                        <number>800</number>
+                        <number>100</number>
                        </property>
                        <property name="singleStep">
-                        <number>50</number>
+                        <number>1</number>
+                       </property>
+                       <property name="value">
+                        <number>1</number>
                        </property>
                       </widget>
                      </item>
