@@ -60,13 +60,14 @@ DEFAULT_VIDEO_QUALITY = 1  # Mbp/s
 
 CLIENT_PROJECT_DIRECTORY = "/home/pi/worker"
 
+# keys are widget accessible names
 RPI_DEFAULTS = {
     "picture resolution": PICTURE_RESOLUTIONS[DEFAULT_PICTURE_RESOLUTION],
     "picture brightness": PICTURE_BRIGHTNESS,
     "picture contrast": PICTURE_CONTRAST,
     "picture saturation": PICTURE_SATURATION,
     "picture sharpness": PICTURE_SHARPNESS,
-    "picture iso": PICTURE_ISO,
+    "picture gain": PICTURE_GAIN,
     "picture rotation": PICTURE_ROTATION,
     "picture hflip": PICTURE_HFLIP,
     "picture vflip": PICTURE_VFLIP,
@@ -82,7 +83,7 @@ RPI_DEFAULTS = {
     "video contrast": VIDEO_CONTRAST,
     "video saturation": VIDEO_SATURATION,
     "video sharpness": VIDEO_SHARPNESS,
-    "video iso": VIDEO_ISO,
+    "video gain": VIDEO_GAIN,
     "video rotation": VIDEO_ROTATION,
     "video hflip": VIDEO_HFLIP,
     "video vflip": VIDEO_VFLIP,

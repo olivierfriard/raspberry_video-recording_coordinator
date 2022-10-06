@@ -926,7 +926,7 @@ class Ui_MainWindow(object):
         self.label_32.setText(_translate("MainWindow", "Saturation"))
         self.video_saturation_sb.setAccessibleName(_translate("MainWindow", "video saturation"))
         self.label_33.setText(_translate("MainWindow", "Gain"))
-        self.video_gain_sb.setAccessibleName(_translate("MainWindow", "video iso"))
+        self.video_gain_sb.setAccessibleName(_translate("MainWindow", "video gain"))
         self.groupBox_2.setTitle(_translate("MainWindow", "Manual control"))
         self.start_video_recording_pb.setText(_translate("MainWindow", "Start video recording now"))
         self.stop_video_recording_pb.setText(_translate("MainWindow", "Stop current video recording"))

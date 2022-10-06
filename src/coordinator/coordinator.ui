@@ -1353,7 +1353,7 @@
                      <item>
                       <widget class="QSpinBox" name="video_gain_sb">
                        <property name="accessibleName">
-                        <string>video iso</string>
+                        <string>video gain</string>
                        </property>
                        <property name="minimum">
                         <number>100</number>
