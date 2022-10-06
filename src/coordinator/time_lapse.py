@@ -5,8 +5,8 @@ time lapse module
 """
 
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import (QMessageBox, QTableWidgetItem)
-from PyQt5.QtCore import (Qt, QThread, pyqtSignal, QObject)
+from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem
+from PyQt5.QtCore import Qt, QThread, pyqtSignal, QObject
 
 import pathlib as pl
 import config_coordinator_local as cfg
@@ -26,29 +26,31 @@ def take_picture(self, raspberry_id: str, mode: str):
 
         self.rasp_output_lb.setText(f"Picture requested")
 
-        width, height = self.raspberry_info[raspberry_id]['picture resolution'].split("x")
+        width, height = self.raspberry_info[raspberry_id]["picture resolution"].split("x")
         data = {
             "key": self.security_key,
             "width": width,
             "height": height,
-            "brightness": self.raspberry_info[raspberry_id]['picture brightness'],
-            "contrast": self.raspberry_info[raspberry_id]['picture contrast'],
-            "saturation": self.raspberry_info[raspberry_id]['picture saturation'],
-            "sharpness": self.raspberry_info[raspberry_id]['picture sharpness'],
-            "ISO": self.raspberry_info[raspberry_id]['picture iso'],
-            "rotation": self.raspberry_info[raspberry_id]['picture rotation'],
-            "hflip": self.raspberry_info[raspberry_id]['picture hflip'],
-            "vflip": self.raspberry_info[raspberry_id]['picture vflip'],
-            "timelapse": self.raspberry_info[raspberry_id]['time lapse wait'] if mode == "time lapse" else 0,
-            "timeout": self.raspberry_info[raspberry_id]['time lapse duration'] if mode == "time lapse" else 0,
-            "annotate": self.raspberry_info[raspberry_id]['picture annotation'],
+            "brightness": self.raspberry_info[raspberry_id]["picture brightness"],
+            "contrast": self.raspberry_info[raspberry_id]["picture contrast"],
+            "saturation": self.raspberry_info[raspberry_id]["picture saturation"],
+            "sharpness": self.raspberry_info[raspberry_id]["picture sharpness"],
+            # "ISO": self.raspberry_info[raspberry_id]['picture iso'],
+            "gain": self.raspberry_info[raspberry_id]["picture iso"] / 100,
+            "rotation": self.raspberry_info[raspberry_id]["picture rotation"],
+            "hflip": self.raspberry_info[raspberry_id]["picture hflip"],
+            "vflip": self.raspberry_info[raspberry_id]["picture vflip"],
+            "timelapse": self.raspberry_info[raspberry_id]["time lapse wait"] if mode == "time lapse" else 0,
+            "timeout": self.raspberry_info[raspberry_id]["time lapse duration"] if mode == "time lapse" else 0,
+            "annotate": self.raspberry_info[raspberry_id]["picture annotation"],
         }
 
         try:
             response = requests.post(
                 f"{cfg.PROTOCOL}{self.raspberry_ip[raspberry_id]}{cfg.SERVER_PORT}/take_picture",
                 data=data,
-                verify=False)
+                verify=False,
+            )
         except requests.exceptions.ConnectionError:
             self.rasp_output_lb.setText(f"Failed to establish a connection")
             self.get_raspberry_status(raspberry_id)
@@ -61,23 +63,27 @@ def take_picture(self, raspberry_id: str, mode: str):
 
         if response.json().get("error", True):
             self.rasp_output_lb.setText(
-                f'{response.json().get("msg", "Undefined error")}  returncode: {response.json().get("error", "-")}')
+                f'{response.json().get("msg", "Undefined error")}  returncode: {response.json().get("error", "-")}'
+            )
             return
 
         # time lapse
-        if (self.raspberry_info[raspberry_id]['time lapse wait'] 
-            and self.raspberry_info[raspberry_id]['time lapse duration']):
-                self.rasp_output_lb.setText(response.json().get("msg", "Undefined error"))
-                self.get_raspberry_status(raspberry_id)
-                self.update_raspberry_display(raspberry_id)
-                self.update_raspberry_dashboard(raspberry_id)
-                return
+        if (
+            self.raspberry_info[raspberry_id]["time lapse wait"]
+            and self.raspberry_info[raspberry_id]["time lapse duration"]
+        ):
+            self.rasp_output_lb.setText(response.json().get("msg", "Undefined error"))
+            self.get_raspberry_status(raspberry_id)
+            self.update_raspberry_display(raspberry_id)
+            self.update_raspberry_dashboard(raspberry_id)
+            return
 
         try:
             response2 = requests.get(
                 f"{cfg.PROTOCOL}{self.raspberry_ip[raspberry_id]}{cfg.SERVER_PORT}/static/live.jpg",
                 stream=True,
-                verify=False)
+                verify=False,
+            )
         except Exception:
             self.rasp_output_lb.setText(f"Error contacting the Raspberry Pi {raspberry_id}")
             return
@@ -90,7 +96,8 @@ def take_picture(self, raspberry_id: str, mode: str):
             shutil.copyfileobj(response2.raw, f)
 
         self.picture_lb.setPixmap(
-            QPixmap(f"live_{raspberry_id}.jpg").scaled(self.picture_lb.size(), Qt.KeepAspectRatio))
+            QPixmap(f"live_{raspberry_id}.jpg").scaled(self.picture_lb.size(), Qt.KeepAspectRatio)
+        )
         self.rasp_output_lb.setText(f"Picture taken")
 
         self.get_raspberry_status(raspberry_id)
@@ -118,34 +125,49 @@ def stop_time_lapse(self, raspberry_id):
     self.update_raspberry_dashboard(raspberry_id)
 
 
-
 def schedule_time_lapse(self, raspberry_id):
     """
     Schedule the picture taking on the Raspberry Pi
     """
 
     if self.picture_hours_le.text() == "":
-        QMessageBox.information(None, "Raspberry Pi coordinator",
-                                f"Specify the hour(s) to start time lapse",
-                                QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+        QMessageBox.information(
+            None,
+            "Raspberry Pi coordinator",
+            f"Specify the hour(s) to start time lapse",
+            QMessageBox.Ok | QMessageBox.Default,
+            QMessageBox.NoButton,
+        )
         return
 
     if self.picture_minutes_le.text() == "":
-        QMessageBox.information(None, "Raspberry Pi coordinator",
-                                f"Specify the minutes(s) to start time lapse",
-                                QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+        QMessageBox.information(
+            None,
+            "Raspberry Pi coordinator",
+            f"Specify the minutes(s) to start time lapse",
+            QMessageBox.Ok | QMessageBox.Default,
+            QMessageBox.NoButton,
+        )
         return
 
     if self.picture_days_of_week_le.text() == "":
-        QMessageBox.information(None, "Raspberry Pi coordinator",
-                                f"Specify the day(s) of the week to start time lapse (0-6 or SUN-SAT)",
-                                QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+        QMessageBox.information(
+            None,
+            "Raspberry Pi coordinator",
+            f"Specify the day(s) of the week to start time lapse (0-6 or SUN-SAT)",
+            QMessageBox.Ok | QMessageBox.Default,
+            QMessageBox.NoButton,
+        )
         return
 
     if self.picture_days_of_month_le.text() == "":
-        QMessageBox.information(None, "Raspberry Pi coordinator",
-                                f"Specify the day(s) of the month to start time lapse (1-31)",
-                                QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+        QMessageBox.information(
+            None,
+            "Raspberry Pi coordinator",
+            f"Specify the day(s) of the month to start time lapse (1-31)",
+            QMessageBox.Ok | QMessageBox.Default,
+            QMessageBox.NoButton,
+        )
         return
 
     # check hours format
@@ -160,9 +182,13 @@ def schedule_time_lapse(self, raspberry_id):
                 if not (0 <= x < 24):
                     raise
         except Exception:
-            QMessageBox.information(None, "Raspberry Pi coordinator",
-                                f"The hour(s) format is not correct. Example; 1,2,13,15 or *",
-                                QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+            QMessageBox.information(
+                None,
+                "Raspberry Pi coordinator",
+                f"The hour(s) format is not correct. Example; 1,2,13,15 or *",
+                QMessageBox.Ok | QMessageBox.Default,
+                QMessageBox.NoButton,
+            )
             return
         hours_str = ",".join([str(x) for x in int_hours_list])
 
@@ -178,9 +204,13 @@ def schedule_time_lapse(self, raspberry_id):
                 if not (0 <= x < 60):
                     raise
         except Exception:
-            QMessageBox.information(None, "Raspberry Pi coordinator",
-                                f"The minutes(s) format is not correct. Example; 1,2,13,15 or *",
-                                QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+            QMessageBox.information(
+                None,
+                "Raspberry Pi coordinator",
+                f"The minutes(s) format is not correct. Example; 1,2,13,15 or *",
+                QMessageBox.Ok | QMessageBox.Default,
+                QMessageBox.NoButton,
+            )
             return
 
         minutes_str = ",".join([str(x) for x in int_minutes_list])
@@ -197,9 +227,13 @@ def schedule_time_lapse(self, raspberry_id):
                 if not (1 <= x <= 31):
                     raise
         except Exception:
-            QMessageBox.information(None, "Raspberry Pi coordinator",
-                                f"The day(s) of month format is not correct. Example; 1,2,13,15 or *",
-                                QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+            QMessageBox.information(
+                None,
+                "Raspberry Pi coordinator",
+                f"The day(s) of month format is not correct. Example; 1,2,13,15 or *",
+                QMessageBox.Ok | QMessageBox.Default,
+                QMessageBox.NoButton,
+            )
             return
         dom_str = ",".join([str(x) for x in int_dom_list])
 
@@ -215,9 +249,13 @@ def schedule_time_lapse(self, raspberry_id):
                 if not (1 <= x <= 12):
                     raise
         except Exception:
-            QMessageBox.information(None, "Raspberry Pi coordinator",
-                                f"The month format is not correct. Example; 1,2,12 or *",
-                                QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+            QMessageBox.information(
+                None,
+                "Raspberry Pi coordinator",
+                f"The month format is not correct. Example; 1,2,12 or *",
+                QMessageBox.Ok | QMessageBox.Default,
+                QMessageBox.NoButton,
+            )
             return
         month_str = ",".join([str(x) for x in int_month_list])
 
@@ -236,33 +274,37 @@ def schedule_time_lapse(self, raspberry_id):
                         raise
                 int_dow_splt = dow_splt
             except Exception:
-                QMessageBox.information(None, "Raspberry Pi coordinator",
-                                f"The days(s) of week format is not correct. Example; 0,1,2 or SUN,MON,TUE",
-                                QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+                QMessageBox.information(
+                    None,
+                    "Raspberry Pi coordinator",
+                    f"The days(s) of week format is not correct. Example; 0,1,2 or SUN,MON,TUE",
+                    QMessageBox.Ok | QMessageBox.Default,
+                    QMessageBox.NoButton,
+                )
 
         dow_str = ",".join([str(x) for x in int_dow_splt])
 
     crontab_event = f"{minutes_str} {hours_str} {dom_str} {month_str} {dow_str}"
 
-    width, height = self.raspberry_info[raspberry_id]['picture resolution'].split("x")
-    data = {"crontab": crontab_event,
-            "timelapse": self.raspberry_info[raspberry_id]['time lapse wait'],
-            "timeout": self.raspberry_info[raspberry_id]['time lapse duration'],
+    width, height = self.raspberry_info[raspberry_id]["picture resolution"].split("x")
+    data = {
+        "crontab": crontab_event,
+        "timelapse": self.raspberry_info[raspberry_id]["time lapse wait"],
+        "timeout": self.raspberry_info[raspberry_id]["time lapse duration"],
+        "width": width,
+        "height": height,
+        "brightness": self.raspberry_info[raspberry_id]["picture brightness"],
+        "contrast": self.raspberry_info[raspberry_id]["picture contrast"],
+        "saturation": self.raspberry_info[raspberry_id]["picture saturation"],
+        "sharpness": self.raspberry_info[raspberry_id]["picture sharpness"],
+        "ISO": self.raspberry_info[raspberry_id]["picture iso"],
+        "rotation": self.raspberry_info[raspberry_id]["picture rotation"],
+        "hflip": self.raspberry_info[raspberry_id]["picture hflip"],
+        "vflip": self.raspberry_info[raspberry_id]["picture vflip"],
+        "annotate": self.raspberry_info[raspberry_id]["picture annotation"],
+    }
 
-            "width": width, "height": height,
-            "brightness": self.raspberry_info[raspberry_id]['picture brightness'],
-            "contrast": self.raspberry_info[raspberry_id]['picture contrast'],
-            "saturation": self.raspberry_info[raspberry_id]['picture saturation'],
-            "sharpness": self.raspberry_info[raspberry_id]['picture sharpness'],
-            "ISO": self.raspberry_info[raspberry_id]['picture iso'],
-            "rotation": self.raspberry_info[raspberry_id]['picture rotation'],
-            "hflip": self.raspberry_info[raspberry_id]['picture hflip'],
-            "vflip": self.raspberry_info[raspberry_id]['picture vflip'],
-            "annotate": self.raspberry_info[raspberry_id]['picture annotation'],
-            }
-
-    response = self.request(raspberry_id, f"/schedule_time_lapse",
-                            data=data)
+    response = self.request(raspberry_id, f"/schedule_time_lapse", data=data)
     if response == None:
         return
 
@@ -282,10 +324,12 @@ def view_time_lapse_schedule(self, raspberry_id):
 
     response = self.request(raspberry_id, f"/view_time_lapse_schedule")
     if response == None:
-            return
+        return
 
     if response.status_code != 200:
-        self.rasp_output_lb.setText(f"Error during view of the time lapse scheduling (status code: {response.status_code})")
+        self.rasp_output_lb.setText(
+            f"Error during view of the time lapse scheduling (status code: {response.status_code})"
+        )
         return
 
     crontab_content = response.json().get("msg", "")
@@ -293,12 +337,10 @@ def view_time_lapse_schedule(self, raspberry_id):
     self.time_lapse_schedule_table.setRowCount(len(crontab_content))
     for i in range(0, len(crontab_content)):
         tokens = crontab_content[i]
-        for j in range(0, 5 +1):
+        for j in range(0, 5 + 1):
             self.time_lapse_schedule_table.setItem(i, j, QTableWidgetItem(tokens[j]))
 
     self.time_lapse_schedule_table.resizeColumnsToContents()
-
-
 
 
 def delete_time_lapse_schedule(self, raspberry_id):
@@ -308,10 +350,12 @@ def delete_time_lapse_schedule(self, raspberry_id):
 
     response = self.request(raspberry_id, f"/delete_time_lapse_schedule")
     if response == None:
-            return
+        return
 
     if response.status_code != 200:
-        self.rasp_output_lb.setText(f"Error during deletion of the time lapse scheduling (status code: {response.status_code})")
+        self.rasp_output_lb.setText(
+            f"Error during deletion of the time lapse scheduling (status code: {response.status_code})"
+        )
         return
     self.rasp_output_lb.setText(response.json().get("msg", "Error during deletion of the time lapse scheduling"))
 
@@ -329,7 +373,8 @@ def get_pictures_list(self, raspberry_id):
 
     if response.status_code != 200:
         self.rasp_output_lb.setText(
-            f"Error requiring the list of recorded pictures (status code: {response.status_code})")
+            f"Error requiring the list of recorded pictures (status code: {response.status_code})"
+        )
         return
     if "pictures_list" not in response.json():
         self.rasp_output_lb.setText(f"Error requiring the list of recorded pictures")
@@ -339,7 +384,6 @@ def get_pictures_list(self, raspberry_id):
 
 
 class Download_pict_worker(QObject):
-
     def __init__(self, raspberry_ip):
         super().__init__()
         # list of Raspberry Pi IP addresses
@@ -363,9 +407,10 @@ class Download_pict_worker(QObject):
             logging.info(f"Downloading {picture_file_name} from {raspberry_id}")
 
             with requests.get(
-                    f"{cfg.PROTOCOL}{self.raspberry_ip[raspberry_id]}{cfg.SERVER_PORT}{remote_pictures_archive_dir}/{picture_file_name}",
-                    stream=True,
-                    verify=False) as r:
+                f"{cfg.PROTOCOL}{self.raspberry_ip[raspberry_id]}{cfg.SERVER_PORT}{remote_pictures_archive_dir}/{picture_file_name}",
+                stream=True,
+                verify=False,
+            ) as r:
                 with open((pl.Path(download_dir) / pl.Path(picture_file_name)), "wb") as file_out:
                     shutil.copyfileobj(r.raw, file_out)
 
@@ -376,7 +421,6 @@ class Download_pict_worker(QObject):
             self.progress.emit(f"{count}/{len(pictures_list)} pictures downloaded")
 
         self.finished.emit(downloaded_pictures)
-
 
 
 def download_pictures(self, raspberry_id, download_dir):
@@ -403,13 +447,13 @@ def download_pictures(self, raspberry_id, download_dir):
         return
     if response.status_code != 200:
         self.rasp_output_lb.setText(
-            f"Error requiring the pictures archive directory (status code: {response.status_code})")
+            f"Error requiring the pictures archive directory (status code: {response.status_code})"
+        )
         return
     if response.json().get("error", True):
         self.rasp_output_lb.setText(f"Error requiring the pictures archive directory")
         return
     remote_pictures_archive_dir = response.json().get("msg", "")
-
 
     self.pict_download_thread = QThread(parent=self)
     self.pict_download_thread.start()
@@ -420,4 +464,3 @@ def download_pictures(self, raspberry_id, download_dir):
     self.pict_download_worker.progress.connect(thread_progress)
     self.pict_download_worker.finished.connect(thread_finished)
     self.pict_download_worker.start.emit(raspberry_id, remote_pictures_list, download_dir, remote_pictures_archive_dir)
-

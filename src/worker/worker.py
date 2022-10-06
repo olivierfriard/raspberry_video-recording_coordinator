@@ -924,7 +924,7 @@ def take_picture():
 
     for key in request.values:
 
-        if key in ["timelapse", "timeout", "annotate", "key"]:
+        if key in ("timelapse", "timeout", "annotate", "key"):
             continue
         if request.values[key] == "True":
             command_line.extend([f"--{key}"])
