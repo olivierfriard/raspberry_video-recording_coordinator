@@ -919,6 +919,9 @@ def take_picture():
         "90",
     ]
 
+    print("XXXXXXXXXXXXXXXXX")
+    logging.info(f"{len(request.values)}")
+
     for key in request.values:
         print(f"{key}: {request.values[key]}")
         logging.info(f"{key}: {request.values[key]}")
