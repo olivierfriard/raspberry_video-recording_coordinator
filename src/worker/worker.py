@@ -894,6 +894,8 @@ def take_picture():
     Start time lapse or take a picture and send it
     """
 
+    logging.info("take picture init")
+
     if video_streaming_active():
         return {"error": True, "msg": "Time lapse cannot be started because the video streaming is active"}
 
@@ -1123,7 +1125,6 @@ def shutdown():
 
 if __name__ == "__main__":
     logging.info("worker started")
-    app.logger.info("worker started (app.logger)")
     app.debug = True
     if security_key_sha256:
         app.run(host="0.0.0.0", port=cfg.PORT, ssl_context="adhoc")
