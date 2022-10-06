@@ -935,7 +935,7 @@ def take_picture():
         command_line.extend(["-a", "4", "-a", f'"{socket.gethostname()} %Y-%m-%d %X"'])
 
     # check time lapse
-    
+
     if (
         "timeout" in request.values
         and request.values["timeout"] != "0"
@@ -949,12 +949,12 @@ def take_picture():
         command_line.extend(
             [
                 "-o",
-                pl.Path(cfg.TIME_LAPSE_ARCHIVE) / pl.Path(f"{socket.gethostname()}_%d").with_suffix(".jpg"),
+                str(pl.Path(cfg.TIME_LAPSE_ARCHIVE) / pl.Path(f"{socket.gethostname()}_%d").with_suffix(".jpg")),
             ]
         )
         logging.info("command: " + (" ".join(command_line)))
         try:
-            
+
             subprocess.Popen(command_line)
         except:
             logging.warning("Error running time lapse (wrong command line option)")
