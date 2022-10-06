@@ -1123,6 +1123,7 @@ def shutdown():
 
 if __name__ == "__main__":
     logging.info("worker started")
+    app.logger.info("worker started (app.logger)")
     app.debug = True
     if security_key_sha256:
         app.run(host="0.0.0.0", port=cfg.PORT, ssl_context="adhoc")
