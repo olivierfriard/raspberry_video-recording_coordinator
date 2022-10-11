@@ -72,14 +72,15 @@ def start_video_recording(self, raspberry_id):
         "contrast": self.raspberry_info[raspberry_id]['video contrast'],
         "saturation": self.raspberry_info[raspberry_id]['video saturation'],
         "sharpness": self.raspberry_info[raspberry_id]['video sharpness'],
-        "ISO": self.raspberry_info[raspberry_id]['video iso'],
+        #"ISO": self.raspberry_info[raspberry_id]['video iso'],
+        "gain": self.raspberry_info[raspberry_id]["video gain"],
         "rotation": self.raspberry_info[raspberry_id]['video rotation'],
         "hflip": self.raspberry_info[raspberry_id]['video hflip'],
         "vflip": self.raspberry_info[raspberry_id]['video vflip'],
     }
 
     self.rasp_output_lb.setText("start video recording requested")
-    response = self.request(raspberry_id, "/start_video", data=data)
+    response = self.request(raspberry_id, "/start_video", type="POST", data=data)
     if response == None:
         return
 

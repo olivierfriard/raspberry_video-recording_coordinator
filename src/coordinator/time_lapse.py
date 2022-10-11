@@ -12,7 +12,12 @@ import pathlib as pl
 import config_coordinator_local as cfg
 import logging
 import shutil
+import datetime
 import requests
+
+
+def datetime_now_iso():
+    return datetime.datetime.now().replace(microsecond=0).isoformat().replace("T", " ")
 
 
 def take_picture(self, raspberry_id: str, mode: str):
@@ -56,12 +61,11 @@ def take_picture(self, raspberry_id: str, mode: str):
             )
             return
 
+        self.rasp_output_lb.setText(response.json().get("msg", "Undefined error"))
+        # app.processEvents()
+
         # check if time lapse requested
-        if (
-            self.raspberry_info[raspberry_id]["time lapse wait"]
-            and self.raspberry_info[raspberry_id]["time lapse duration"]
-        ):
-            self.rasp_output_lb.setText(response.json().get("msg", "Undefined error"))
+        if mode == "time lapse":
             self.get_raspberry_status(raspberry_id)
             self.update_raspberry_display(raspberry_id)
             self.update_raspberry_dashboard(raspberry_id)
@@ -73,7 +77,6 @@ def take_picture(self, raspberry_id: str, mode: str):
                 stream=True,
                 verify=False,
             )
-            print(response2)
 
         except Exception:
             self.rasp_output_lb.setText(f"Error contacting the Raspberry Pi {raspberry_id}")
@@ -90,7 +93,7 @@ def take_picture(self, raspberry_id: str, mode: str):
         self.picture_lb.setPixmap(
             QPixmap(f"live_{raspberry_id}.jpg").scaled(self.picture_lb.size(), Qt.KeepAspectRatio)
         )
-        self.rasp_output_lb.setText(f"Picture taken2")
+        self.rasp_output_lb.setText(f"Picture received at {datetime_now_iso()}")
 
         self.get_raspberry_status(raspberry_id)
         self.update_raspberry_display(raspberry_id)

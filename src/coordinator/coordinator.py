@@ -81,7 +81,7 @@ def date_iso():
     """
     return current date in ISO 8601 format
     """
-    return datetime.datetime.now().isoformat().split(".")[0].replace("T", " ")
+    return datetime.datetime.now().replace(microsecond=0).isoformat().replace("T", " ")
 
 
 '''
@@ -1145,9 +1145,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             return
 
         self.get_raspberry_status(self.current_raspberry_id)
-
         self.update_raspberry_dashboard(self.current_raspberry_id)
-
         self.update_raspberry_display(self.current_raspberry_id)
 
     def update_raspberry_display(self, raspberry_id):

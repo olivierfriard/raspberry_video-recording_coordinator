@@ -41,10 +41,24 @@ import config as cfg
 def is_camera_detected():
     """
     check if camera is plugged
+
+
+    Available cameras
+-----------------
+0 : imx219 [3280x2464] (/base/soc/i2c0mux/i2c@1/imx219@10)
+    Modes: 'SRGGB10_CSI2P' : 640x480 [206.65 fps - (1000, 752)/1280x960 crop]
+                             1640x1232 [41.85 fps - (0, 0)/3280x2464 crop]
+                             1920x1080 [47.57 fps - (680, 692)/1920x1080 crop]
+                             3280x2464 [21.19 fps - (0, 0)/3280x2464 crop]
+           'SRGGB8' : 640x480 [206.65 fps - (1000, 752)/1280x960 crop]
+                      1640x1232 [41.85 fps - (0, 0)/3280x2464 crop]
+                      1920x1080 [47.57 fps - (680, 692)/1920x1080 crop]
+                      3280x2464 [21.19 fps - (0, 0)/3280x2464 crop]
+
     """
-    process = subprocess.run([VCGENCMD_PATH, "get_camera"], stdout=subprocess.PIPE)
+    process = subprocess.run(["libcamera-hello", "--list-cameras"], stdout=subprocess.PIPE)
     output = process.stdout.decode("utf-8").strip()
-    return output == "supported=1 detected=1"
+    return output
 
 
 def get_hw_addr(ifname):
@@ -963,7 +977,7 @@ def take_picture():
         return {"error": False, "msg": "Time lapse running"}
 
     else:
-
+        # take one picture
         command_line.extend(["-o", str(pl.Path(cfg.STATIC_DIR) / pl.Path("live.jpg"))])
         logging.info("command:" + (" ".join(command_line)))
         try:
@@ -971,6 +985,7 @@ def take_picture():
         except:
             logging.warning("Error taking picture (wrong command line option)")
             return {"error": 1, "msg": "Error taking picture (wrong command line option)"}
+
         if not completed.returncode:
             return {"error": False, "msg": "Picture taken successfully"}
         else:
