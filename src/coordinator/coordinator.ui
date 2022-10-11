@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1371</width>
-    <height>1072</height>
+    <width>1916</width>
+    <height>1577</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -406,207 +406,243 @@
                <attribute name="title">
                 <string>Picture</string>
                </attribute>
-               <layout class="QVBoxLayout" name="verticalLayout_20">
+               <layout class="QVBoxLayout" name="verticalLayout_21">
                 <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_2">
-                  <item>
-                   <widget class="QLabel" name="label_4">
-                    <property name="text">
-                     <string>Resolution</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QComboBox" name="picture_resolution_cb">
-                    <property name="accessibleName">
-                     <string>picture resolution</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="label_19">
-                    <property name="text">
-                     <string>Rotation</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QSpinBox" name="picture_rotation_sb">
-                    <property name="accessibleName">
-                     <string>picture rotation</string>
-                    </property>
-                    <property name="maximum">
-                     <number>180</number>
-                    </property>
-                    <property name="singleStep">
-                     <number>180</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QCheckBox" name="picture_hflip_cb">
-                    <property name="accessibleName">
-                     <string>picture hflip</string>
-                    </property>
-                    <property name="text">
-                     <string>Horizontal flip</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QCheckBox" name="picture_vflip_cb">
-                    <property name="accessibleName">
-                     <string>picture vflip</string>
-                    </property>
-                    <property name="text">
-                     <string>Vertical flip</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <spacer name="horizontalSpacer_3">
-                    <property name="orientation">
-                     <enum>Qt::Horizontal</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>40</width>
-                      <height>20</height>
-                     </size>
-                    </property>
-                   </spacer>
-                  </item>
-                 </layout>
+                 <widget class="QGroupBox" name="groupBox_5">
+                  <property name="title">
+                   <string>Parameters</string>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout_20">
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_2">
+                     <item>
+                      <widget class="QLabel" name="label_4">
+                       <property name="text">
+                        <string>Resolution</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QComboBox" name="picture_resolution_cb">
+                       <property name="accessibleName">
+                        <string>picture resolution</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLabel" name="label_19">
+                       <property name="text">
+                        <string>Rotation</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QSpinBox" name="picture_rotation_sb">
+                       <property name="accessibleName">
+                        <string>picture rotation</string>
+                       </property>
+                       <property name="maximum">
+                        <number>180</number>
+                       </property>
+                       <property name="singleStep">
+                        <number>180</number>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QCheckBox" name="picture_hflip_cb">
+                       <property name="accessibleName">
+                        <string>picture hflip</string>
+                       </property>
+                       <property name="text">
+                        <string>Horizontal flip</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QCheckBox" name="picture_vflip_cb">
+                       <property name="accessibleName">
+                        <string>picture vflip</string>
+                       </property>
+                       <property name="text">
+                        <string>Vertical flip</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <spacer name="horizontalSpacer_3">
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>40</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_13">
+                     <item>
+                      <widget class="QLabel" name="label_15">
+                       <property name="text">
+                        <string>Brightness</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QDoubleSpinBox" name="picture_brightness_sb">
+                       <property name="accessibleName">
+                        <string>picture brightness</string>
+                       </property>
+                       <property name="maximum">
+                        <double>1.000000000000000</double>
+                       </property>
+                       <property name="singleStep">
+                        <double>0.100000000000000</double>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLabel" name="label_16">
+                       <property name="text">
+                        <string>Contrast</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QSpinBox" name="picture_contrast_sb">
+                       <property name="accessibleName">
+                        <string>picture contrast</string>
+                       </property>
+                       <property name="minimum">
+                        <number>-100</number>
+                       </property>
+                       <property name="maximum">
+                        <number>100</number>
+                       </property>
+                       <property name="value">
+                        <number>1</number>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLabel" name="Sharpness">
+                       <property name="text">
+                        <string>Sharpness</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QSpinBox" name="picture_sharpness_sb">
+                       <property name="accessibleName">
+                        <string>picture sharpness</string>
+                       </property>
+                       <property name="minimum">
+                        <number>-100</number>
+                       </property>
+                       <property name="maximum">
+                        <number>100</number>
+                       </property>
+                       <property name="value">
+                        <number>1</number>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLabel" name="label_17">
+                       <property name="text">
+                        <string>Saturation</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QSpinBox" name="picture_saturation_sb">
+                       <property name="accessibleName">
+                        <string>picture saturation</string>
+                       </property>
+                       <property name="minimum">
+                        <number>0</number>
+                       </property>
+                       <property name="maximum">
+                        <number>100</number>
+                       </property>
+                       <property name="value">
+                        <number>1</number>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLabel" name="label_18">
+                       <property name="text">
+                        <string>Gain</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QSpinBox" name="picture_gain_sb">
+                       <property name="accessibleName">
+                        <string>picture gain</string>
+                       </property>
+                       <property name="minimum">
+                        <number>0</number>
+                       </property>
+                       <property name="maximum">
+                        <number>100</number>
+                       </property>
+                       <property name="singleStep">
+                        <number>1</number>
+                       </property>
+                       <property name="value">
+                        <number>1</number>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QCheckBox" name="picture_annotation_cb">
+                       <property name="accessibleName">
+                        <string>picture annotation</string>
+                       </property>
+                       <property name="text">
+                        <string>Annotate picture</string>
+                       </property>
+                       <property name="checkable">
+                        <bool>false</bool>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <spacer name="horizontalSpacer_4">
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>40</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </widget>
                 </item>
                 <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_13">
+                 <layout class="QHBoxLayout" name="horizontalLayout_14">
                   <item>
-                   <widget class="QLabel" name="label_15">
+                   <widget class="QPushButton" name="take_picture_pb">
                     <property name="text">
-                     <string>Brightness</string>
+                     <string>Take a picture</string>
                     </property>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QDoubleSpinBox" name="picture_brightness_sb">
-                    <property name="accessibleName">
-                     <string>picture brightness</string>
-                    </property>
-                    <property name="maximum">
-                     <double>1.000000000000000</double>
-                    </property>
-                    <property name="singleStep">
-                     <double>0.100000000000000</double>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="label_16">
-                    <property name="text">
-                     <string>Contrast</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QSpinBox" name="picture_contrast_sb">
-                    <property name="accessibleName">
-                     <string>picture contrast</string>
-                    </property>
-                    <property name="minimum">
-                     <number>-100</number>
-                    </property>
-                    <property name="maximum">
-                     <number>100</number>
-                    </property>
-                    <property name="value">
-                     <number>1</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="Sharpness">
-                    <property name="text">
-                     <string>Sharpness</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QSpinBox" name="picture_sharpness_sb">
-                    <property name="accessibleName">
-                     <string>picture sharpness</string>
-                    </property>
-                    <property name="minimum">
-                     <number>-100</number>
-                    </property>
-                    <property name="maximum">
-                     <number>100</number>
-                    </property>
-                    <property name="value">
-                     <number>1</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="label_17">
-                    <property name="text">
-                     <string>Saturation</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QSpinBox" name="picture_saturation_sb">
-                    <property name="accessibleName">
-                     <string>picture saturation</string>
-                    </property>
-                    <property name="minimum">
-                     <number>0</number>
-                    </property>
-                    <property name="maximum">
-                     <number>100</number>
-                    </property>
-                    <property name="value">
-                     <number>1</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="label_18">
-                    <property name="text">
-                     <string>Gain</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QSpinBox" name="picture_gain_sb">
-                    <property name="accessibleName">
-                     <string>picture gain</string>
-                    </property>
-                    <property name="minimum">
-                     <number>0</number>
-                    </property>
-                    <property name="maximum">
-                     <number>100</number>
-                    </property>
-                    <property name="singleStep">
-                     <number>1</number>
-                    </property>
-                    <property name="value">
-                     <number>1</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QCheckBox" name="picture_annotation_cb">
-                    <property name="accessibleName">
-                     <string>picture annotation</string>
-                    </property>
-                    <property name="text">
-                     <string>Annotate picture</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <spacer name="horizontalSpacer_4">
+                   <spacer name="horizontalSpacer_5">
                     <property name="orientation">
                      <enum>Qt::Horizontal</enum>
                     </property>
@@ -623,18 +659,11 @@
                 <item>
                  <widget class="QGroupBox" name="groupBox_4">
                   <property name="title">
-                   <string>Manual control</string>
+                   <string>Manual time lapse</string>
                   </property>
                   <layout class="QVBoxLayout" name="verticalLayout_6">
                    <item>
                     <layout class="QHBoxLayout" name="horizontalLayout_15">
-                     <item>
-                      <widget class="QCheckBox" name="time_lapse_cb">
-                       <property name="text">
-                        <string>Time lapse</string>
-                       </property>
-                      </widget>
-                     </item>
                      <item>
                       <widget class="QLabel" name="label_20">
                        <property name="text">
@@ -695,30 +724,6 @@
                      </item>
                     </layout>
                    </item>
-                   <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_14">
-                     <item>
-                      <widget class="QPushButton" name="take_picture_pb">
-                       <property name="text">
-                        <string>Take a picture</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <spacer name="horizontalSpacer_5">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>40</width>
-                         <height>20</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                    </layout>
-                   </item>
                   </layout>
                  </widget>
                 </item>
@@ -741,7 +746,7 @@
                     </size>
                    </property>
                    <property name="title">
-                    <string>Schedule</string>
+                    <string>Time lapse schedule</string>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_16">
                     <item>
@@ -1805,8 +1810,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1371</width>
-     <height>22</height>
+     <width>1916</width>
+     <height>35</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

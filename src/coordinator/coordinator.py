@@ -1,15 +1,17 @@
 """
 Raspberry Pi coordinator (via TCP/IP)
 
+https://www.raspberrypi.com/documentation/accessories/camera.html#common-command-line-options
 
 TODO:
 
-* scan network with QThread
+[X] scan network with QThread
+[ ] 
 
 """
 
-__version__ = "8"
-__version_date__ = "2021-10-06"
+__version__ = "9"
+__version_date__ = "2021-10-11"
 
 from PyQt5.QtWidgets import (
     QApplication,
@@ -44,7 +46,7 @@ import logging
 import socket
 import fcntl
 import struct
-from PIL.ImageQt import ImageQt
+#from PIL.ImageQt import ImageQt
 from multiprocessing.pool import ThreadPool
 import shutil
 import platform
@@ -377,7 +379,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
 
         self.rpi_tw.setEnabled(True)
 
-    def request(self, raspberry_id, route, data={}, time_out=None):
+    def request(self, raspberry_id, route, type="GET", data={}, time_out=None):
         """
         wrapper for contacting Raspberry Pi using requests
         security key is sent
@@ -389,12 +391,21 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             data_to_send = {"key": self.security_key}
 
         try:
-            response = requests.get(
+            if type == "GET":
+                response = requests.get(
                 f"{cfg.PROTOCOL}{self.raspberry_ip[raspberry_id]}{cfg.SERVER_PORT}{route}",
                 data=data_to_send,
                 timeout=time_out,
                 verify=False,
             )
+            if type == "POST":
+                response = requests.post(
+                f"{cfg.PROTOCOL}{self.raspberry_ip[raspberry_id]}{cfg.SERVER_PORT}{route}",
+                data=data_to_send,
+                timeout=time_out,
+                verify=False,
+            )
+
             return response
         except requests.exceptions.ConnectionError:
             self.rasp_output_lb.setText(f"Failed to establish a connection")
@@ -440,7 +451,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             width, height = self.raspberry_info[raspberry_id]["video mode"].split("x")
             data = {"width": width, "height": height}
 
-            response = self.request(raspberry_id, "/video_streaming/start", data=data)
+            response = self.request(raspberry_id, "/video_streaming/start", type="POST", data=data)
             if response == None:
                 return
 
@@ -1154,16 +1165,12 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         get status for all Raspberries Pi
         """
 
-        print("get_status_for_all_rpi")
-
         threads = []
         for raspberry_id in self.raspberry_ip:
             threads.append(threading.Thread(target=self.get_raspberry_status, args=(raspberry_id,)))
             threads[-1].start()
         for x in threads:
             x.join()
-
-        print("thread finished")
 
         for raspberry_id in self.raspberry_ip:
             self.update_raspberry_display(raspberry_id)
@@ -1177,10 +1184,14 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         """
 
         if self.sender().objectName() == "take_picture_pb":
-            time_lapse.take_picture(self, self.current_raspberry_id, "one")
+            self.rasp_output_lb.setText(f"Picture requested")
+            app.processEvents()
+            time_lapse.take_picture(self, self.current_raspberry_id, mode="one")
 
         if self.sender().objectName() == "start_time_lapse_pb":
-            time_lapse.take_picture(self, self.current_raspberry_id, "time lapse")
+            self.rasp_output_lb.setText(f"Time lapse requested")
+            app.processEvents()
+            time_lapse.take_picture(self, self.current_raspberry_id, mode="time lapse")
 
     @verif
     def stop_time_lapse_clicked(self):

@@ -12,7 +12,7 @@ __version_date__ = "2022-10-05"
 
 VCGENCMD_PATH = "/usr/bin/vcgencmd"
 
-from crontab import CronTab
+from crontab import CronTab  # from python-crontab (not crontab)
 
 import threading
 import datetime
@@ -114,20 +114,20 @@ def video_streaming_active():
 
 def recording_video_active():
     """
-    check if raspivid process is present
+    check if libcamera-vid process is present
     """
     process = subprocess.run(["ps", "auxwg"], stdout=subprocess.PIPE)
     processes_list = process.stdout.decode("utf-8").split("\n")
-    return len([x for x in processes_list if "raspivid" in x]) > 0
+    return len([x for x in processes_list if "libcamera-vid" in x]) > 0
 
 
 def time_lapse_active():
     """
-    check if raspistill process is present
+    check if libcamera-still process is present
     """
     process = subprocess.run(["ps", "auxwg"], stdout=subprocess.PIPE)
     processes_list = process.stdout.decode("utf-8").split("\n")
-    return len([x for x in processes_list if "raspistill" in x]) > 0
+    return len([x for x in processes_list if "libcamera-still" in x]) > 0
 
 
 def get_cpu_temperature() -> str:
@@ -173,10 +173,10 @@ class Raspivid_thread(threading.Thread):
         self.parameters = parameters
 
     def run(self):
-        logging.info("start raspivid thread")
+        logging.info("start libcamera-vid thread")
 
         command_line = [
-            "/usr/bin/raspivid",
+            "/usr/bin/libcamera-vid",
         ]
 
         for key in self.parameters:
@@ -496,8 +496,10 @@ def schedule_time_lapse():
     if not crontab_event:
         return {"error": True, "msg": "Time lapse NOT configured. Crontab event not found"}
 
+    logging.info(f"crontab event: {crontab_event}")    
+
     command_line = [
-        "/usr/bin/raspistill",
+        "libcamera-still",
         "-q",
         "90",
     ]
@@ -512,7 +514,7 @@ def schedule_time_lapse():
             command_line.extend([f"--{key}", f"{request.values[key]}"])
 
     # use Epoch time for file name
-    command_line.extend(["--timestamp"])
+    #command_line.extend(["--timestamp"])
 
     if (
         "timeout" in request.values
@@ -527,7 +529,7 @@ def schedule_time_lapse():
     command_line.extend(
         [
             "-o",
-            str(pl.Path(cfg.TIME_LAPSE_ARCHIVE) / pl.Path(f"{socket.gethostname()}_%d").with_suffix(".jpg")),
+            str(pl.Path(cfg.TIME_LAPSE_ARCHIVE) / pl.Path(f"{socket.gethostname()}_%04d").with_suffix(".jpg")),
         ]
     )
 
@@ -548,7 +550,7 @@ def schedule_time_lapse():
 
     cron.write()
 
-    return {"error": False, "msg": "Time lapse  scheduled"}
+    return {"error": False, "msg": "Time lapse scheduled"}
 
 
 @app.route(
@@ -567,7 +569,7 @@ def view_time_lapse_schedule():
     output = []
     try:
         for job in cron:
-            if "/usr/bin/raspistill" in job.command:
+            if "libcamera-still" in job.command:
                 output.append(
                     [str(job.minutes), str(job.hours), str(job.dom), str(job.month), str(job.dow), job.comment]
                 )
@@ -593,7 +595,7 @@ def delete_time_lapse_schedule():
     cron = CronTab(user="pi")
     try:
         for job in cron:
-            if "/usr/bin/raspistill" in job.command:
+            if "libcamera-still" in job.command:
                 cron.remove(job)
         cron.write()
     except Exception:
@@ -934,8 +936,7 @@ def take_picture():
     if "annotate" in request.values and request.values["annotate"] == "True":
         command_line.extend(["-a", "4", "-a", f'"{socket.gethostname()} %Y-%m-%d %X"'])
 
-    # check time lapse
-
+    # check if time lapse required
     if (
         "timeout" in request.values
         and request.values["timeout"] != "0"
@@ -944,12 +945,12 @@ def take_picture():
     ):
         command_line.extend([f"--timeout", str(int(request.values["timeout"]) * 1000)])
         command_line.extend([f"--timelapse", str(int(request.values["timelapse"]) * 1000)])
-        command_line.extend(["--timestamp"])
+        # command_line.extend(["--timestamp"])
 
         command_line.extend(
             [
                 "-o",
-                str(pl.Path(cfg.TIME_LAPSE_ARCHIVE) / pl.Path(f"{socket.gethostname()}_%d").with_suffix(".jpg")),
+                str(pl.Path(cfg.TIME_LAPSE_ARCHIVE) / pl.Path(f"{socket.gethostname()}_%04d").with_suffix(".jpg")),
             ]
         )
         logging.info("command: " + (" ".join(command_line)))

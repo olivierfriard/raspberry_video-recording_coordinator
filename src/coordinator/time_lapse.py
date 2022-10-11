@@ -22,9 +22,8 @@ def take_picture(self, raspberry_id: str, mode: str):
 
     if raspberry_id not in self.raspberry_ip:
         return
+    
     if self.raspberry_info[raspberry_id]["status"]["status"] == "OK":  # and self.raspberry_status[raspberry_id]:
-
-        self.rasp_output_lb.setText(f"Picture requested")
 
         width, height = self.raspberry_info[raspberry_id]["picture resolution"].split("x")
         data = {
@@ -45,17 +44,7 @@ def take_picture(self, raspberry_id: str, mode: str):
             "annotate": self.raspberry_info[raspberry_id]["picture annotation"],
         }
 
-        try:
-            response = requests.post(
-                f"{cfg.PROTOCOL}{self.raspberry_ip[raspberry_id]}{cfg.SERVER_PORT}/take_picture",
-                data=data,
-                verify=False,
-            )
-        except requests.exceptions.ConnectionError:
-            self.rasp_output_lb.setText(f"Failed to establish a connection")
-            self.get_raspberry_status(raspberry_id)
-            self.update_raspberry_display(raspberry_id)
-            return
+        response = self.request(raspberry_id, f"/take_picture", type="POST", data=data)
 
         if response.status_code != 200:
             self.rasp_output_lb.setText(f"Error taking picture (status code: {response.status_code})")
@@ -67,7 +56,7 @@ def take_picture(self, raspberry_id: str, mode: str):
             )
             return
 
-        # time lapse
+        # check if time lapse requested
         if (
             self.raspberry_info[raspberry_id]["time lapse wait"]
             and self.raspberry_info[raspberry_id]["time lapse duration"]
@@ -84,9 +73,12 @@ def take_picture(self, raspberry_id: str, mode: str):
                 stream=True,
                 verify=False,
             )
+            print(response2)
+
         except Exception:
             self.rasp_output_lb.setText(f"Error contacting the Raspberry Pi {raspberry_id}")
             return
+
         if response2.status_code != 200:
             self.rasp_output_lb.setText(f"Error retrieving the picture. Server status code: {response.status_code}")
             return
@@ -98,7 +90,7 @@ def take_picture(self, raspberry_id: str, mode: str):
         self.picture_lb.setPixmap(
             QPixmap(f"live_{raspberry_id}.jpg").scaled(self.picture_lb.size(), Qt.KeepAspectRatio)
         )
-        self.rasp_output_lb.setText(f"Picture taken")
+        self.rasp_output_lb.setText(f"Picture taken2")
 
         self.get_raspberry_status(raspberry_id)
         self.update_raspberry_display(raspberry_id)
@@ -286,6 +278,8 @@ def schedule_time_lapse(self, raspberry_id):
 
     crontab_event = f"{minutes_str} {hours_str} {dom_str} {month_str} {dow_str}"
 
+    logging.info(f"crontab event: {crontab_event} for {raspberry_id}")
+
     width, height = self.raspberry_info[raspberry_id]["picture resolution"].split("x")
     data = {
         "crontab": crontab_event,
@@ -301,10 +295,11 @@ def schedule_time_lapse(self, raspberry_id):
         "rotation": self.raspberry_info[raspberry_id]["picture rotation"],
         "hflip": self.raspberry_info[raspberry_id]["picture hflip"],
         "vflip": self.raspberry_info[raspberry_id]["picture vflip"],
-        "annotate": self.raspberry_info[raspberry_id]["picture annotation"],
+        #"annotate": self.raspberry_info[raspberry_id]["picture annotation"],
     }
 
-    response = self.request(raspberry_id, f"/schedule_time_lapse", data=data)
+    response = self.request(raspberry_id, f"/schedule_time_lapse", type="POST", data=data)
+
     if response == None:
         return
 
