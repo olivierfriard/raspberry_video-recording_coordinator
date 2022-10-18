@@ -419,7 +419,7 @@ def delete_videos(self, raspberry_id):
                     video_list_to_delete.append((video_file_name, video_size))
                     break
 
-    response = self.request(raspberry_id, "/delete_video", data={"video list": json.dumps(video_list_to_delete)})
+    response = self.request(raspberry_id, "/delete_video", type="POST", data={"video list": json.dumps(video_list_to_delete)})
     if response == None:
         return
 

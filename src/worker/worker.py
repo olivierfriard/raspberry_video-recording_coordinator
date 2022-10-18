@@ -6,8 +6,8 @@ to enable the service at boot:
 sudo systemctl enable worker
 """
 
-__version__ = "29"
-__version_date__ = "2022-10-05"
+__version__ = "30"
+__version_date__ = "2022-10-18"
 
 
 VCGENCMD_PATH = "/usr/bin/vcgencmd"
@@ -177,7 +177,7 @@ def datetime_now_iso():
     return datetime.datetime.now().replace(microsecond=0).isoformat().replace("T", " ")
 
 
-class Raspivid_thread(threading.Thread):
+class Libcamera_vid_thread(threading.Thread):
     """
     Class for recording video using a thread
     """
@@ -646,7 +646,7 @@ def start_video():
         f"Starting video recording for {int(request.values['timeout']) / 1000} s ({request.values['width']}x{request.values['height']})"
     )
     try:
-        thread = Raspivid_thread(request.values)
+        thread = Libcamera_vid_thread(request.values)
         thread.start()
 
         logging.info("Video recording started")
@@ -669,7 +669,7 @@ def stop_video():
     Stop the video recording
     """
 
-    subprocess.run(["sudo", "killall", "raspivid"])
+    subprocess.run(["sudo", "killall", "libcamera-vid"])
     time.sleep(2)
 
     if not recording_video_active():
@@ -947,8 +947,10 @@ def take_picture():
         elif request.values[key] != "False":
             command_line.extend([f"--{key}", f"{request.values[key]}"])
 
+    '''
     if "annotate" in request.values and request.values["annotate"] == "True":
         command_line.extend(["-a", "4", "-a", f'"{socket.gethostname()} %Y-%m-%d %X"'])
+    '''
 
     # check if time lapse required
     if (
@@ -1067,11 +1069,8 @@ def delete_video():
         return {"error": True, "msg": "No video to delete"}
 
     for video_file_name, _ in json.loads(request.values.get("video list", "[]")):
-        try:
-            subprocess.run(["rm", "-f", f"{cfg.VIDEO_ARCHIVE}/{video_file_name}"])
-        except Exception:
-            return {"error": True, "msg": "video not deleted"}
-
+        (pl.Path(cfg.VIDEO_ARCHIVE) / pl.Path(video_file_name)).unlink(missing_ok=True)
+        (pl.Path(cfg.VIDEO_ARCHIVE) / pl.Path(video_file_name).with_suffix(".md5sum")).unlink(missing_ok=True)
     return {"error": False, "msg": "All video deleted"}
 
 
