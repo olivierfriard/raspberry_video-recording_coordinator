@@ -5,8 +5,7 @@ https://www.raspberrypi.com/documentation/accessories/camera.html#common-command
 
 TODO:
 
-[X] scan network with QThread
-[ ] 
+* scan network with QThread
 
 """
 
@@ -24,7 +23,7 @@ from PyQt5.QtWidgets import (
     QListWidgetItem,
 )
 from PyQt5.QtGui import QPixmap, QIcon, QFont
-from PyQt5.QtCore import QTimer, Qt, QUrl, QSettings
+from PyQt5.QtCore import (QTimer, Qt, QUrl, QSettings)
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 
@@ -416,20 +415,18 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
 
     def verif(func):
         """
-        check if there is current Raspberry Pi
+        check if a Raspberry Pi is selected
         """
 
         def wrapper(*args, **kwargs):
             if args[0].current_raspberry_id not in args[0].raspberry_ip:
-                QMessageBox.information(
-                    None,
-                    "Raspberry Pi coordinator",
-                    "Select a Raspberry Pi before",
-                    QMessageBox.Ok | QMessageBox.Default,
-                    QMessageBox.NoButton,
-                )
+                QMessageBox.information(None, "Raspberry Pi coordinator", "Select a Raspberry Pi before",
+                                        QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
             else:
-                func(args[0])
+                if len(args) == 3:  # function has 2 arguments (self and an other)
+                    func(args[0], args[1])
+                else:
+                    func(args[0])  # function has only the self argument
 
         return wrapper
 
