@@ -444,6 +444,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         """
         if action == "start":
 
+            '''
             width, height = self.raspberry_info[raspberry_id]["video mode"].split("x")
             data = {"width": width, "height": height}
 
@@ -461,12 +462,18 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             self.rasp_output_lb.setText(response.json().get("msg", "Error starting streaming"))
 
             time.sleep(1)
+
             self.media_list.setMedia(
                 QMediaContent(QUrl(f"http://{self.raspberry_ip[raspberry_id]}:9090/stream/video.mjpeg"))
             )
             self.media_list.play()
             self.rasp_output_lb.setText(f"Streaming active")
-
+            '''
+            self.media_list.setMedia(
+                QMediaContent(QUrl(f"rtsp://192.168.2.6:8554/stream1"))
+            )
+            self.media_list.play()
+            print("playing")
             # generate QR code
             """
             try:
