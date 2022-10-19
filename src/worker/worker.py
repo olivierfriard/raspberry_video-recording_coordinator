@@ -399,10 +399,12 @@ def video_streaming(action):
     """
     start/stop video streaming with uv4l
 
-    see /etc/uv4l/uv4l-raspicam.conf for default configuration
+    DEPRECATED
+                see /etc/uv4l/uv4l-raspicam.conf for default configuration
+                sudo uv4l -nopreview --auto-video_nr --driver raspicam --encoding mjpeg --width 640 --height 480 --framerate 10 --server-option '--port=9090'
+                --server-option '--max-queued-connections=30' --server-option '--max-streams=25' --server-option '--max-threads=29'
 
-    sudo uv4l -nopreview --auto-video_nr --driver raspicam --encoding mjpeg --width 640 --height 480 --framerate 10 --server-option '--port=9090'
-    --server-option '--max-queued-connections=30' --server-option '--max-streams=25' --server-option '--max-threads=29'
+    libcamera-vid -t 0 --inline --listen -o - | cvlc stream:///dev/stdin --sout '#rtp{sdp=rtsp://:8554/stream1}' :demux=h264
 
     """
     # kill current streaming
