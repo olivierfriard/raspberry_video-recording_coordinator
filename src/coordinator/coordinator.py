@@ -47,7 +47,6 @@ import fcntl
 import struct
 #from PIL.ImageQt import ImageQt
 from multiprocessing.pool import ThreadPool
-import shutil
 import platform
 
 import argparse
