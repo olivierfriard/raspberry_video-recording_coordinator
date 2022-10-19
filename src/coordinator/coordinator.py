@@ -282,8 +282,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         self.all_video_cb.clicked.connect(self.all_video_clicked)
         self.all_new_video_cb.clicked.connect(self.all_new_video_clicked)
 
-        mediaPlayer = QMediaPlayer(None, QMediaPlayer.VideoSurface)
-        self.media_list = mediaPlayer
+        self.media_list = QMediaPlayer(None, QMediaPlayer.VideoSurface)
         videoWidget = QVideoWidget()
         self.media_list.setVideoOutput(videoWidget)
 
@@ -478,10 +477,13 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             self.media_list.setMedia(
                 QMediaContent(
                     # QUrl(f"rtsp://192.168.2.6:8554/stream1"))
-                    QUrl.fromLocalFile("")
+                    QUrl.fromLocalFile("/home/user/Videos/indri_song.mp4")
                 )
             )
             self.media_list.play()
+            time.sleep(5)
+            print(self.media_list.state())
+
             print("playing")
             # generate QR code
             """
@@ -494,6 +496,8 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             """
 
         if action == "stop":
+
+            
 
             self.rasp_output_lb.setText("Video streaming stop requested")
             response = self.request(raspberry_id, "/video_streaming/stop")
