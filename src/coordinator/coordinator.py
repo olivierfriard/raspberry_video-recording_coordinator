@@ -23,7 +23,7 @@ from PyQt5.QtWidgets import (
     QListWidgetItem,
 )
 from PyQt5.QtGui import QPixmap, QIcon, QFont
-from PyQt5.QtCore import (QTimer, Qt, QUrl, QSettings)
+from PyQt5.QtCore import QTimer, Qt, QUrl, QSettings
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 
@@ -45,7 +45,8 @@ import logging
 import socket
 import fcntl
 import struct
-#from PIL.ImageQt import ImageQt
+
+# from PIL.ImageQt import ImageQt
 from multiprocessing.pool import ThreadPool
 import platform
 
@@ -391,18 +392,18 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         try:
             if type == "GET":
                 response = requests.get(
-                f"{cfg.PROTOCOL}{self.raspberry_ip[raspberry_id]}{cfg.SERVER_PORT}{route}",
-                data=data_to_send,
-                timeout=time_out,
-                verify=False,
-            )
+                    f"{cfg.PROTOCOL}{self.raspberry_ip[raspberry_id]}{cfg.SERVER_PORT}{route}",
+                    data=data_to_send,
+                    timeout=time_out,
+                    verify=False,
+                )
             if type == "POST":
                 response = requests.post(
-                f"{cfg.PROTOCOL}{self.raspberry_ip[raspberry_id]}{cfg.SERVER_PORT}{route}",
-                data=data_to_send,
-                timeout=time_out,
-                verify=False,
-            )
+                    f"{cfg.PROTOCOL}{self.raspberry_ip[raspberry_id]}{cfg.SERVER_PORT}{route}",
+                    data=data_to_send,
+                    timeout=time_out,
+                    verify=False,
+                )
 
             return response
         except requests.exceptions.ConnectionError:
@@ -419,8 +420,13 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
 
         def wrapper(*args, **kwargs):
             if args[0].current_raspberry_id not in args[0].raspberry_ip:
-                QMessageBox.information(None, "Raspberry Pi coordinator", "Select a Raspberry Pi before",
-                                        QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
+                QMessageBox.information(
+                    None,
+                    "Raspberry Pi coordinator",
+                    "Select a Raspberry Pi before",
+                    QMessageBox.Ok | QMessageBox.Default,
+                    QMessageBox.NoButton,
+                )
             else:
                 if len(args) == 3:  # function has 2 arguments (self and an other)
                     func(args[0], args[1])
@@ -444,7 +450,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         """
         if action == "start":
 
-            '''
+            """
             width, height = self.raspberry_info[raspberry_id]["video mode"].split("x")
             data = {"width": width, "height": height}
 
@@ -468,9 +474,12 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             )
             self.media_list.play()
             self.rasp_output_lb.setText(f"Streaming active")
-            '''
+            """
             self.media_list.setMedia(
-                QMediaContent(QUrl(f"rtsp://192.168.2.6:8554/stream1"))
+                QMediaContent(
+                    # QUrl(f"rtsp://192.168.2.6:8554/stream1"))
+                    QUrl.fromLocalFile("")
+                )
             )
             self.media_list.play()
             print("playing")
