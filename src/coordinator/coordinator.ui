@@ -145,7 +145,7 @@
                <bool>false</bool>
               </property>
               <property name="currentIndex">
-               <number>3</number>
+               <number>2</number>
               </property>
               <widget class="QWidget" name="status_tab">
                <attribute name="title">
@@ -1037,7 +1037,7 @@
                 </item>
                </layout>
               </widget>
-              <widget class="QWidget" name="tab">
+              <widget class="QWidget" name="streaming_tab">
                <attribute name="title">
                 <string>Video streaming</string>
                </attribute>
