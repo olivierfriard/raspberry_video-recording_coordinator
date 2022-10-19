@@ -25,7 +25,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtGui import QPixmap, QIcon, QFont
 from PyQt5.QtCore import QTimer, Qt, QUrl, QSettings
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
-from PyQt5.QtMultimediaWidgets import QVideoWidget
+from PyQt5.QtMultimediaWidgets import QVideoWidget  #  sudo apt install libqt5multimedia5-plugins
 
 # from qt_material import apply_stylesheet
 

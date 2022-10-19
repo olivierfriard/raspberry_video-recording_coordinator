@@ -1,6 +1,6 @@
 from PyQt5.QtCore import QDir, Qt, QUrl
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
-from PyQt5.QtMultimediaWidgets import QVideoWidget
+from PyQt5.QtMultimediaWidgets import QVideoWidget   #  sudo apt install libqt5multimedia5-plugins
 from PyQt5.QtWidgets import (
     QMainWindow,
     QWidget,
