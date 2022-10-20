@@ -449,7 +449,6 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         """
         if action == "start":
 
-            
             width, height = self.raspberry_info[raspberry_id]["video mode"].split("x")
             data = {"width": width, "height": height}
 
@@ -469,12 +468,16 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             time.sleep(1)
 
             self.media_list.setMedia(
-                #QMediaContent(QUrl(f"http://{self.raspberry_ip[raspberry_id]}:9090/stream/video.mjpeg")
-                QMediaContent(QUrl(f"rtsp://{self.raspberry_ip[raspberry_id]}:8554/stream1"))
+                # QMediaContent(QUrl(f"http://{self.raspberry_ip[raspberry_id]}:9090/stream/video.mjpeg")
+                QMediaContent(
+                    QUrl(f"rtsp://{self.raspberry_ip[raspberry_id]}:8554/stream")
+                    # QUrl(f"udp://{self.raspberry_ip[raspberry_id]}:6000")
+                    # QUrl(f"tcp://{self.raspberry_ip[raspberry_id]}:6000")
+                )
             )
             self.media_list.play()
             self.rasp_output_lb.setText(f"Video streaming active")
-            
+
             self.media_list.play()
 
             # generate QR code
@@ -488,8 +491,6 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             """
 
         if action == "stop":
-
-            
 
             self.rasp_output_lb.setText("Video streaming stop requested")
             response = self.request(raspberry_id, "/video_streaming/stop")

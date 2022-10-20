@@ -40,20 +40,20 @@ import config as cfg
 
 def is_camera_detected():
     """
-    check if camera is plugged
+        check if camera is plugged
 
 
-    Available cameras
------------------
-0 : imx219 [3280x2464] (/base/soc/i2c0mux/i2c@1/imx219@10)
-    Modes: 'SRGGB10_CSI2P' : 640x480 [206.65 fps - (1000, 752)/1280x960 crop]
-                             1640x1232 [41.85 fps - (0, 0)/3280x2464 crop]
-                             1920x1080 [47.57 fps - (680, 692)/1920x1080 crop]
-                             3280x2464 [21.19 fps - (0, 0)/3280x2464 crop]
-           'SRGGB8' : 640x480 [206.65 fps - (1000, 752)/1280x960 crop]
-                      1640x1232 [41.85 fps - (0, 0)/3280x2464 crop]
-                      1920x1080 [47.57 fps - (680, 692)/1920x1080 crop]
-                      3280x2464 [21.19 fps - (0, 0)/3280x2464 crop]
+        Available cameras
+    -----------------
+    0 : imx219 [3280x2464] (/base/soc/i2c0mux/i2c@1/imx219@10)
+        Modes: 'SRGGB10_CSI2P' : 640x480 [206.65 fps - (1000, 752)/1280x960 crop]
+                                 1640x1232 [41.85 fps - (0, 0)/3280x2464 crop]
+                                 1920x1080 [47.57 fps - (680, 692)/1920x1080 crop]
+                                 3280x2464 [21.19 fps - (0, 0)/3280x2464 crop]
+               'SRGGB8' : 640x480 [206.65 fps - (1000, 752)/1280x960 crop]
+                          1640x1232 [41.85 fps - (0, 0)/3280x2464 crop]
+                          1920x1080 [47.57 fps - (680, 692)/1920x1080 crop]
+                          3280x2464 [21.19 fps - (0, 0)/3280x2464 crop]
 
     """
     process = subprocess.run(["libcamera-hello", "--list-cameras"], stdout=subprocess.PIPE)
@@ -123,7 +123,7 @@ def video_streaming_active():
 
     process = subprocess.run(["ps", "auxwg"], stdout=subprocess.PIPE)
     processes_list = process.stdout.decode("utf-8").split("\n")
-    return len([x for x in processes_list if "uv4l" in x]) > 0
+    return len([x for x in processes_list if "/usr/bin/vlc -I dummy stream:///dev/stdin" in x]) > 0
 
 
 def recording_video_active():
@@ -404,7 +404,7 @@ def video_streaming(action):
                 sudo uv4l -nopreview --auto-video_nr --driver raspicam --encoding mjpeg --width 640 --height 480 --framerate 10 --server-option '--port=9090'
                 --server-option '--max-queued-connections=30' --server-option '--max-streams=25' --server-option '--max-threads=29'
 
-    libcamera-vid -t 0 --inline --listen -o - | cvlc stream:///dev/stdin --sout '#rtp{sdp=rtsp://:8554/stream1}' :demux=h264
+    libcamera-vid -t 0 --inline --listen -o - | cvlc stream:///dev/stdin --sout '#rtp{sdp=rtsp://:8554/stream}' :demux=h264
 
     """
     # kill current streaming
@@ -512,7 +512,7 @@ def schedule_time_lapse():
     if not crontab_event:
         return {"error": True, "msg": "Time lapse NOT configured. Crontab event not found"}
 
-    logging.info(f"crontab event: {crontab_event}")    
+    logging.info(f"crontab event: {crontab_event}")
 
     command_line = [
         "libcamera-still",
@@ -530,7 +530,7 @@ def schedule_time_lapse():
             command_line.extend([f"--{key}", f"{request.values[key]}"])
 
     # use Epoch time for file name
-    #command_line.extend(["--timestamp"])
+    # command_line.extend(["--timestamp"])
 
     if (
         "timeout" in request.values
@@ -949,10 +949,10 @@ def take_picture():
         elif request.values[key] != "False":
             command_line.extend([f"--{key}", f"{request.values[key]}"])
 
-    '''
+    """
     if "annotate" in request.values and request.values["annotate"] == "True":
         command_line.extend(["-a", "4", "-a", f'"{socket.gethostname()} %Y-%m-%d %X"'])
-    '''
+    """
 
     # check if time lapse required
     if (
