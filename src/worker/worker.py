@@ -232,25 +232,17 @@ class Blink_thread(threading.Thread):
         threading.Thread.__init__(self)
 
     def run(self):
-        logging.info("start  blinking")
-
+        logging.info("start blinking")
         subprocess.run(["bash", "blink_sudo.bash"])
 
-        """
-        # Set the PWR LED to GPIO mode (set 'off' by default).
-        os.system("echo gpio | sudo tee /sys/class/leds/led1/trigger")
 
-        # (Optional) Turn on (1) or off (0) the PWR LED.
+class Video_streaming_thread(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
 
-        for n in range(30):
-            os.system("echo 0 | sudo tee /sys/class/leds/led1/brightness")
-            time.sleep(500)
-            os.system("echo 1 | sudo tee /sys/class/leds/led1/brightness")
-            time.sleep(500)
-
-        # Revert the PWR LED back to 'under-voltage detect' mode.
-        os.system("echo input | sudo tee /sys/class/leds/led1/trigger")
-        """
+    def run(self):
+        logging.info("start video streaming")
+        subprocess.run(["bash", "stream_video.bash"])
 
 
 from flask import Flask, request, send_from_directory, Response
@@ -420,12 +412,8 @@ def video_streaming(action):
     if action == "start":
 
         try:
-            subprocess.run(
-                [
-                    "bash",
-                    "stream_video.bash",
-                ]
-            )
+            thread = Blink_thread()
+            thread.start()
             return {"msg": "video streaming started"}
         except Exception:
             return {"msg": "video streaming not started"}
