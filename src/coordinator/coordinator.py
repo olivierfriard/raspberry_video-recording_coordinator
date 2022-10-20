@@ -9,8 +9,8 @@ TODO:
 
 """
 
-__version__ = "9"
-__version_date__ = "2021-10-11"
+__version__ = "20"
+__version_date__ = "2021-10-20"
 
 from PyQt5.QtWidgets import (
     QApplication,
@@ -45,6 +45,7 @@ import logging
 import socket
 import fcntl
 import struct
+from http import HTTPStatus
 
 # from PIL.ImageQt import ImageQt
 from multiprocessing.pool import ThreadPool
@@ -445,7 +446,6 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
     def video_streaming(self, raspberry_id, action):
         """
         start/stop video streaming on client and show output
-        see /etc/uv4l/uv4l-raspicam.conf for default configuration
         """
         if action == "start":
 
@@ -456,7 +456,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             if response == None:
                 return
 
-            if response.status_code != 200:
+            if response.status_code != HTTPStatus.OK:
                 self.rasp_output_lb.setText(f"Error during the video streaming (status code: {response.status_code})")
                 return
 
@@ -497,7 +497,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             if response == None:
                 return
 
-            if response.status_code != 200:
+            if response.status_code != HTTPStatus.OK:
                 self.rasp_output_lb.setText(f"Error stopping the video streaming (status code: {response.status_code})")
                 return
 
@@ -791,7 +791,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             logging.debug(f"{ip_address}: failed to establish a connection")
             return
 
-        if response.status_code != 200:
+        if response.status_code != HTTPStatus.OK:
             logging.debug(f"{ip_address}: server status code != 200: {response.status_code}")
             return
 
@@ -1018,7 +1018,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         if response == None:
             return
 
-        if response.status_code != 200:
+        if response.status_code != HTTPStatus.OK:
             self.rasp_output_lb.setText(f"Error during reboot (status code: {response.status_code})")
             return
         self.rasp_output_lb.setText(response.json().get("msg", "Error during reboot"))
@@ -1053,7 +1053,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         if response == None:
             return
 
-        if response.status_code != 200:
+        if response.status_code != HTTPStatus.OK:
             self.rasp_output_lb.setText(f"Error during time synchronization (status code: {response.status_code})")
             return
         self.rasp_output_lb.setText(response.json().get("msg", "Error during time synchronization"))
@@ -1091,7 +1091,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         if response == None:
             return
 
-        if response.status_code != 200:
+        if response.status_code != HTTPStatus.OK:
             self.rasp_output_lb.setText(f"Error during shutdown (status code: {response.status_code})")
             return
         self.rasp_output_lb.setText(response.json().get("msg", "Error during shutdown"))
@@ -1118,7 +1118,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         if response == None:
             return
 
-        if response.status_code != 200:
+        if response.status_code != HTTPStatus.OK:
             self.rasp_output_lb.setText("Error during blinking")
             return
         self.rasp_output_lb.setText(response.json().get("msg", "Error during blinking"))
@@ -1133,7 +1133,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             if raspberry_id in self.raspberry_info:
                 self.raspberry_info[raspberry_id]["status"] = {"status": "not reachable"}
             return {"status": "not reachable"}
-        if response.status_code != 200:
+        if response.status_code != HTTPStatus.OK:
             self.raspberry_info[raspberry_id]["status"] = {
                 "status": f"not available (status code: {response.status_code})"
             }
@@ -1230,7 +1230,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         get the log of the current Raspberry Pi
         """
         response = self.request(self.current_raspberry_id, "/get_log")
-        if response.status_code != 200:
+        if response.status_code != HTTPStatus.OK:
             self.rasp_output_lb.setText(f"Failed to start recording video (status code: {response.status_code})")
             return
 

@@ -883,6 +883,8 @@ def sync_time(date, hour):
     synchronize the date and time
     """
 
+    completed = subprocess.run(["sudo", "timedatectl", "set-ntp", "false"])
+
     completed = subprocess.run(["sudo", "timedatectl", "set-time", f"{date} {hour}"])  # 2015-11-23 10:11:22
     if completed.returncode:
         return {"error": True, "msg": "Time not synchronised"}
