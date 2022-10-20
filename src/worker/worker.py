@@ -132,7 +132,7 @@ def recording_video_active():
     """
     process = subprocess.run(["ps", "auxwg"], stdout=subprocess.PIPE)
     processes_list = process.stdout.decode("utf-8").split("\n")
-    return len([x for x in processes_list if "libcamera-vid" in x]) > 0
+    return len([x for x in processes_list if "libcamera-vid" in x and "libcamera-vid -t 0" not in x]) > 0
 
 
 def time_lapse_active():
