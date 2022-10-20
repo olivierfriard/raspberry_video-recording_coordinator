@@ -412,7 +412,7 @@ def video_streaming(action):
     if action == "start":
 
         try:
-            thread = Blink_thread()
+            thread = Video_streaming_thread()
             thread.start()
             return {"msg": "video streaming started"}
         except Exception:
