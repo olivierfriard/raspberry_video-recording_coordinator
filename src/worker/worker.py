@@ -409,7 +409,7 @@ def video_streaming(action):
     """
     # kill current streaming
     try:
-        subprocess.run(["sudo", "pkill", "uv4l"])
+        subprocess.run(["sudo", "pkill", "vlc"])
         time.sleep(2)
     except Exception:
         return {"msg": "Problem trying to stop the video streaming"}
@@ -420,15 +420,17 @@ def video_streaming(action):
     if action == "start":
 
         try:
-            width = request.values["width"]
+            subprocess.run(
+                [
+                    "bash",
+                    "stream_video.bash",
+                ]
+            )
+            return {"msg": "video streaming started"}
         except Exception:
-            width = cfg.DEFAULT_PICTURE_WIDTH
+            return {"msg": "video streaming not started"}
 
-        try:
-            height = request.values["height"]
-        except Exception:
-            height = cfg.DEFAULT_PICTURE_HEIGHT
-
+        """
         try:
             subprocess.run(
                 [
@@ -459,6 +461,7 @@ def video_streaming(action):
             return {"msg": "video streaming started"}
         except Exception:
             return {"msg": "video streaming not started"}
+        """
 
 
 '''
