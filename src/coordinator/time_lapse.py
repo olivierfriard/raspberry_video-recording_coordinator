@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem
 from PyQt5.QtCore import Qt, QThread, pyqtSignal, QObject
 
 import pathlib as pl
-import config_coordinator_local as cfg
+import config_coordinator as cfg
 import logging
 import shutil
 import datetime

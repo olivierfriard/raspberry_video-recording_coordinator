@@ -4,7 +4,7 @@ Raspberry Pi coordinator
 video recording module
 """
 
-import config_coordinator_local as cfg
+import config_coordinator as cfg
 from PyQt5.QtWidgets import (QMessageBox, QTableWidgetItem)
 from PyQt5.QtCore import (QThread, pyqtSignal, QObject, Qt)
 import pathlib as pl
