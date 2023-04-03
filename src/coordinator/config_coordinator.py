@@ -11,7 +11,6 @@ IP_RANGES = (("192.168.1.1", [2, 2]),)
 WLAN_INTERVAL = [128, 254]
 
 
-
 # path for receiving video from raspberries
 VIDEO_ARCHIVE  = "/tmp"
 

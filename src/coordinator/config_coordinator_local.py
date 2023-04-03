@@ -7,10 +7,8 @@ PROTOCOL = "http://"
 
 IP_RANGES = (
     ("192.168.1.1", [146, 146]),
-    # ("130.192.200.1", [160, 160]),
 )
 
-# IP_RANGES = (("130.192.200.1", [160, 160]),)
 
 # path for receiving video from raspberries
 VIDEO_ARCHIVE = "/tmp"

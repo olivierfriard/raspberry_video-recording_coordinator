@@ -47,7 +47,6 @@ import fcntl
 import struct
 from http import HTTPStatus
 
-# from PIL.ImageQt import ImageQt
 from multiprocessing.pool import ThreadPool
 import platform
 
