@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1916</width>
-    <height>1577</height>
+    <width>1502</width>
+    <height>850</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
@@ -145,7 +151,7 @@
                <bool>false</bool>
               </property>
               <property name="currentIndex">
-               <number>2</number>
+               <number>3</number>
               </property>
               <widget class="QWidget" name="status_tab">
                <attribute name="title">
@@ -657,280 +663,158 @@
                  </layout>
                 </item>
                 <item>
-                 <widget class="QGroupBox" name="groupBox_4">
-                  <property name="title">
-                   <string>Manual time lapse</string>
-                  </property>
-                  <layout class="QVBoxLayout" name="verticalLayout_6">
-                   <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_15">
+                 <layout class="QHBoxLayout" name="horizontalLayout_17">
+                  <item>
+                   <widget class="QGroupBox" name="groupBox_4">
+                    <property name="title">
+                     <string>Manual time lapse</string>
+                    </property>
+                    <layout class="QVBoxLayout" name="verticalLayout_6">
                      <item>
-                      <widget class="QLabel" name="label_20">
-                       <property name="text">
-                        <string>Duration (s)</string>
-                       </property>
-                      </widget>
+                      <layout class="QHBoxLayout" name="horizontalLayout_15">
+                       <item>
+                        <widget class="QLabel" name="label_20">
+                         <property name="text">
+                          <string>Duration (s)</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QSpinBox" name="time_lapse_duration_sb">
+                         <property name="accessibleName">
+                          <string>time lapse duration</string>
+                         </property>
+                         <property name="maximum">
+                          <number>99999</number>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QLabel" name="label_21">
+                         <property name="text">
+                          <string>Time between pictures (s)</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QSpinBox" name="time_lapse_wait_sb">
+                         <property name="accessibleName">
+                          <string>time lapse wait</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
                      </item>
                      <item>
-                      <widget class="QSpinBox" name="time_lapse_duration_sb">
-                       <property name="accessibleName">
-                        <string>time lapse duration</string>
-                       </property>
-                       <property name="maximum">
-                        <number>99999</number>
-                       </property>
-                      </widget>
+                      <layout class="QHBoxLayout" name="horizontalLayout_31">
+                       <item>
+                        <widget class="QPushButton" name="start_time_lapse_pb">
+                         <property name="text">
+                          <string>Start time lapse</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="stop_time_lapse_pb">
+                         <property name="text">
+                          <string>Stop time lapse</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <spacer name="horizontalSpacer_6">
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>40</width>
+                           <height>20</height>
+                          </size>
+                         </property>
+                        </spacer>
+                       </item>
+                      </layout>
                      </item>
                      <item>
-                      <widget class="QLabel" name="label_21">
-                       <property name="text">
-                        <string>Time between pictures (s)</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QSpinBox" name="time_lapse_wait_sb">
-                       <property name="accessibleName">
-                        <string>time lapse wait</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QPushButton" name="start_time_lapse_pb">
-                       <property name="text">
-                        <string>Start time lapse</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QPushButton" name="stop_time_lapse_pb">
-                       <property name="text">
-                        <string>Stop time lapse</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <spacer name="horizontalSpacer_6">
+                      <spacer name="verticalSpacer_4">
                        <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
+                        <enum>Qt::Vertical</enum>
                        </property>
                        <property name="sizeHint" stdset="0">
                         <size>
-                         <width>40</width>
-                         <height>20</height>
+                         <width>20</width>
+                         <height>40</height>
                         </size>
                        </property>
                       </spacer>
                      </item>
                     </layout>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QSplitter" name="picture_splitter">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="orientation">
-                   <enum>Qt::Vertical</enum>
-                  </property>
-                  <widget class="QGroupBox" name="picture_schedule_gb">
-                   <property name="maximumSize">
-                    <size>
-                     <width>16777215</width>
-                     <height>300</height>
-                    </size>
-                   </property>
-                   <property name="title">
-                    <string>Time lapse schedule</string>
-                   </property>
-                   <layout class="QVBoxLayout" name="verticalLayout_16">
-                    <item>
-                     <widget class="QTabWidget" name="picture_schedule_tw">
-                      <property name="currentIndex">
-                       <number>1</number>
-                      </property>
-                      <widget class="QWidget" name="add_picture_schedule_tab">
-                       <attribute name="title">
-                        <string>New schedule</string>
-                       </attribute>
-                       <layout class="QVBoxLayout" name="verticalLayout_17">
-                        <item>
-                         <layout class="QHBoxLayout" name="horizontalLayout_25">
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QSplitter" name="picture_splitter">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
+                    <widget class="QGroupBox" name="picture_schedule_gb">
+                     <property name="maximumSize">
+                      <size>
+                       <width>16777215</width>
+                       <height>300</height>
+                      </size>
+                     </property>
+                     <property name="title">
+                      <string>Time lapse schedule</string>
+                     </property>
+                     <layout class="QVBoxLayout" name="verticalLayout_16">
+                      <item>
+                       <widget class="QTabWidget" name="picture_schedule_tw">
+                        <property name="currentIndex">
+                         <number>1</number>
+                        </property>
+                        <widget class="QWidget" name="add_picture_schedule_tab">
+                         <attribute name="title">
+                          <string>New schedule</string>
+                         </attribute>
+                         <layout class="QVBoxLayout" name="verticalLayout_17">
                           <item>
-                           <widget class="QLabel" name="label_35">
-                            <property name="text">
-                             <string>Hours</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item>
-                           <widget class="QLineEdit" name="picture_hours_le">
-                            <property name="frame">
-                             <bool>true</bool>
-                            </property>
-                            <property name="clearButtonEnabled">
-                             <bool>false</bool>
-                            </property>
-                           </widget>
-                          </item>
-                          <item>
-                           <widget class="QLabel" name="label_36">
-                            <property name="text">
-                             <string>Minutes</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item>
-                           <widget class="QLineEdit" name="picture_minutes_le"/>
-                          </item>
-                          <item>
-                           <spacer name="horizontalSpacer_19">
-                            <property name="orientation">
-                             <enum>Qt::Horizontal</enum>
-                            </property>
-                            <property name="sizeHint" stdset="0">
-                             <size>
-                              <width>40</width>
-                              <height>20</height>
-                             </size>
-                            </property>
-                           </spacer>
-                          </item>
-                         </layout>
-                        </item>
-                        <item>
-                         <layout class="QHBoxLayout" name="horizontalLayout_26">
-                          <item>
-                           <widget class="QLabel" name="label_37">
-                            <property name="text">
-                             <string>Days of week (0-6 or SUN-SAT)</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item>
-                           <widget class="QLineEdit" name="picture_days_of_week_le"/>
-                          </item>
-                          <item>
-                           <spacer name="horizontalSpacer_20">
-                            <property name="orientation">
-                             <enum>Qt::Horizontal</enum>
-                            </property>
-                            <property name="sizeHint" stdset="0">
-                             <size>
-                              <width>40</width>
-                              <height>20</height>
-                             </size>
-                            </property>
-                           </spacer>
-                          </item>
-                         </layout>
-                        </item>
-                        <item>
-                         <layout class="QHBoxLayout" name="horizontalLayout_27">
-                          <item>
-                           <widget class="QLabel" name="label_38">
-                            <property name="text">
-                             <string>Days of month (1-31)</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item>
-                           <widget class="QLineEdit" name="picture_days_of_month_le"/>
-                          </item>
-                          <item>
-                           <widget class="QLabel" name="label_39">
-                            <property name="text">
-                             <string>Month(s)</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item>
-                           <widget class="QLineEdit" name="picture_months_le"/>
-                          </item>
-                          <item>
-                           <spacer name="horizontalSpacer_21">
-                            <property name="orientation">
-                             <enum>Qt::Horizontal</enum>
-                            </property>
-                            <property name="sizeHint" stdset="0">
-                             <size>
-                              <width>40</width>
-                              <height>20</height>
-                             </size>
-                            </property>
-                           </spacer>
-                          </item>
-                         </layout>
-                        </item>
-                        <item>
-                         <layout class="QHBoxLayout" name="horizontalLayout_30">
-                          <item>
-                           <widget class="QPushButton" name="configure_picture_pb">
-                            <property name="text">
-                             <string>Add schedule to Raspberry Pi</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item>
-                           <spacer name="horizontalSpacer_24">
-                            <property name="orientation">
-                             <enum>Qt::Horizontal</enum>
-                            </property>
-                            <property name="sizeHint" stdset="0">
-                             <size>
-                              <width>40</width>
-                              <height>20</height>
-                             </size>
-                            </property>
-                           </spacer>
-                          </item>
-                         </layout>
-                        </item>
-                        <item>
-                         <spacer name="verticalSpacer_3">
-                          <property name="orientation">
-                           <enum>Qt::Vertical</enum>
-                          </property>
-                          <property name="sizeHint" stdset="0">
-                           <size>
-                            <width>20</width>
-                            <height>40</height>
-                           </size>
-                          </property>
-                         </spacer>
-                        </item>
-                       </layout>
-                      </widget>
-                      <widget class="QWidget" name="view_picture_schedule">
-                       <attribute name="title">
-                        <string>Time lapse schedule</string>
-                       </attribute>
-                       <layout class="QVBoxLayout" name="verticalLayout_18">
-                        <item>
-                         <layout class="QVBoxLayout" name="verticalLayout_19">
-                          <item>
-                           <layout class="QHBoxLayout" name="horizontalLayout_28">
+                           <layout class="QHBoxLayout" name="horizontalLayout_25">
                             <item>
-                             <widget class="QPushButton" name="view_picture_schedule_pb">
+                             <widget class="QLabel" name="label_35">
                               <property name="text">
-                               <string>View schedule on Raspberry Pi</string>
+                               <string>Hours</string>
                               </property>
                              </widget>
                             </item>
                             <item>
-                             <widget class="QPushButton" name="delete_picture_schedule_pb">
-                              <property name="text">
-                               <string>Delete schedule on Raspberry Pi</string>
+                             <widget class="QLineEdit" name="picture_hours_le">
+                              <property name="frame">
+                               <bool>true</bool>
+                              </property>
+                              <property name="clearButtonEnabled">
+                               <bool>false</bool>
                               </property>
                              </widget>
                             </item>
                             <item>
-                             <spacer name="horizontalSpacer_22">
+                             <widget class="QLabel" name="label_36">
+                              <property name="text">
+                               <string>Minutes</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLineEdit" name="picture_minutes_le"/>
+                            </item>
+                            <item>
+                             <spacer name="horizontalSpacer_19">
                               <property name="orientation">
                                <enum>Qt::Horizontal</enum>
                               </property>
@@ -945,95 +829,241 @@
                            </layout>
                           </item>
                           <item>
-                           <widget class="QTableWidget" name="time_lapse_schedule_table">
-                            <property name="sizePolicy">
-                             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                              <horstretch>0</horstretch>
-                              <verstretch>0</verstretch>
-                             </sizepolicy>
+                           <layout class="QHBoxLayout" name="horizontalLayout_26">
+                            <item>
+                             <widget class="QLabel" name="label_37">
+                              <property name="text">
+                               <string>Days of week (0-6 or SUN-SAT)</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLineEdit" name="picture_days_of_week_le"/>
+                            </item>
+                            <item>
+                             <spacer name="horizontalSpacer_20">
+                              <property name="orientation">
+                               <enum>Qt::Horizontal</enum>
+                              </property>
+                              <property name="sizeHint" stdset="0">
+                               <size>
+                                <width>40</width>
+                                <height>20</height>
+                               </size>
+                              </property>
+                             </spacer>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_27">
+                            <item>
+                             <widget class="QLabel" name="label_38">
+                              <property name="text">
+                               <string>Days of month (1-31)</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLineEdit" name="picture_days_of_month_le"/>
+                            </item>
+                            <item>
+                             <widget class="QLabel" name="label_39">
+                              <property name="text">
+                               <string>Month(s)</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLineEdit" name="picture_months_le"/>
+                            </item>
+                            <item>
+                             <spacer name="horizontalSpacer_21">
+                              <property name="orientation">
+                               <enum>Qt::Horizontal</enum>
+                              </property>
+                              <property name="sizeHint" stdset="0">
+                               <size>
+                                <width>40</width>
+                                <height>20</height>
+                               </size>
+                              </property>
+                             </spacer>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_30">
+                            <item>
+                             <widget class="QPushButton" name="configure_picture_pb">
+                              <property name="text">
+                               <string>Add schedule to Raspberry Pi</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <spacer name="horizontalSpacer_24">
+                              <property name="orientation">
+                               <enum>Qt::Horizontal</enum>
+                              </property>
+                              <property name="sizeHint" stdset="0">
+                               <size>
+                                <width>40</width>
+                                <height>20</height>
+                               </size>
+                              </property>
+                             </spacer>
+                            </item>
+                           </layout>
+                          </item>
+                          <item>
+                           <spacer name="verticalSpacer_3">
+                            <property name="orientation">
+                             <enum>Qt::Vertical</enum>
                             </property>
-                            <property name="maximumSize">
+                            <property name="sizeHint" stdset="0">
                              <size>
-                              <width>16777215</width>
-                              <height>16777215</height>
+                              <width>20</width>
+                              <height>40</height>
                              </size>
                             </property>
-                            <property name="selectionMode">
-                             <enum>QAbstractItemView::SingleSelection</enum>
-                            </property>
-                            <property name="selectionBehavior">
-                             <enum>QAbstractItemView::SelectRows</enum>
-                            </property>
-                            <column>
-                             <property name="text">
-                              <string>Minute</string>
-                             </property>
-                            </column>
-                            <column>
-                             <property name="text">
-                              <string>Hour</string>
-                             </property>
-                            </column>
-                            <column>
-                             <property name="text">
-                              <string>Day of month</string>
-                             </property>
-                            </column>
-                            <column>
-                             <property name="text">
-                              <string>Month</string>
-                             </property>
-                            </column>
-                            <column>
-                             <property name="text">
-                              <string>Day of week</string>
-                             </property>
-                            </column>
-                            <column>
-                             <property name="text">
-                              <string>Type</string>
-                             </property>
-                            </column>
-                           </widget>
+                           </spacer>
                           </item>
                          </layout>
-                        </item>
-                       </layout>
-                      </widget>
-                     </widget>
-                    </item>
-                    <item>
-                     <layout class="QHBoxLayout" name="horizontalLayout_29">
-                      <item>
-                       <widget class="QPushButton" name="download_pictures_pb">
-                        <property name="text">
-                         <string>Download pictures</string>
-                        </property>
+                        </widget>
+                        <widget class="QWidget" name="view_picture_schedule">
+                         <attribute name="title">
+                          <string>Time lapse schedule</string>
+                         </attribute>
+                         <layout class="QVBoxLayout" name="verticalLayout_18">
+                          <item>
+                           <layout class="QVBoxLayout" name="verticalLayout_19">
+                            <item>
+                             <layout class="QHBoxLayout" name="horizontalLayout_28">
+                              <item>
+                               <widget class="QPushButton" name="view_picture_schedule_pb">
+                                <property name="text">
+                                 <string>View schedule on Raspberry Pi</string>
+                                </property>
+                               </widget>
+                              </item>
+                              <item>
+                               <widget class="QPushButton" name="delete_picture_schedule_pb">
+                                <property name="text">
+                                 <string>Delete schedule on Raspberry Pi</string>
+                                </property>
+                               </widget>
+                              </item>
+                              <item>
+                               <spacer name="horizontalSpacer_22">
+                                <property name="orientation">
+                                 <enum>Qt::Horizontal</enum>
+                                </property>
+                                <property name="sizeHint" stdset="0">
+                                 <size>
+                                  <width>40</width>
+                                  <height>20</height>
+                                 </size>
+                                </property>
+                               </spacer>
+                              </item>
+                             </layout>
+                            </item>
+                            <item>
+                             <widget class="QTableWidget" name="time_lapse_schedule_table">
+                              <property name="enabled">
+                               <bool>false</bool>
+                              </property>
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>16777215</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="selectionMode">
+                               <enum>QAbstractItemView::SingleSelection</enum>
+                              </property>
+                              <property name="selectionBehavior">
+                               <enum>QAbstractItemView::SelectRows</enum>
+                              </property>
+                              <column>
+                               <property name="text">
+                                <string>Minute</string>
+                               </property>
+                              </column>
+                              <column>
+                               <property name="text">
+                                <string>Hour</string>
+                               </property>
+                              </column>
+                              <column>
+                               <property name="text">
+                                <string>Day of month</string>
+                               </property>
+                              </column>
+                              <column>
+                               <property name="text">
+                                <string>Month</string>
+                               </property>
+                              </column>
+                              <column>
+                               <property name="text">
+                                <string>Day of week</string>
+                               </property>
+                              </column>
+                              <column>
+                               <property name="text">
+                                <string>Type</string>
+                               </property>
+                              </column>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                         </layout>
+                        </widget>
                        </widget>
                       </item>
                       <item>
-                       <spacer name="horizontalSpacer_23">
-                        <property name="orientation">
-                         <enum>Qt::Horizontal</enum>
-                        </property>
-                        <property name="sizeHint" stdset="0">
-                         <size>
-                          <width>40</width>
-                          <height>20</height>
-                         </size>
-                        </property>
-                       </spacer>
+                       <layout class="QHBoxLayout" name="horizontalLayout_29">
+                        <item>
+                         <widget class="QPushButton" name="download_pictures_pb">
+                          <property name="text">
+                           <string>Download pictures</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <spacer name="horizontalSpacer_23">
+                          <property name="orientation">
+                           <enum>Qt::Horizontal</enum>
+                          </property>
+                          <property name="sizeHint" stdset="0">
+                           <size>
+                            <width>40</width>
+                            <height>20</height>
+                           </size>
+                          </property>
+                         </spacer>
+                        </item>
+                       </layout>
                       </item>
                      </layout>
-                    </item>
-                   </layout>
-                  </widget>
-                  <widget class="QLabel" name="picture_lb">
-                   <property name="text">
-                    <string>TextLabel</string>
-                   </property>
-                  </widget>
-                 </widget>
+                    </widget>
+                    <widget class="QLabel" name="picture_lb">
+                     <property name="text">
+                      <string>TextLabel</string>
+                     </property>
+                    </widget>
+                   </widget>
+                  </item>
+                 </layout>
                 </item>
                </layout>
               </widget>
@@ -1523,23 +1553,6 @@
                           <widget class="QLineEdit" name="days_of_week_le"/>
                          </item>
                          <item>
-                          <spacer name="horizontalSpacer_7">
-                           <property name="orientation">
-                            <enum>Qt::Horizontal</enum>
-                           </property>
-                           <property name="sizeHint" stdset="0">
-                            <size>
-                             <width>40</width>
-                             <height>20</height>
-                            </size>
-                           </property>
-                          </spacer>
-                         </item>
-                        </layout>
-                       </item>
-                       <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_17">
-                         <item>
                           <widget class="QLabel" name="label_27">
                            <property name="text">
                             <string>Days of month (1-31)</string>
@@ -1560,7 +1573,7 @@
                           <widget class="QLineEdit" name="months_le"/>
                          </item>
                          <item>
-                          <spacer name="horizontalSpacer_8">
+                          <spacer name="horizontalSpacer_7">
                            <property name="orientation">
                             <enum>Qt::Horizontal</enum>
                            </property>
@@ -1739,7 +1752,14 @@
                  </layout>
                 </item>
                 <item>
-                 <widget class="QListWidget" name="video_list_lw"/>
+                 <widget class="QListWidget" name="video_list_lw">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                 </widget>
                 </item>
                 <item>
                  <layout class="QHBoxLayout" name="horizontalLayout_24">
@@ -1810,8 +1830,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1916</width>
-     <height>35</height>
+     <width>1502</width>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

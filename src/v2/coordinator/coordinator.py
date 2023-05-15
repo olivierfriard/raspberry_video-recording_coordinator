@@ -194,7 +194,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             f"v. {__version__} - {__version_date__}    WIFI SSID: {get_wifi_ssid()} ({get_wlan_ip_address()})    IP address: {get_ip()}"
         )
 
-        self.setGeometry(0, 0, 1300, 768)
+        # self.setGeometry(0, 0, 1300, 768)
 
         if app.password is not None:
             self.security_key = app.password
