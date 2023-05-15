@@ -170,7 +170,6 @@ from coordinator_ui import Ui_MainWindow
 
 
 class RPI_coordinator(QMainWindow, Ui_MainWindow):
-
     raspberry_ip = {}
     raspberry_info = {}
     raspberry_saved_settings = {}
@@ -182,6 +181,9 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
 
         # super(MainWindow, self).__init__(parent)
         self.setupUi(self)
+
+        self.showMaximized()
+        # .showFullScreen()
 
         connections.connect(self)
 
@@ -328,7 +330,6 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         self.save_settings()
 
     def read_settings(self):
-
         iniFilePath = pathlib.Path.home() / pathlib.Path(".rpi_coordinator.conf")
 
         logging.debug(f"read config file from {iniFilePath}")
@@ -338,7 +339,6 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         return settings.value("rpi_config", {})
 
     def save_settings(self):
-
         iniFilePath = pathlib.Path.home() / pathlib.Path(".rpi_coordinator.conf")
 
         logging.debug(f"save config file in {iniFilePath}")
@@ -447,7 +447,6 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         start/stop video streaming on client and show output
         """
         if action == "start":
-
             width, height = self.raspberry_info[raspberry_id]["video mode"].split("x")
             data = {"width": width, "height": height}
 
@@ -490,7 +489,6 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             """
 
         if action == "stop":
-
             self.rasp_output_lb.setText("Video streaming stop requested")
             response = self.request(raspberry_id, "/video_streaming/stop")
             if response == None:
@@ -836,7 +834,6 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         app.processEvents()
 
         for ip_config in cfg.IP_RANGES:
-
             ip_base_address, interval = ip_config[0], ip_config[1]
             self.scan_raspberries(ip_base_address, interval)
 
@@ -1283,7 +1280,6 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser(
         description="",
     )
