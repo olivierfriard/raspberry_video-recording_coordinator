@@ -795,14 +795,14 @@ def video_list():
 
 
 @app.route(
-    "/pictures_list",
+    "/timelapse_pictures_list",
     methods=(
         "GET",
         "POST",
     ),
 )
 @security_key_required
-def pictures_list():
+def timelapse_pictures_list():
     """
     Return the list of recorded pictures
     """
@@ -810,6 +810,26 @@ def pictures_list():
         "pictures_list": [
             (x.replace(cfg.TIME_LAPSE_ARCHIVE + "/", ""), pl.Path(x).stat().st_size)
             for x in glob.glob(cfg.TIME_LAPSE_ARCHIVE + "/*.jpg")
+        ]
+    }
+
+
+@app.route(
+    "/live_pictures_list",
+    methods=(
+        "GET",
+        "POST",
+    ),
+)
+@security_key_required
+def live_pictures_list():
+    """
+    Return the list of live pictures
+    """
+    return {
+        "pictures_list": [
+            (x.replace(cfg.LIVE_PICTURES_ARCHIVE + "/", ""), pl.Path(x).stat().st_size)
+            for x in glob.glob(cfg.LIVE_PICTURES_ARCHIVE + "/*.jpg")
         ]
     }
 

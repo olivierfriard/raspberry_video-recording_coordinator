@@ -366,22 +366,41 @@ def delete_time_lapse_schedule(self, raspberry_id):
     self.view_time_lapse_schedule_clicked()
 
 
-def get_pictures_list(self, raspberry_id):
+def get_timelapse_pictures_list(self, raspberry_id):
     """
     request the list of recorded pictures to Raspberry Pi
     """
 
-    response = self.request(raspberry_id, "/pictures_list")
+    response = self.request(raspberry_id, "/timelapse_pictures_list")
     if response == None:
         return
 
     if response.status_code != 200:
         self.rasp_output_lb.setText(
-            f"Error requiring the list of recorded pictures (status code: {response.status_code})"
+            f"Error requiring the list of time lapse pictures (status code: {response.status_code})"
         )
         return
     if "pictures_list" not in response.json():
-        self.rasp_output_lb.setText(f"Error requiring the list of recorded pictures")
+        self.rasp_output_lb.setText(f"Error requiring the list of time lapse pictures")
+        return
+
+    return sorted(list(response.json()["pictures_list"]))
+
+
+def get_live_pictures_list(self, raspberry_id):
+    """
+    request the list of live pictures to Raspberry Pi
+    """
+
+    response = self.request(raspberry_id, "/live_pictures_list")
+    if response == None:
+        return
+
+    if response.status_code != 200:
+        self.rasp_output_lb.setText(f"Error requiring the list of live pictures (status code: {response.status_code})")
+        return
+    if "pictures_list" not in response.json():
+        self.rasp_output_lb.setText(f"Error requiring the list of live pictures")
         return
 
     return sorted(list(response.json()["pictures_list"]))
@@ -440,7 +459,7 @@ def download_timelapse_pictures(self, raspberry_id, download_dir):
         self.video_list_clicked()
         self.pict_download_thread.quit
 
-    remote_pictures_list = get_pictures_list(self, raspberry_id)
+    remote_pictures_list = get_timelapse_pictures_list(self, raspberry_id)
     if len(remote_pictures_list) == 0:
         self.rasp_output_lb.setText(f"No pictures to download")
         return
@@ -455,7 +474,7 @@ def download_timelapse_pictures(self, raspberry_id, download_dir):
         )
         return
     if response.json().get("error", True):
-        self.rasp_output_lb.setText(f"Error requiring the pictures archive directory")
+        self.rasp_output_lb.setText(f"Error requiring the time lapse pictures archive directory")
         return
     remote_pictures_archive_dir = response.json().get("msg", "")
 
@@ -483,7 +502,7 @@ def download_live_pictures(self, raspberry_id, download_dir):
         self.video_list_clicked()
         self.pict_download_thread.quit
 
-    remote_pictures_list = get_pictures_list(self, raspberry_id)
+    remote_pictures_list = get_live_pictures_list(self, raspberry_id)
     if len(remote_pictures_list) == 0:
         self.rasp_output_lb.setText(f"No pictures to download")
         return
@@ -494,13 +513,15 @@ def download_live_pictures(self, raspberry_id, download_dir):
         return
     if response.status_code != 200:
         self.rasp_output_lb.setText(
-            f"Error requiring the pictures archive directory (status code: {response.status_code})"
+            f"Error requiring the live pictures archive directory (status code: {response.status_code})"
         )
         return
     if response.json().get("error", True):
         self.rasp_output_lb.setText(f"Error requiring the pictures archive directory")
         return
     remote_pictures_archive_dir = response.json().get("msg", "")
+
+    logging.info(f"Remote live picture directory: {remote_pictures_archive_dir}")
 
     self.pict_download_thread = QThread(parent=self)
     self.pict_download_thread.start()
