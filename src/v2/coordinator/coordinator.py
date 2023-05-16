@@ -257,6 +257,8 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             self.picture_resolution_cb.addItem(resolution)
         self.picture_resolution_cb.setCurrentIndex(cfg.DEFAULT_PICTURE_RESOLUTION)
 
+        self.cb_enable_picture_parameters.clicked.connect(self.enable_picture_parameters)
+
         self.configure_picture_pb.clicked.connect(self.schedule_time_lapse_clicked)
         self.view_picture_schedule_pb.clicked.connect(self.view_time_lapse_schedule_clicked)
         self.delete_picture_schedule_pb.clicked.connect(self.delete_time_lapse_schedule_clicked)
@@ -1236,6 +1238,13 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             self.update_raspberry_display(raspberry_id)
             if self.current_raspberry_id == raspberry_id:
                 self.update_raspberry_dashboard(raspberry_id)
+
+    def enable_picture_parameters(self):
+        self.picture_brightness_sb.setEnabled(self.cb_enable_picture_parameters.isChecked())
+        self.picture_contrast_sb.setEnabled(self.cb_enable_picture_parameters.isChecked())
+        self.picture_sharpness_sb.setEnabled(self.cb_enable_picture_parameters.isChecked())
+        self.picture_saturation_sb.setEnabled(self.cb_enable_picture_parameters.isChecked())
+        self.picture_gain_sb.setEnabled(self.cb_enable_picture_parameters.isChecked())
 
     @verif
     def take_picture_clicked(self):

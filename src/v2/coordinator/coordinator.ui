@@ -506,6 +506,13 @@
                            <item>
                             <layout class="QHBoxLayout" name="horizontalLayout_13">
                              <item>
+                              <widget class="QCheckBox" name="cb_enable_picture_parameters">
+                               <property name="text">
+                                <string>Enable picture parameters</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
                               <widget class="QLabel" name="label_15">
                                <property name="text">
                                 <string>Brightness</string>
@@ -514,6 +521,9 @@
                              </item>
                              <item>
                               <widget class="QDoubleSpinBox" name="picture_brightness_sb">
+                               <property name="enabled">
+                                <bool>false</bool>
+                               </property>
                                <property name="accessibleName">
                                 <string>picture brightness</string>
                                </property>
@@ -534,6 +544,9 @@
                              </item>
                              <item>
                               <widget class="QSpinBox" name="picture_contrast_sb">
+                               <property name="enabled">
+                                <bool>false</bool>
+                               </property>
                                <property name="accessibleName">
                                 <string>picture contrast</string>
                                </property>
@@ -557,6 +570,9 @@
                              </item>
                              <item>
                               <widget class="QSpinBox" name="picture_sharpness_sb">
+                               <property name="enabled">
+                                <bool>false</bool>
+                               </property>
                                <property name="accessibleName">
                                 <string>picture sharpness</string>
                                </property>
@@ -580,6 +596,9 @@
                              </item>
                              <item>
                               <widget class="QSpinBox" name="picture_saturation_sb">
+                               <property name="enabled">
+                                <bool>false</bool>
+                               </property>
                                <property name="accessibleName">
                                 <string>picture saturation</string>
                                </property>
@@ -603,6 +622,9 @@
                              </item>
                              <item>
                               <widget class="QSpinBox" name="picture_gain_sb">
+                               <property name="enabled">
+                                <bool>false</bool>
+                               </property>
                                <property name="accessibleName">
                                 <string>picture gain</string>
                                </property>

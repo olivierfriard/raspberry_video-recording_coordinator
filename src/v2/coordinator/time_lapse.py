@@ -36,12 +36,6 @@ def take_picture(self, raspberry_id: str, mode: str):
             "key": self.security_key,
             "width": width,
             "height": height,
-            "brightness": self.raspberry_info[raspberry_id]["picture brightness"],
-            "contrast": self.raspberry_info[raspberry_id]["picture contrast"],
-            "saturation": self.raspberry_info[raspberry_id]["picture saturation"],
-            "sharpness": self.raspberry_info[raspberry_id]["picture sharpness"],
-            # "ISO": self.raspberry_info[raspberry_id]['picture iso'],
-            "gain": self.raspberry_info[raspberry_id]["picture gain"],
             "rotation": self.raspberry_info[raspberry_id]["picture rotation"],
             "hflip": self.raspberry_info[raspberry_id]["picture hflip"],
             "vflip": self.raspberry_info[raspberry_id]["picture vflip"],
@@ -49,6 +43,15 @@ def take_picture(self, raspberry_id: str, mode: str):
             "timeout": self.raspberry_info[raspberry_id]["time lapse duration"] if mode == "time lapse" else 0,
             "annotate": self.raspberry_info[raspberry_id]["picture annotation"],
         }
+
+        if self.cb_enable_picture_parameters.isChecked():
+            data["brightness"] = self.raspberry_info[raspberry_id]["picture brightness"]
+            data["contrast"] = self.raspberry_info[raspberry_id]["picture contrast"]
+            data["saturation"] = self.raspberry_info[raspberry_id]["picture saturation"]
+            data["sharpness"] = self.raspberry_info[raspberry_id]["picture sharpness"]
+            data["gain"] = self.raspberry_info[raspberry_id]["picture gain"]
+
+            # "ISO": self.raspberry_info[raspberry_id]['picture iso'],
 
         # add file name based on epoch
         if mode == "one":
