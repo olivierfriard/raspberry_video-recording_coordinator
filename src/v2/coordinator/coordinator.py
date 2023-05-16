@@ -1240,10 +1240,19 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
                 self.update_raspberry_dashboard(raspberry_id)
 
     def enable_picture_parameters(self):
+        self.lb_brightness.setEnabled(self.cb_enable_picture_parameters.isChecked())
         self.picture_brightness_sb.setEnabled(self.cb_enable_picture_parameters.isChecked())
+
+        self.lb_contrast.setEnabled(self.cb_enable_picture_parameters.isChecked())
         self.picture_contrast_sb.setEnabled(self.cb_enable_picture_parameters.isChecked())
+
+        self.lb_sharpness.setEnabled(self.cb_enable_picture_parameters.isChecked())
         self.picture_sharpness_sb.setEnabled(self.cb_enable_picture_parameters.isChecked())
+
+        self.lb_saturation.setEnabled(self.cb_enable_picture_parameters.isChecked())
         self.picture_saturation_sb.setEnabled(self.cb_enable_picture_parameters.isChecked())
+
+        self.lb_gain.setEnabled(self.cb_enable_picture_parameters.isChecked())
         self.picture_gain_sb.setEnabled(self.cb_enable_picture_parameters.isChecked())
 
     @verif

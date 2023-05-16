@@ -443,6 +443,12 @@
                              </item>
                              <item>
                               <widget class="QComboBox" name="picture_resolution_cb">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>100</width>
+                                 <height>0</height>
+                                </size>
+                               </property>
                                <property name="accessibleName">
                                 <string>picture resolution</string>
                                </property>
@@ -513,7 +519,10 @@
                               </widget>
                              </item>
                              <item>
-                              <widget class="QLabel" name="label_15">
+                              <widget class="QLabel" name="lb_brightness">
+                               <property name="enabled">
+                                <bool>false</bool>
+                               </property>
                                <property name="text">
                                 <string>Brightness</string>
                                </property>
@@ -536,7 +545,10 @@
                               </widget>
                              </item>
                              <item>
-                              <widget class="QLabel" name="label_16">
+                              <widget class="QLabel" name="lb_contrast">
+                               <property name="enabled">
+                                <bool>false</bool>
+                               </property>
                                <property name="text">
                                 <string>Contrast</string>
                                </property>
@@ -562,7 +574,10 @@
                               </widget>
                              </item>
                              <item>
-                              <widget class="QLabel" name="Sharpness">
+                              <widget class="QLabel" name="lb_sharpness">
+                               <property name="enabled">
+                                <bool>false</bool>
+                               </property>
                                <property name="text">
                                 <string>Sharpness</string>
                                </property>
@@ -588,7 +603,10 @@
                               </widget>
                              </item>
                              <item>
-                              <widget class="QLabel" name="label_17">
+                              <widget class="QLabel" name="lb_saturation">
+                               <property name="enabled">
+                                <bool>false</bool>
+                               </property>
                                <property name="text">
                                 <string>Saturation</string>
                                </property>
@@ -614,7 +632,10 @@
                               </widget>
                              </item>
                              <item>
-                              <widget class="QLabel" name="label_18">
+                              <widget class="QLabel" name="lb_gain">
+                               <property name="enabled">
+                                <bool>false</bool>
+                               </property>
                                <property name="text">
                                 <string>Gain</string>
                                </property>
@@ -644,6 +665,9 @@
                              </item>
                              <item>
                               <widget class="QCheckBox" name="picture_annotation_cb">
+                               <property name="enabled">
+                                <bool>false</bool>
+                               </property>
                                <property name="accessibleName">
                                 <string>picture annotation</string>
                                </property>
