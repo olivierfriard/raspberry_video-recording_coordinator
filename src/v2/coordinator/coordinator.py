@@ -166,7 +166,7 @@ def get_wifi_ssid():
     return ""
 
 
-from coordinator_ui import Ui_MainWindow
+from coordinator_ui1 import Ui_MainWindow
 
 
 class RPI_coordinator(QMainWindow, Ui_MainWindow):
