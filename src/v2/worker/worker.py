@@ -960,7 +960,7 @@ def command(command_to_run):
 
         logging.info(f"command: {cmd}")
 
-        process = subprocess.Popen(cmd.split(" "), stdout=subprocess.PIPE)
+        subprocess.Popen(cmd.split(" "), stdout=subprocess.PIPE)
         # results = {"return_code": process.returncode, "output": process.stdout.decode("utf-8")}
         return {"error": False}
     except Exception:
