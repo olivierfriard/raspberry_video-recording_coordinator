@@ -13,6 +13,7 @@ import config_coordinator as cfg
 import logging
 import shutil
 import datetime
+import time
 import requests
 
 
@@ -49,6 +50,10 @@ def take_picture(self, raspberry_id: str, mode: str):
             "annotate": self.raspberry_info[raspberry_id]["picture annotation"],
         }
 
+        # add file name based on epoch
+        if mode == "one":
+            data["file_name"] = f"{str(int(time.time()))}.jpg"
+
         response = self.request(raspberry_id, f"/take_picture", type="POST", data=data)
 
         if response.status_code != 200:
@@ -73,7 +78,7 @@ def take_picture(self, raspberry_id: str, mode: str):
 
         try:
             response2 = requests.get(
-                f"{cfg.PROTOCOL}{self.raspberry_ip[raspberry_id]}{cfg.SERVER_PORT}/static/live.jpg",
+                f"{cfg.PROTOCOL}{self.raspberry_ip[raspberry_id]}{cfg.SERVER_PORT}/static/live_pictures/{data['file_name']}.jpg",
                 stream=True,
                 verify=False,
             )

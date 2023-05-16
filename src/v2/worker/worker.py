@@ -975,8 +975,15 @@ def take_picture():
 
     else:
         # take one picture
-        command_line.extend(["-o", str(pl.Path(cfg.STATIC_DIR) / pl.Path("live_pictures") / pl.Path("live.jpg"))])
+        if "file_name" in request.values:
+            command_line.extend(
+                ["-o", str(pl.Path(cfg.STATIC_DIR) / pl.Path("live_pictures") / pl.Path(request.values["file_name"]))]
+            )
+        else:
+            command_line.extend(["-o", str(pl.Path(cfg.STATIC_DIR) / pl.Path("live.jpg"))])
+
         logging.info("command:" + (" ".join(command_line)))
+
         try:
             completed = subprocess.run(command_line)
         except:
