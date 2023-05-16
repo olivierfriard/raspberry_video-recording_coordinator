@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1375</width>
-    <height>762</height>
+    <width>1114</width>
+    <height>700</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -82,14 +82,14 @@
        <attribute name="title">
         <string>Raspberry Pi list</string>
        </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout_14">
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
          <widget class="QSplitter" name="splitter">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
           <widget class="QWidget" name="layoutWidget">
-           <layout class="QVBoxLayout" name="verticalLayout_5">
+           <layout class="QVBoxLayout" name="verticalLayout">
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout">
               <item>
@@ -125,9 +125,20 @@
           </widget>
           <widget class="QWidget" name="layoutWidget">
            <layout class="QVBoxLayout" name="verticalLayout_3">
-            <property name="sizeConstraint">
-             <enum>QLayout::SetDefaultConstraint</enum>
-            </property>
+            <item>
+             <widget class="QLabel" name="raspberry_id_lb">
+              <property name="font">
+               <font>
+                <pointsize>13</pointsize>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
             <item>
              <widget class="QTabWidget" name="rpi_tw">
               <property name="enabled">
@@ -140,916 +151,932 @@
                <attribute name="title">
                 <string>Status</string>
                </attribute>
-               <widget class="QWidget" name="layoutWidget">
-                <property name="geometry">
-                 <rect>
-                  <x>0</x>
-                  <y>0</y>
-                  <width>576</width>
-                  <height>313</height>
-                 </rect>
-                </property>
-                <layout class="QVBoxLayout" name="verticalLayout_4">
-                 <item>
-                  <layout class="QGridLayout" name="gridLayout">
-                   <item row="11" column="0">
-                    <widget class="QLabel" name="label_22">
-                     <property name="text">
-                      <string>Time lapse active</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="6" column="1">
-                    <widget class="QLabel" name="free_sd_space_lb">
-                     <property name="text">
-                      <string/>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="4" column="1">
-                    <widget class="QLabel" name="wifi_essid_lb">
-                     <property name="text">
-                      <string/>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="11" column="1">
-                    <widget class="QLabel" name="time_lapse_active_lb">
-                     <property name="text">
-                      <string/>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="0">
-                    <widget class="QLabel" name="label_2">
-                     <property name="text">
-                      <string>Date/time</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="9" column="1">
-                    <widget class="QLabel" name="video_recording_active_lb">
-                     <property name="text">
-                      <string/>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="1">
-                    <widget class="QLabel" name="datetime_lb">
-                     <property name="text">
-                      <string/>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="0">
-                    <widget class="QLabel" name="label">
-                     <property name="text">
-                      <string>Status</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="3" column="0">
-                    <widget class="QLabel" name="label_3">
-                     <property name="text">
-                      <string>CPU temperature</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="4" column="0">
-                    <widget class="QLabel" name="label_8">
-                     <property name="text">
-                      <string>WiFi ESSID</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="7" column="1">
-                    <widget class="QLabel" name="camera_detected_lb">
-                     <property name="text">
-                      <string/>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="1">
-                    <widget class="QLabel" name="ip_address_lb">
-                     <property name="text">
-                      <string/>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="3" column="1">
-                    <widget class="QLabel" name="cpu_temp_lb">
-                     <property name="text">
-                      <string/>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="0">
-                    <widget class="QLabel" name="label_12">
-                     <property name="text">
-                      <string>IP address</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="7" column="0">
-                    <widget class="QLabel" name="label_10">
-                     <property name="text">
-                      <string>Camera detected</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="10" column="0">
-                    <widget class="QLabel" name="label_14">
-                     <property name="text">
-                      <string>Video streaming active</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="6" column="0">
-                    <widget class="QLabel" name="label_9">
-                     <property name="text">
-                      <string>Free SD space</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="9" column="0">
-                    <widget class="QLabel" name="label_13">
-                     <property name="text">
-                      <string>Video recording active</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="8" column="0">
-                    <widget class="QLabel" name="label_11">
-                     <property name="text">
-                      <string>Uptime</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="8" column="1">
-                    <widget class="QLabel" name="uptime_lb">
-                     <property name="text">
-                      <string/>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="10" column="1">
-                    <widget class="QLabel" name="video_streaming_active_lb">
-                     <property name="text">
-                      <string/>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="1">
-                    <widget class="QLabel" name="status_lb">
-                     <property name="text">
-                      <string/>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="5" column="0">
-                    <widget class="QLabel" name="label_23">
-                     <property name="text">
-                      <string>Server version</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="5" column="1">
-                    <widget class="QLabel" name="server_version_lb">
-                     <property name="text">
-                      <string/>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                 <item>
-                  <spacer name="verticalSpacer">
-                   <property name="orientation">
-                    <enum>Qt::Vertical</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>20</width>
-                     <height>40</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                 <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_4">
-                   <item>
-                    <widget class="QPushButton" name="status_update_pb">
-                     <property name="text">
-                      <string>Update status</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="time_synchro_pb">
-                     <property name="text">
-                      <string>Time synchronization</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="get_log_pb">
-                     <property name="text">
-                      <string>Get log</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="blink_pb">
-                     <property name="text">
-                      <string>Blink</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="reboot_pb">
-                     <property name="text">
-                      <string>Reboot</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="shutdown_pb">
-                     <property name="text">
-                      <string>Shutdown</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <spacer name="horizontalSpacer">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>40</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                  </layout>
-                 </item>
-                </layout>
-               </widget>
+               <layout class="QVBoxLayout" name="verticalLayout_5">
+                <item>
+                 <layout class="QVBoxLayout" name="verticalLayout_4">
+                  <item>
+                   <layout class="QGridLayout" name="gridLayout">
+                    <item row="11" column="0">
+                     <widget class="QLabel" name="label_22">
+                      <property name="text">
+                       <string>Time lapse active</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="6" column="1">
+                     <widget class="QLabel" name="free_sd_space_lb">
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="4" column="1">
+                     <widget class="QLabel" name="wifi_essid_lb">
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="11" column="1">
+                     <widget class="QLabel" name="time_lapse_active_lb">
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="0">
+                     <widget class="QLabel" name="label_2">
+                      <property name="text">
+                       <string>Date/time</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="9" column="1">
+                     <widget class="QLabel" name="video_recording_active_lb">
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="1">
+                     <widget class="QLabel" name="datetime_lb">
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="0">
+                     <widget class="QLabel" name="label">
+                      <property name="text">
+                       <string>Status</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="3" column="0">
+                     <widget class="QLabel" name="label_3">
+                      <property name="text">
+                       <string>CPU temperature</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="4" column="0">
+                     <widget class="QLabel" name="label_8">
+                      <property name="text">
+                       <string>WiFi ESSID</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="7" column="1">
+                     <widget class="QLabel" name="camera_detected_lb">
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="1">
+                     <widget class="QLabel" name="ip_address_lb">
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="3" column="1">
+                     <widget class="QLabel" name="cpu_temp_lb">
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="0">
+                     <widget class="QLabel" name="label_12">
+                      <property name="text">
+                       <string>IP address</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="7" column="0">
+                     <widget class="QLabel" name="label_10">
+                      <property name="text">
+                       <string>Camera detected</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="10" column="0">
+                     <widget class="QLabel" name="label_14">
+                      <property name="text">
+                       <string>Video streaming active</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="6" column="0">
+                     <widget class="QLabel" name="label_9">
+                      <property name="text">
+                       <string>Free SD space</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="9" column="0">
+                     <widget class="QLabel" name="label_13">
+                      <property name="text">
+                       <string>Video recording active</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="8" column="0">
+                     <widget class="QLabel" name="label_11">
+                      <property name="text">
+                       <string>Uptime</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="8" column="1">
+                     <widget class="QLabel" name="uptime_lb">
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="10" column="1">
+                     <widget class="QLabel" name="video_streaming_active_lb">
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QLabel" name="status_lb">
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="5" column="0">
+                     <widget class="QLabel" name="label_23">
+                      <property name="text">
+                       <string>Server version</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="5" column="1">
+                     <widget class="QLabel" name="server_version_lb">
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <spacer name="verticalSpacer">
+                    <property name="orientation">
+                     <enum>Qt::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>20</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_4">
+                    <item>
+                     <widget class="QPushButton" name="status_update_pb">
+                      <property name="text">
+                       <string>Update status</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="time_synchro_pb">
+                      <property name="text">
+                       <string>Time synchronization</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="get_log_pb">
+                      <property name="text">
+                       <string>Get log</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="blink_pb">
+                      <property name="text">
+                       <string>Blink</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="reboot_pb">
+                      <property name="text">
+                       <string>Reboot</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="shutdown_pb">
+                      <property name="text">
+                       <string>Shutdown</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <spacer name="horizontalSpacer">
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>40</width>
+                        <height>20</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
               </widget>
               <widget class="QWidget" name="picture_tab">
                <attribute name="title">
                 <string>Picture</string>
                </attribute>
-               <layout class="QVBoxLayout" name="verticalLayout_22">
+               <layout class="QVBoxLayout" name="verticalLayout_21">
                 <item>
-                 <widget class="QGroupBox" name="groupBox_5">
-                  <property name="title">
-                   <string>Parameters</string>
+                 <widget class="QScrollArea" name="scrollArea_2">
+                  <property name="widgetResizable">
+                   <bool>true</bool>
                   </property>
-                  <widget class="QWidget" name="">
+                  <widget class="QWidget" name="scrollAreaWidgetContents_2">
                    <property name="geometry">
                     <rect>
-                     <x>12</x>
-                     <y>32</y>
-                     <width>850</width>
-                     <height>66</height>
+                     <x>0</x>
+                     <y>0</y>
+                     <width>822</width>
+                     <height>446</height>
                     </rect>
                    </property>
-                   <layout class="QHBoxLayout" name="horizontalLayout_3">
+                   <layout class="QVBoxLayout" name="verticalLayout_23">
                     <item>
-                     <layout class="QVBoxLayout" name="verticalLayout_12">
+                     <widget class="QGroupBox" name="groupBox_5">
+                      <property name="title">
+                       <string>Parameters</string>
+                      </property>
+                      <layout class="QVBoxLayout" name="verticalLayout_20">
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_2">
+                         <item>
+                          <widget class="QLabel" name="label_4">
+                           <property name="text">
+                            <string>Resolution</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QComboBox" name="picture_resolution_cb">
+                           <property name="accessibleName">
+                            <string>picture resolution</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QLabel" name="label_19">
+                           <property name="text">
+                            <string>Rotation</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QSpinBox" name="picture_rotation_sb">
+                           <property name="accessibleName">
+                            <string>picture rotation</string>
+                           </property>
+                           <property name="maximum">
+                            <number>180</number>
+                           </property>
+                           <property name="singleStep">
+                            <number>180</number>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QCheckBox" name="picture_hflip_cb">
+                           <property name="accessibleName">
+                            <string>picture hflip</string>
+                           </property>
+                           <property name="text">
+                            <string>Horizontal flip</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QCheckBox" name="picture_vflip_cb">
+                           <property name="accessibleName">
+                            <string>picture vflip</string>
+                           </property>
+                           <property name="text">
+                            <string>Vertical flip</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <spacer name="horizontalSpacer_3">
+                           <property name="orientation">
+                            <enum>Qt::Horizontal</enum>
+                           </property>
+                           <property name="sizeHint" stdset="0">
+                            <size>
+                             <width>40</width>
+                             <height>20</height>
+                            </size>
+                           </property>
+                          </spacer>
+                         </item>
+                        </layout>
+                       </item>
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_13">
+                         <item>
+                          <widget class="QLabel" name="label_15">
+                           <property name="text">
+                            <string>Brightness</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QDoubleSpinBox" name="picture_brightness_sb">
+                           <property name="accessibleName">
+                            <string>picture brightness</string>
+                           </property>
+                           <property name="maximum">
+                            <double>1.000000000000000</double>
+                           </property>
+                           <property name="singleStep">
+                            <double>0.100000000000000</double>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QLabel" name="label_16">
+                           <property name="text">
+                            <string>Contrast</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QSpinBox" name="picture_contrast_sb">
+                           <property name="accessibleName">
+                            <string>picture contrast</string>
+                           </property>
+                           <property name="minimum">
+                            <number>-100</number>
+                           </property>
+                           <property name="maximum">
+                            <number>100</number>
+                           </property>
+                           <property name="value">
+                            <number>1</number>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QLabel" name="Sharpness">
+                           <property name="text">
+                            <string>Sharpness</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QSpinBox" name="picture_sharpness_sb">
+                           <property name="accessibleName">
+                            <string>picture sharpness</string>
+                           </property>
+                           <property name="minimum">
+                            <number>-100</number>
+                           </property>
+                           <property name="maximum">
+                            <number>100</number>
+                           </property>
+                           <property name="value">
+                            <number>1</number>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QLabel" name="label_17">
+                           <property name="text">
+                            <string>Saturation</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QSpinBox" name="picture_saturation_sb">
+                           <property name="accessibleName">
+                            <string>picture saturation</string>
+                           </property>
+                           <property name="minimum">
+                            <number>0</number>
+                           </property>
+                           <property name="maximum">
+                            <number>100</number>
+                           </property>
+                           <property name="value">
+                            <number>1</number>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QLabel" name="label_18">
+                           <property name="text">
+                            <string>Gain</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QSpinBox" name="picture_gain_sb">
+                           <property name="accessibleName">
+                            <string>picture gain</string>
+                           </property>
+                           <property name="minimum">
+                            <number>0</number>
+                           </property>
+                           <property name="maximum">
+                            <number>100</number>
+                           </property>
+                           <property name="singleStep">
+                            <number>1</number>
+                           </property>
+                           <property name="value">
+                            <number>1</number>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QCheckBox" name="picture_annotation_cb">
+                           <property name="accessibleName">
+                            <string>picture annotation</string>
+                           </property>
+                           <property name="text">
+                            <string>Annotate picture</string>
+                           </property>
+                           <property name="checkable">
+                            <bool>false</bool>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <spacer name="horizontalSpacer_4">
+                           <property name="orientation">
+                            <enum>Qt::Horizontal</enum>
+                           </property>
+                           <property name="sizeHint" stdset="0">
+                            <size>
+                             <width>40</width>
+                             <height>20</height>
+                            </size>
+                           </property>
+                          </spacer>
+                         </item>
+                        </layout>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_14">
                       <item>
-                       <layout class="QHBoxLayout" name="horizontalLayout_2">
-                        <item>
-                         <widget class="QLabel" name="label_4">
-                          <property name="text">
-                           <string>Resolution</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QComboBox" name="picture_resolution_cb">
-                          <property name="accessibleName">
-                           <string>picture resolution</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="label_19">
-                          <property name="text">
-                           <string>Rotation</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QSpinBox" name="picture_rotation_sb">
-                          <property name="accessibleName">
-                           <string>picture rotation</string>
-                          </property>
-                          <property name="maximum">
-                           <number>180</number>
-                          </property>
-                          <property name="singleStep">
-                           <number>180</number>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QCheckBox" name="picture_hflip_cb">
-                          <property name="accessibleName">
-                           <string>picture hflip</string>
-                          </property>
-                          <property name="text">
-                           <string>Horizontal flip</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QCheckBox" name="picture_vflip_cb">
-                          <property name="accessibleName">
-                           <string>picture vflip</string>
-                          </property>
-                          <property name="text">
-                           <string>Vertical flip</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <spacer name="horizontalSpacer_3">
-                          <property name="orientation">
-                           <enum>Qt::Horizontal</enum>
-                          </property>
-                          <property name="sizeHint" stdset="0">
-                           <size>
-                            <width>40</width>
-                            <height>20</height>
-                           </size>
-                          </property>
-                         </spacer>
-                        </item>
-                       </layout>
+                       <widget class="QPushButton" name="take_picture_pb">
+                        <property name="text">
+                         <string>Take a picture</string>
+                        </property>
+                       </widget>
                       </item>
                       <item>
-                       <layout class="QHBoxLayout" name="horizontalLayout_13">
-                        <item>
-                         <widget class="QLabel" name="label_15">
-                          <property name="text">
-                           <string>Brightness</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QDoubleSpinBox" name="picture_brightness_sb">
-                          <property name="accessibleName">
-                           <string>picture brightness</string>
-                          </property>
-                          <property name="maximum">
-                           <double>1.000000000000000</double>
-                          </property>
-                          <property name="singleStep">
-                           <double>0.100000000000000</double>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="label_16">
-                          <property name="text">
-                           <string>Contrast</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QSpinBox" name="picture_contrast_sb">
-                          <property name="accessibleName">
-                           <string>picture contrast</string>
-                          </property>
-                          <property name="minimum">
-                           <number>-100</number>
-                          </property>
-                          <property name="maximum">
-                           <number>100</number>
-                          </property>
-                          <property name="value">
-                           <number>1</number>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="Sharpness">
-                          <property name="text">
-                           <string>Sharpness</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QSpinBox" name="picture_sharpness_sb">
-                          <property name="accessibleName">
-                           <string>picture sharpness</string>
-                          </property>
-                          <property name="minimum">
-                           <number>-100</number>
-                          </property>
-                          <property name="maximum">
-                           <number>100</number>
-                          </property>
-                          <property name="value">
-                           <number>1</number>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="label_17">
-                          <property name="text">
-                           <string>Saturation</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QSpinBox" name="picture_saturation_sb">
-                          <property name="accessibleName">
-                           <string>picture saturation</string>
-                          </property>
-                          <property name="minimum">
-                           <number>0</number>
-                          </property>
-                          <property name="maximum">
-                           <number>100</number>
-                          </property>
-                          <property name="value">
-                           <number>1</number>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="label_18">
-                          <property name="text">
-                           <string>Gain</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QSpinBox" name="picture_gain_sb">
-                          <property name="accessibleName">
-                           <string>picture gain</string>
-                          </property>
-                          <property name="minimum">
-                           <number>0</number>
-                          </property>
-                          <property name="maximum">
-                           <number>100</number>
-                          </property>
-                          <property name="singleStep">
-                           <number>1</number>
-                          </property>
-                          <property name="value">
-                           <number>1</number>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QCheckBox" name="picture_annotation_cb">
-                          <property name="accessibleName">
-                           <string>picture annotation</string>
-                          </property>
-                          <property name="text">
-                           <string>Annotate picture</string>
-                          </property>
-                          <property name="checkable">
-                           <bool>false</bool>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <spacer name="horizontalSpacer_4">
-                          <property name="orientation">
-                           <enum>Qt::Horizontal</enum>
-                          </property>
-                          <property name="sizeHint" stdset="0">
-                           <size>
-                            <width>40</width>
-                            <height>20</height>
-                           </size>
-                          </property>
-                         </spacer>
-                        </item>
-                       </layout>
+                       <spacer name="horizontalSpacer_5">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>40</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
                       </item>
                      </layout>
                     </item>
                     <item>
-                     <widget class="QPushButton" name="take_picture_pb">
-                      <property name="text">
-                       <string>Take a picture</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </widget>
-                 </widget>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_17">
-                  <item>
-                   <widget class="QGroupBox" name="groupBox_4">
-                    <property name="title">
-                     <string>Manual time lapse</string>
-                    </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_6">
-                     <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_15">
-                       <item>
-                        <widget class="QLabel" name="label_20">
-                         <property name="text">
-                          <string>Duration (s)</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QSpinBox" name="time_lapse_duration_sb">
-                         <property name="accessibleName">
-                          <string>time lapse duration</string>
-                         </property>
-                         <property name="maximum">
-                          <number>99999</number>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QLabel" name="label_21">
-                         <property name="text">
-                          <string>Time between pictures (s)</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QSpinBox" name="time_lapse_wait_sb">
-                         <property name="accessibleName">
-                          <string>time lapse wait</string>
-                         </property>
-                        </widget>
-                       </item>
-                      </layout>
-                     </item>
-                     <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_31">
-                       <item>
-                        <widget class="QPushButton" name="start_time_lapse_pb">
-                         <property name="text">
-                          <string>Start time lapse</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QPushButton" name="stop_time_lapse_pb">
-                         <property name="text">
-                          <string>Stop time lapse</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <spacer name="horizontalSpacer_6">
-                         <property name="orientation">
-                          <enum>Qt::Horizontal</enum>
-                         </property>
-                         <property name="sizeHint" stdset="0">
+                     <layout class="QHBoxLayout" name="horizontalLayout_17">
+                      <item>
+                       <widget class="QGroupBox" name="groupBox_4">
+                        <property name="title">
+                         <string>Manual time lapse</string>
+                        </property>
+                        <layout class="QVBoxLayout" name="verticalLayout_6">
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_15">
+                           <item>
+                            <widget class="QLabel" name="label_20">
+                             <property name="text">
+                              <string>Duration (s)</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QSpinBox" name="time_lapse_duration_sb">
+                             <property name="accessibleName">
+                              <string>time lapse duration</string>
+                             </property>
+                             <property name="maximum">
+                              <number>99999</number>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QLabel" name="label_21">
+                             <property name="text">
+                              <string>Time between pictures (s)</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QSpinBox" name="time_lapse_wait_sb">
+                             <property name="accessibleName">
+                              <string>time lapse wait</string>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_31">
+                           <item>
+                            <widget class="QPushButton" name="start_time_lapse_pb">
+                             <property name="text">
+                              <string>Start time lapse</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QPushButton" name="stop_time_lapse_pb">
+                             <property name="text">
+                              <string>Stop time lapse</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <spacer name="horizontalSpacer_6">
+                             <property name="orientation">
+                              <enum>Qt::Horizontal</enum>
+                             </property>
+                             <property name="sizeHint" stdset="0">
+                              <size>
+                               <width>40</width>
+                               <height>20</height>
+                              </size>
+                             </property>
+                            </spacer>
+                           </item>
+                          </layout>
+                         </item>
+                         <item>
+                          <spacer name="verticalSpacer_4">
+                           <property name="orientation">
+                            <enum>Qt::Vertical</enum>
+                           </property>
+                           <property name="sizeHint" stdset="0">
+                            <size>
+                             <width>20</width>
+                             <height>40</height>
+                            </size>
+                           </property>
+                          </spacer>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QSplitter" name="picture_splitter">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="orientation">
+                         <enum>Qt::Vertical</enum>
+                        </property>
+                        <widget class="QGroupBox" name="picture_schedule_gb">
+                         <property name="maximumSize">
                           <size>
-                           <width>40</width>
-                           <height>20</height>
+                           <width>16777215</width>
+                           <height>300</height>
                           </size>
                          </property>
-                        </spacer>
-                       </item>
-                      </layout>
-                     </item>
-                     <item>
-                      <spacer name="verticalSpacer_4">
-                       <property name="orientation">
-                        <enum>Qt::Vertical</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>20</width>
-                         <height>40</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                    </layout>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QSplitter" name="picture_splitter">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="orientation">
-                     <enum>Qt::Vertical</enum>
-                    </property>
-                    <widget class="QGroupBox" name="picture_schedule_gb">
-                     <property name="maximumSize">
-                      <size>
-                       <width>16777215</width>
-                       <height>300</height>
-                      </size>
-                     </property>
-                     <property name="title">
-                      <string>Time lapse schedule</string>
-                     </property>
-                     <layout class="QVBoxLayout" name="verticalLayout_16">
-                      <item>
-                       <widget class="QTabWidget" name="picture_schedule_tw">
-                        <property name="currentIndex">
-                         <number>1</number>
-                        </property>
-                        <widget class="QWidget" name="add_picture_schedule_tab">
-                         <attribute name="title">
-                          <string>New schedule</string>
-                         </attribute>
-                         <layout class="QVBoxLayout" name="verticalLayout_17">
-                          <item>
-                           <layout class="QHBoxLayout" name="horizontalLayout_25">
-                            <item>
-                             <widget class="QLabel" name="label_35">
-                              <property name="text">
-                               <string>Hours</string>
-                              </property>
-                             </widget>
-                            </item>
-                            <item>
-                             <widget class="QLineEdit" name="picture_hours_le">
-                              <property name="frame">
-                               <bool>true</bool>
-                              </property>
-                              <property name="clearButtonEnabled">
-                               <bool>false</bool>
-                              </property>
-                             </widget>
-                            </item>
-                            <item>
-                             <widget class="QLabel" name="label_36">
-                              <property name="text">
-                               <string>Minutes</string>
-                              </property>
-                             </widget>
-                            </item>
-                            <item>
-                             <widget class="QLineEdit" name="picture_minutes_le"/>
-                            </item>
-                            <item>
-                             <spacer name="horizontalSpacer_19">
-                              <property name="orientation">
-                               <enum>Qt::Horizontal</enum>
-                              </property>
-                              <property name="sizeHint" stdset="0">
-                               <size>
-                                <width>40</width>
-                                <height>20</height>
-                               </size>
-                              </property>
-                             </spacer>
-                            </item>
-                           </layout>
-                          </item>
-                          <item>
-                           <layout class="QHBoxLayout" name="horizontalLayout_26">
-                            <item>
-                             <widget class="QLabel" name="label_37">
-                              <property name="text">
-                               <string>Days of week (0-6 or SUN-SAT)</string>
-                              </property>
-                             </widget>
-                            </item>
-                            <item>
-                             <widget class="QLineEdit" name="picture_days_of_week_le"/>
-                            </item>
-                            <item>
-                             <spacer name="horizontalSpacer_20">
-                              <property name="orientation">
-                               <enum>Qt::Horizontal</enum>
-                              </property>
-                              <property name="sizeHint" stdset="0">
-                               <size>
-                                <width>40</width>
-                                <height>20</height>
-                               </size>
-                              </property>
-                             </spacer>
-                            </item>
-                           </layout>
-                          </item>
-                          <item>
-                           <layout class="QHBoxLayout" name="horizontalLayout_27">
-                            <item>
-                             <widget class="QLabel" name="label_38">
-                              <property name="text">
-                               <string>Days of month (1-31)</string>
-                              </property>
-                             </widget>
-                            </item>
-                            <item>
-                             <widget class="QLineEdit" name="picture_days_of_month_le"/>
-                            </item>
-                            <item>
-                             <widget class="QLabel" name="label_39">
-                              <property name="text">
-                               <string>Month(s)</string>
-                              </property>
-                             </widget>
-                            </item>
-                            <item>
-                             <widget class="QLineEdit" name="picture_months_le"/>
-                            </item>
-                            <item>
-                             <spacer name="horizontalSpacer_21">
-                              <property name="orientation">
-                               <enum>Qt::Horizontal</enum>
-                              </property>
-                              <property name="sizeHint" stdset="0">
-                               <size>
-                                <width>40</width>
-                                <height>20</height>
-                               </size>
-                              </property>
-                             </spacer>
-                            </item>
-                           </layout>
-                          </item>
-                          <item>
-                           <layout class="QHBoxLayout" name="horizontalLayout_30">
-                            <item>
-                             <widget class="QPushButton" name="configure_picture_pb">
-                              <property name="text">
-                               <string>Add schedule to Raspberry Pi</string>
-                              </property>
-                             </widget>
-                            </item>
-                            <item>
-                             <spacer name="horizontalSpacer_24">
-                              <property name="orientation">
-                               <enum>Qt::Horizontal</enum>
-                              </property>
-                              <property name="sizeHint" stdset="0">
-                               <size>
-                                <width>40</width>
-                                <height>20</height>
-                               </size>
-                              </property>
-                             </spacer>
-                            </item>
-                           </layout>
-                          </item>
-                          <item>
-                           <spacer name="verticalSpacer_3">
-                            <property name="orientation">
-                             <enum>Qt::Vertical</enum>
-                            </property>
-                            <property name="sizeHint" stdset="0">
-                             <size>
-                              <width>20</width>
-                              <height>40</height>
-                             </size>
-                            </property>
-                           </spacer>
-                          </item>
-                         </layout>
-                        </widget>
-                        <widget class="QWidget" name="view_picture_schedule">
-                         <attribute name="title">
+                         <property name="title">
                           <string>Time lapse schedule</string>
-                         </attribute>
-                         <layout class="QVBoxLayout" name="verticalLayout_18">
+                         </property>
+                         <layout class="QVBoxLayout" name="verticalLayout_16">
                           <item>
-                           <layout class="QVBoxLayout" name="verticalLayout_19">
-                            <item>
-                             <layout class="QHBoxLayout" name="horizontalLayout_28">
+                           <widget class="QTabWidget" name="picture_schedule_tw">
+                            <property name="currentIndex">
+                             <number>1</number>
+                            </property>
+                            <widget class="QWidget" name="add_picture_schedule_tab">
+                             <attribute name="title">
+                              <string>New schedule</string>
+                             </attribute>
+                             <layout class="QVBoxLayout" name="verticalLayout_17">
                               <item>
-                               <widget class="QPushButton" name="view_picture_schedule_pb">
-                                <property name="text">
-                                 <string>View schedule on Raspberry Pi</string>
-                                </property>
-                               </widget>
+                               <layout class="QHBoxLayout" name="horizontalLayout_25">
+                                <item>
+                                 <widget class="QLabel" name="label_35">
+                                  <property name="text">
+                                   <string>Hours</string>
+                                  </property>
+                                 </widget>
+                                </item>
+                                <item>
+                                 <widget class="QLineEdit" name="picture_hours_le">
+                                  <property name="frame">
+                                   <bool>true</bool>
+                                  </property>
+                                  <property name="clearButtonEnabled">
+                                   <bool>false</bool>
+                                  </property>
+                                 </widget>
+                                </item>
+                                <item>
+                                 <widget class="QLabel" name="label_36">
+                                  <property name="text">
+                                   <string>Minutes</string>
+                                  </property>
+                                 </widget>
+                                </item>
+                                <item>
+                                 <widget class="QLineEdit" name="picture_minutes_le"/>
+                                </item>
+                                <item>
+                                 <spacer name="horizontalSpacer_19">
+                                  <property name="orientation">
+                                   <enum>Qt::Horizontal</enum>
+                                  </property>
+                                  <property name="sizeHint" stdset="0">
+                                   <size>
+                                    <width>40</width>
+                                    <height>20</height>
+                                   </size>
+                                  </property>
+                                 </spacer>
+                                </item>
+                               </layout>
                               </item>
                               <item>
-                               <widget class="QPushButton" name="delete_picture_schedule_pb">
-                                <property name="text">
-                                 <string>Delete schedule on Raspberry Pi</string>
-                                </property>
-                               </widget>
+                               <layout class="QHBoxLayout" name="horizontalLayout_26">
+                                <item>
+                                 <widget class="QLabel" name="label_37">
+                                  <property name="text">
+                                   <string>Days of week (0-6 or SUN-SAT)</string>
+                                  </property>
+                                 </widget>
+                                </item>
+                                <item>
+                                 <widget class="QLineEdit" name="picture_days_of_week_le"/>
+                                </item>
+                                <item>
+                                 <spacer name="horizontalSpacer_20">
+                                  <property name="orientation">
+                                   <enum>Qt::Horizontal</enum>
+                                  </property>
+                                  <property name="sizeHint" stdset="0">
+                                   <size>
+                                    <width>40</width>
+                                    <height>20</height>
+                                   </size>
+                                  </property>
+                                 </spacer>
+                                </item>
+                               </layout>
                               </item>
                               <item>
-                               <spacer name="horizontalSpacer_22">
+                               <layout class="QHBoxLayout" name="horizontalLayout_27">
+                                <item>
+                                 <widget class="QLabel" name="label_38">
+                                  <property name="text">
+                                   <string>Days of month (1-31)</string>
+                                  </property>
+                                 </widget>
+                                </item>
+                                <item>
+                                 <widget class="QLineEdit" name="picture_days_of_month_le"/>
+                                </item>
+                                <item>
+                                 <widget class="QLabel" name="label_39">
+                                  <property name="text">
+                                   <string>Month(s)</string>
+                                  </property>
+                                 </widget>
+                                </item>
+                                <item>
+                                 <widget class="QLineEdit" name="picture_months_le"/>
+                                </item>
+                                <item>
+                                 <spacer name="horizontalSpacer_21">
+                                  <property name="orientation">
+                                   <enum>Qt::Horizontal</enum>
+                                  </property>
+                                  <property name="sizeHint" stdset="0">
+                                   <size>
+                                    <width>40</width>
+                                    <height>20</height>
+                                   </size>
+                                  </property>
+                                 </spacer>
+                                </item>
+                               </layout>
+                              </item>
+                              <item>
+                               <layout class="QHBoxLayout" name="horizontalLayout_30">
+                                <item>
+                                 <widget class="QPushButton" name="configure_picture_pb">
+                                  <property name="text">
+                                   <string>Add schedule to Raspberry Pi</string>
+                                  </property>
+                                 </widget>
+                                </item>
+                                <item>
+                                 <spacer name="horizontalSpacer_24">
+                                  <property name="orientation">
+                                   <enum>Qt::Horizontal</enum>
+                                  </property>
+                                  <property name="sizeHint" stdset="0">
+                                   <size>
+                                    <width>40</width>
+                                    <height>20</height>
+                                   </size>
+                                  </property>
+                                 </spacer>
+                                </item>
+                               </layout>
+                              </item>
+                              <item>
+                               <spacer name="verticalSpacer_3">
                                 <property name="orientation">
-                                 <enum>Qt::Horizontal</enum>
+                                 <enum>Qt::Vertical</enum>
                                 </property>
                                 <property name="sizeHint" stdset="0">
                                  <size>
-                                  <width>40</width>
-                                  <height>20</height>
+                                  <width>20</width>
+                                  <height>40</height>
                                  </size>
                                 </property>
                                </spacer>
                               </item>
                              </layout>
+                            </widget>
+                            <widget class="QWidget" name="view_picture_schedule">
+                             <attribute name="title">
+                              <string>Time lapse schedule</string>
+                             </attribute>
+                             <layout class="QVBoxLayout" name="verticalLayout_18">
+                              <item>
+                               <layout class="QVBoxLayout" name="verticalLayout_19">
+                                <item>
+                                 <layout class="QHBoxLayout" name="horizontalLayout_28">
+                                  <item>
+                                   <widget class="QPushButton" name="view_picture_schedule_pb">
+                                    <property name="text">
+                                     <string>View schedule on Raspberry Pi</string>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                  <item>
+                                   <widget class="QPushButton" name="delete_picture_schedule_pb">
+                                    <property name="text">
+                                     <string>Delete schedule on Raspberry Pi</string>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                  <item>
+                                   <spacer name="horizontalSpacer_22">
+                                    <property name="orientation">
+                                     <enum>Qt::Horizontal</enum>
+                                    </property>
+                                    <property name="sizeHint" stdset="0">
+                                     <size>
+                                      <width>40</width>
+                                      <height>20</height>
+                                     </size>
+                                    </property>
+                                   </spacer>
+                                  </item>
+                                 </layout>
+                                </item>
+                                <item>
+                                 <widget class="QTableWidget" name="time_lapse_schedule_table">
+                                  <property name="enabled">
+                                   <bool>false</bool>
+                                  </property>
+                                  <property name="sizePolicy">
+                                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                   </sizepolicy>
+                                  </property>
+                                  <property name="maximumSize">
+                                   <size>
+                                    <width>16777215</width>
+                                    <height>16777215</height>
+                                   </size>
+                                  </property>
+                                  <property name="selectionMode">
+                                   <enum>QAbstractItemView::SingleSelection</enum>
+                                  </property>
+                                  <property name="selectionBehavior">
+                                   <enum>QAbstractItemView::SelectRows</enum>
+                                  </property>
+                                  <column>
+                                   <property name="text">
+                                    <string>Minute</string>
+                                   </property>
+                                  </column>
+                                  <column>
+                                   <property name="text">
+                                    <string>Hour</string>
+                                   </property>
+                                  </column>
+                                  <column>
+                                   <property name="text">
+                                    <string>Day of month</string>
+                                   </property>
+                                  </column>
+                                  <column>
+                                   <property name="text">
+                                    <string>Month</string>
+                                   </property>
+                                  </column>
+                                  <column>
+                                   <property name="text">
+                                    <string>Day of week</string>
+                                   </property>
+                                  </column>
+                                  <column>
+                                   <property name="text">
+                                    <string>Type</string>
+                                   </property>
+                                  </column>
+                                 </widget>
+                                </item>
+                               </layout>
+                              </item>
+                             </layout>
+                            </widget>
+                           </widget>
+                          </item>
+                          <item>
+                           <layout class="QHBoxLayout" name="horizontalLayout_29">
+                            <item>
+                             <widget class="QPushButton" name="download_pictures_pb">
+                              <property name="text">
+                               <string>Download pictures</string>
+                              </property>
+                             </widget>
                             </item>
                             <item>
-                             <widget class="QTableWidget" name="time_lapse_schedule_table">
-                              <property name="enabled">
-                               <bool>false</bool>
+                             <spacer name="horizontalSpacer_23">
+                              <property name="orientation">
+                               <enum>Qt::Horizontal</enum>
                               </property>
-                              <property name="sizePolicy">
-                               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                                <horstretch>0</horstretch>
-                                <verstretch>0</verstretch>
-                               </sizepolicy>
-                              </property>
-                              <property name="maximumSize">
+                              <property name="sizeHint" stdset="0">
                                <size>
-                                <width>16777215</width>
-                                <height>16777215</height>
+                                <width>40</width>
+                                <height>20</height>
                                </size>
                               </property>
-                              <property name="selectionMode">
-                               <enum>QAbstractItemView::SingleSelection</enum>
-                              </property>
-                              <property name="selectionBehavior">
-                               <enum>QAbstractItemView::SelectRows</enum>
-                              </property>
-                              <column>
-                               <property name="text">
-                                <string>Minute</string>
-                               </property>
-                              </column>
-                              <column>
-                               <property name="text">
-                                <string>Hour</string>
-                               </property>
-                              </column>
-                              <column>
-                               <property name="text">
-                                <string>Day of month</string>
-                               </property>
-                              </column>
-                              <column>
-                               <property name="text">
-                                <string>Month</string>
-                               </property>
-                              </column>
-                              <column>
-                               <property name="text">
-                                <string>Day of week</string>
-                               </property>
-                              </column>
-                              <column>
-                               <property name="text">
-                                <string>Type</string>
-                               </property>
-                              </column>
-                             </widget>
+                             </spacer>
                             </item>
                            </layout>
                           </item>
                          </layout>
                         </widget>
+                        <widget class="QLabel" name="picture_lb">
+                         <property name="text">
+                          <string>TextLabel</string>
+                         </property>
+                        </widget>
                        </widget>
                       </item>
-                      <item>
-                       <layout class="QHBoxLayout" name="horizontalLayout_29">
-                        <item>
-                         <widget class="QPushButton" name="download_pictures_pb">
-                          <property name="text">
-                           <string>Download pictures</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <spacer name="horizontalSpacer_23">
-                          <property name="orientation">
-                           <enum>Qt::Horizontal</enum>
-                          </property>
-                          <property name="sizeHint" stdset="0">
-                           <size>
-                            <width>40</width>
-                            <height>20</height>
-                           </size>
-                          </property>
-                         </spacer>
-                        </item>
-                       </layout>
-                      </item>
                      </layout>
-                    </widget>
-                    <widget class="QLabel" name="picture_lb">
-                     <property name="text">
-                      <string>TextLabel</string>
-                     </property>
-                    </widget>
-                   </widget>
-                  </item>
-                 </layout>
+                    </item>
+                   </layout>
+                  </widget>
+                 </widget>
                 </item>
                </layout>
               </widget>
@@ -1102,419 +1129,126 @@
                <attribute name="title">
                 <string>Video recording</string>
                </attribute>
-               <layout class="QVBoxLayout" name="verticalLayout">
+               <layout class="QVBoxLayout" name="verticalLayout_12">
                 <item>
-                 <widget class="QGroupBox" name="groupBox_3">
-                  <property name="title">
-                   <string>Parameters</string>
+                 <widget class="QScrollArea" name="scrollArea">
+                  <property name="widgetResizable">
+                   <bool>true</bool>
                   </property>
-                  <layout class="QVBoxLayout" name="verticalLayout_10">
-                   <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_11">
-                     <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_7">
+                  <widget class="QWidget" name="scrollAreaWidgetContents">
+                   <property name="geometry">
+                    <rect>
+                     <x>0</x>
+                     <y>-63</y>
+                     <width>719</width>
+                     <height>585</height>
+                    </rect>
+                   </property>
+                   <layout class="QVBoxLayout" name="verticalLayout_22">
+                    <item>
+                     <widget class="QGroupBox" name="groupBox_3">
+                      <property name="title">
+                       <string>Parameters</string>
+                      </property>
+                      <layout class="QVBoxLayout" name="verticalLayout_10">
                        <item>
-                        <widget class="QLabel" name="label_5">
-                         <property name="text">
-                          <string>Video mode</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QComboBox" name="video_mode_cb">
-                         <property name="accessibleName">
-                          <string>video mode</string>
-                         </property>
-                        </widget>
-                       </item>
-                      </layout>
-                     </item>
-                     <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_8">
-                       <item>
-                        <widget class="QLabel" name="lb_durations">
-                         <property name="text">
-                          <string>Duration (s)</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QSpinBox" name="video_duration_sb">
-                         <property name="accessibleName">
-                          <string>video duration</string>
-                         </property>
-                         <property name="minimum">
-                          <number>60</number>
-                         </property>
-                         <property name="maximum">
-                          <number>86000</number>
-                         </property>
-                         <property name="singleStep">
-                          <number>60</number>
-                         </property>
-                         <property name="value">
-                          <number>2400</number>
-                         </property>
-                        </widget>
-                       </item>
-                      </layout>
-                     </item>
-                     <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_10">
-                       <item>
-                        <widget class="QLabel" name="label_6">
-                         <property name="text">
-                          <string>Video quality (Mbp/s)</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QSpinBox" name="video_quality_sb">
-                         <property name="accessibleName">
-                          <string>video quality</string>
-                         </property>
-                         <property name="minimum">
-                          <number>1</number>
-                         </property>
-                         <property name="maximum">
-                          <number>10</number>
-                         </property>
-                        </widget>
-                       </item>
-                      </layout>
-                     </item>
-                     <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_9">
-                       <item>
-                        <widget class="QLabel" name="label_7">
-                         <property name="text">
-                          <string>FPS</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QSpinBox" name="video_fps_sb">
-                         <property name="accessibleName">
-                          <string>FPS</string>
-                         </property>
-                         <property name="minimum">
-                          <number>1</number>
-                         </property>
-                         <property name="maximum">
-                          <number>30</number>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <spacer name="horizontalSpacer_11">
-                         <property name="orientation">
-                          <enum>Qt::Horizontal</enum>
-                         </property>
-                         <property name="sizeHint" stdset="0">
-                          <size>
-                           <width>40</width>
-                           <height>20</height>
-                          </size>
-                         </property>
-                        </spacer>
-                       </item>
-                      </layout>
-                     </item>
-                    </layout>
-                   </item>
-                   <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_20">
-                     <item>
-                      <widget class="QLabel" name="label_29">
-                       <property name="text">
-                        <string>Rotation</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QSpinBox" name="video_rotation_sb">
-                       <property name="accessibleName">
-                        <string>video rotation</string>
-                       </property>
-                       <property name="frame">
-                        <bool>true</bool>
-                       </property>
-                       <property name="maximum">
-                        <number>270</number>
-                       </property>
-                       <property name="singleStep">
-                        <number>90</number>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QCheckBox" name="video_hflip_cb">
-                       <property name="accessibleName">
-                        <string>video hflip</string>
-                       </property>
-                       <property name="text">
-                        <string>Horizontal flip</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QCheckBox" name="video_vflip_cb">
-                       <property name="accessibleName">
-                        <string>video vflip</string>
-                       </property>
-                       <property name="text">
-                        <string>Vertical flip</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <spacer name="horizontalSpacer_12">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>40</width>
-                         <height>20</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                    </layout>
-                   </item>
-                   <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_22">
-                     <item>
-                      <widget class="QLabel" name="label_31">
-                       <property name="text">
-                        <string>Brightness</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QDoubleSpinBox" name="video_brightness_sb">
-                       <property name="accessibleName">
-                        <string>video brightness</string>
-                       </property>
-                       <property name="minimum">
-                        <double>-1.000000000000000</double>
-                       </property>
-                       <property name="maximum">
-                        <double>1.000000000000000</double>
-                       </property>
-                       <property name="singleStep">
-                        <double>0.010000000000000</double>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLabel" name="label_30">
-                       <property name="text">
-                        <string>Contrast</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QSpinBox" name="video_contrast_sb">
-                       <property name="accessibleName">
-                        <string>video contrast</string>
-                       </property>
-                       <property name="minimum">
-                        <number>0</number>
-                       </property>
-                       <property name="maximum">
-                        <number>100</number>
-                       </property>
-                       <property name="value">
-                        <number>1</number>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLabel" name="Sharpness_2">
-                       <property name="text">
-                        <string>Sharpness</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QSpinBox" name="video_sharpness_sb">
-                       <property name="accessibleName">
-                        <string>video sharpness</string>
-                       </property>
-                       <property name="minimum">
-                        <number>0</number>
-                       </property>
-                       <property name="maximum">
-                        <number>100</number>
-                       </property>
-                       <property name="value">
-                        <number>1</number>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLabel" name="label_32">
-                       <property name="text">
-                        <string>Saturation</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QSpinBox" name="video_saturation_sb">
-                       <property name="accessibleName">
-                        <string>video saturation</string>
-                       </property>
-                       <property name="minimum">
-                        <number>0</number>
-                       </property>
-                       <property name="maximum">
-                        <number>100</number>
-                       </property>
-                       <property name="value">
-                        <number>1</number>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLabel" name="label_33">
-                       <property name="text">
-                        <string>Gain</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QSpinBox" name="video_gain_sb">
-                       <property name="accessibleName">
-                        <string>video gain</string>
-                       </property>
-                       <property name="minimum">
-                        <number>0</number>
-                       </property>
-                       <property name="maximum">
-                        <number>100</number>
-                       </property>
-                       <property name="singleStep">
-                        <number>1</number>
-                       </property>
-                       <property name="value">
-                        <number>1</number>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <spacer name="horizontalSpacer_14">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>40</width>
-                         <height>20</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                    </layout>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_6">
-                  <item>
-                   <widget class="QGroupBox" name="groupBox_2">
-                    <property name="title">
-                     <string>Manual control</string>
-                    </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_11">
-                     <item>
-                      <layout class="QVBoxLayout" name="verticalLayout_20">
-                       <item>
-                        <widget class="QPushButton" name="start_video_recording_pb">
-                         <property name="text">
-                          <string>Start video recording now</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QPushButton" name="stop_video_recording_pb">
-                         <property name="text">
-                          <string>Stop current video recording</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <spacer name="verticalSpacer_5">
-                         <property name="orientation">
-                          <enum>Qt::Vertical</enum>
-                         </property>
-                         <property name="sizeHint" stdset="0">
-                          <size>
-                           <width>20</width>
-                           <height>40</height>
-                          </size>
-                         </property>
-                        </spacer>
-                       </item>
-                      </layout>
-                     </item>
-                    </layout>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QGroupBox" name="groupBox">
-                    <property name="maximumSize">
-                     <size>
-                      <width>16777215</width>
-                      <height>300</height>
-                     </size>
-                    </property>
-                    <property name="title">
-                     <string>Schedule</string>
-                    </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_13">
-                     <item>
-                      <widget class="QTabWidget" name="video_rec_schedule_tw">
-                       <property name="currentIndex">
-                        <number>0</number>
-                       </property>
-                       <widget class="QWidget" name="add_video_rec_schedule_tab">
-                        <attribute name="title">
-                         <string>New schedule</string>
-                        </attribute>
-                        <layout class="QVBoxLayout" name="verticalLayout_7">
+                        <layout class="QHBoxLayout" name="horizontalLayout_11">
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_18">
+                          <layout class="QHBoxLayout" name="horizontalLayout_7">
                            <item>
-                            <widget class="QLabel" name="label_24">
+                            <widget class="QLabel" name="label_5">
                              <property name="text">
-                              <string>Hours</string>
+                              <string>Video mode</string>
                              </property>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="hours_le">
-                             <property name="frame">
-                              <bool>true</bool>
-                             </property>
-                             <property name="clearButtonEnabled">
-                              <bool>false</bool>
+                            <widget class="QComboBox" name="video_mode_cb">
+                             <property name="accessibleName">
+                              <string>video mode</string>
                              </property>
                             </widget>
                            </item>
+                          </layout>
+                         </item>
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_8">
                            <item>
-                            <widget class="QLabel" name="label_25">
+                            <widget class="QLabel" name="lb_durations">
                              <property name="text">
-                              <string>Minutes</string>
+                              <string>Duration (s)</string>
                              </property>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="minutes_le"/>
+                            <widget class="QSpinBox" name="video_duration_sb">
+                             <property name="accessibleName">
+                              <string>video duration</string>
+                             </property>
+                             <property name="minimum">
+                              <number>60</number>
+                             </property>
+                             <property name="maximum">
+                              <number>86000</number>
+                             </property>
+                             <property name="singleStep">
+                              <number>60</number>
+                             </property>
+                             <property name="value">
+                              <number>2400</number>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_10">
+                           <item>
+                            <widget class="QLabel" name="label_6">
+                             <property name="text">
+                              <string>Video quality (Mbp/s)</string>
+                             </property>
+                            </widget>
                            </item>
                            <item>
-                            <spacer name="horizontalSpacer_9">
+                            <widget class="QSpinBox" name="video_quality_sb">
+                             <property name="accessibleName">
+                              <string>video quality</string>
+                             </property>
+                             <property name="minimum">
+                              <number>1</number>
+                             </property>
+                             <property name="maximum">
+                              <number>10</number>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_9">
+                           <item>
+                            <widget class="QLabel" name="label_7">
+                             <property name="text">
+                              <string>FPS</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QSpinBox" name="video_fps_sb">
+                             <property name="accessibleName">
+                              <string>FPS</string>
+                             </property>
+                             <property name="minimum">
+                              <number>1</number>
+                             </property>
+                             <property name="maximum">
+                              <number>30</number>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <spacer name="horizontalSpacer_11">
                              <property name="orientation">
                               <enum>Qt::Horizontal</enum>
                              </property>
@@ -1528,117 +1262,299 @@
                            </item>
                           </layout>
                          </item>
+                        </layout>
+                       </item>
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_20">
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_16">
-                           <item>
-                            <widget class="QLabel" name="label_26">
-                             <property name="text">
-                              <string>Days of week (0-6 or SUN-SAT)</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item>
-                            <widget class="QLineEdit" name="days_of_week_le"/>
-                           </item>
-                           <item>
-                            <widget class="QLabel" name="label_27">
-                             <property name="text">
-                              <string>Days of month (1-31)</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item>
-                            <widget class="QLineEdit" name="days_of_month_le"/>
-                           </item>
-                           <item>
-                            <widget class="QLabel" name="label_28">
-                             <property name="text">
-                              <string>Month(s)</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item>
-                            <widget class="QLineEdit" name="months_le"/>
-                           </item>
-                           <item>
-                            <spacer name="horizontalSpacer_7">
-                             <property name="orientation">
-                              <enum>Qt::Horizontal</enum>
-                             </property>
-                             <property name="sizeHint" stdset="0">
-                              <size>
-                               <width>40</width>
-                               <height>20</height>
-                              </size>
-                             </property>
-                            </spacer>
-                           </item>
-                          </layout>
+                          <widget class="QLabel" name="label_29">
+                           <property name="text">
+                            <string>Rotation</string>
+                           </property>
+                          </widget>
                          </item>
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_23">
-                           <item>
-                            <widget class="QPushButton" name="configure_video_recording_pb">
-                             <property name="text">
-                              <string>Add schedule to Raspberry Pi</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item>
-                            <spacer name="horizontalSpacer_15">
-                             <property name="orientation">
-                              <enum>Qt::Horizontal</enum>
-                             </property>
-                             <property name="sizeHint" stdset="0">
-                              <size>
-                               <width>40</width>
-                               <height>20</height>
-                              </size>
-                             </property>
-                            </spacer>
-                           </item>
-                          </layout>
+                          <widget class="QSpinBox" name="video_rotation_sb">
+                           <property name="accessibleName">
+                            <string>video rotation</string>
+                           </property>
+                           <property name="frame">
+                            <bool>true</bool>
+                           </property>
+                           <property name="maximum">
+                            <number>270</number>
+                           </property>
+                           <property name="singleStep">
+                            <number>90</number>
+                           </property>
+                          </widget>
                          </item>
                          <item>
-                          <spacer name="verticalSpacer_2">
+                          <widget class="QCheckBox" name="video_hflip_cb">
+                           <property name="accessibleName">
+                            <string>video hflip</string>
+                           </property>
+                           <property name="text">
+                            <string>Horizontal flip</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QCheckBox" name="video_vflip_cb">
+                           <property name="accessibleName">
+                            <string>video vflip</string>
+                           </property>
+                           <property name="text">
+                            <string>Vertical flip</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <spacer name="horizontalSpacer_12">
                            <property name="orientation">
-                            <enum>Qt::Vertical</enum>
+                            <enum>Qt::Horizontal</enum>
                            </property>
                            <property name="sizeHint" stdset="0">
                             <size>
-                             <width>20</width>
-                             <height>40</height>
+                             <width>40</width>
+                             <height>20</height>
                             </size>
                            </property>
                           </spacer>
                          </item>
                         </layout>
-                       </widget>
-                       <widget class="QWidget" name="view_video_rec_schedule">
-                        <attribute name="title">
-                         <string>Video recording schedule</string>
-                        </attribute>
-                        <layout class="QVBoxLayout" name="verticalLayout_15">
+                       </item>
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_22">
                          <item>
-                          <layout class="QVBoxLayout" name="verticalLayout_14">
+                          <widget class="QLabel" name="label_31">
+                           <property name="text">
+                            <string>Brightness</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QDoubleSpinBox" name="video_brightness_sb">
+                           <property name="accessibleName">
+                            <string>video brightness</string>
+                           </property>
+                           <property name="minimum">
+                            <double>-1.000000000000000</double>
+                           </property>
+                           <property name="maximum">
+                            <double>1.000000000000000</double>
+                           </property>
+                           <property name="singleStep">
+                            <double>0.010000000000000</double>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QLabel" name="label_30">
+                           <property name="text">
+                            <string>Contrast</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QSpinBox" name="video_contrast_sb">
+                           <property name="accessibleName">
+                            <string>video contrast</string>
+                           </property>
+                           <property name="minimum">
+                            <number>0</number>
+                           </property>
+                           <property name="maximum">
+                            <number>100</number>
+                           </property>
+                           <property name="value">
+                            <number>1</number>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QLabel" name="Sharpness_2">
+                           <property name="text">
+                            <string>Sharpness</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QSpinBox" name="video_sharpness_sb">
+                           <property name="accessibleName">
+                            <string>video sharpness</string>
+                           </property>
+                           <property name="minimum">
+                            <number>0</number>
+                           </property>
+                           <property name="maximum">
+                            <number>100</number>
+                           </property>
+                           <property name="value">
+                            <number>1</number>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QLabel" name="label_32">
+                           <property name="text">
+                            <string>Saturation</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QSpinBox" name="video_saturation_sb">
+                           <property name="accessibleName">
+                            <string>video saturation</string>
+                           </property>
+                           <property name="minimum">
+                            <number>0</number>
+                           </property>
+                           <property name="maximum">
+                            <number>100</number>
+                           </property>
+                           <property name="value">
+                            <number>1</number>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QLabel" name="label_33">
+                           <property name="text">
+                            <string>Gain</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QSpinBox" name="video_gain_sb">
+                           <property name="accessibleName">
+                            <string>video gain</string>
+                           </property>
+                           <property name="minimum">
+                            <number>0</number>
+                           </property>
+                           <property name="maximum">
+                            <number>100</number>
+                           </property>
+                           <property name="singleStep">
+                            <number>1</number>
+                           </property>
+                           <property name="value">
+                            <number>1</number>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <spacer name="horizontalSpacer_14">
+                           <property name="orientation">
+                            <enum>Qt::Horizontal</enum>
+                           </property>
+                           <property name="sizeHint" stdset="0">
+                            <size>
+                             <width>40</width>
+                             <height>20</height>
+                            </size>
+                           </property>
+                          </spacer>
+                         </item>
+                        </layout>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QGroupBox" name="groupBox_2">
+                      <property name="title">
+                       <string>Manual control</string>
+                      </property>
+                      <layout class="QVBoxLayout" name="verticalLayout_11">
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_6">
+                         <item>
+                          <widget class="QPushButton" name="start_video_recording_pb">
+                           <property name="text">
+                            <string>Start video recording now</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QPushButton" name="stop_video_recording_pb">
+                           <property name="text">
+                            <string>Stop current video recording</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <spacer name="horizontalSpacer_2">
+                           <property name="orientation">
+                            <enum>Qt::Horizontal</enum>
+                           </property>
+                           <property name="sizeHint" stdset="0">
+                            <size>
+                             <width>40</width>
+                             <height>20</height>
+                            </size>
+                           </property>
+                          </spacer>
+                         </item>
+                        </layout>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QGroupBox" name="groupBox">
+                      <property name="maximumSize">
+                       <size>
+                        <width>16777215</width>
+                        <height>300</height>
+                       </size>
+                      </property>
+                      <property name="title">
+                       <string>Schedule</string>
+                      </property>
+                      <layout class="QVBoxLayout" name="verticalLayout_13">
+                       <item>
+                        <widget class="QTabWidget" name="video_rec_schedule_tw">
+                         <property name="currentIndex">
+                          <number>0</number>
+                         </property>
+                         <widget class="QWidget" name="add_video_rec_schedule_tab">
+                          <attribute name="title">
+                           <string>New schedule</string>
+                          </attribute>
+                          <layout class="QVBoxLayout" name="verticalLayout_7">
                            <item>
-                            <layout class="QHBoxLayout" name="horizontalLayout_21">
+                            <layout class="QHBoxLayout" name="horizontalLayout_18">
                              <item>
-                              <widget class="QPushButton" name="view_video_recording_schedule_pb">
+                              <widget class="QLabel" name="label_24">
                                <property name="text">
-                                <string>View schedule on Raspberry Pi</string>
+                                <string>Hours</string>
                                </property>
                               </widget>
                              </item>
                              <item>
-                              <widget class="QPushButton" name="delete_video_recording_schedule_pb">
-                               <property name="text">
-                                <string>Delete schedule on Raspberry Pi</string>
+                              <widget class="QLineEdit" name="hours_le">
+                               <property name="frame">
+                                <bool>true</bool>
+                               </property>
+                               <property name="clearButtonEnabled">
+                                <bool>false</bool>
                                </property>
                               </widget>
                              </item>
                              <item>
-                              <spacer name="horizontalSpacer_13">
+                              <widget class="QLabel" name="label_25">
+                               <property name="text">
+                                <string>Minutes</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <widget class="QLineEdit" name="minutes_le"/>
+                             </item>
+                             <item>
+                              <spacer name="horizontalSpacer_9">
                                <property name="orientation">
                                 <enum>Qt::Horizontal</enum>
                                </property>
@@ -1653,69 +1569,165 @@
                             </layout>
                            </item>
                            <item>
-                            <widget class="QTableWidget" name="video_rec_schedule_table">
-                             <property name="selectionMode">
-                              <enum>QAbstractItemView::SingleSelection</enum>
-                             </property>
-                             <property name="selectionBehavior">
-                              <enum>QAbstractItemView::SelectRows</enum>
-                             </property>
-                             <column>
-                              <property name="text">
-                               <string>Minute</string>
-                              </property>
-                             </column>
-                             <column>
-                              <property name="text">
-                               <string>Hour</string>
-                              </property>
-                             </column>
-                             <column>
-                              <property name="text">
-                               <string>Day of month</string>
-                              </property>
-                             </column>
-                             <column>
-                              <property name="text">
-                               <string>Month</string>
-                              </property>
-                             </column>
-                             <column>
-                              <property name="text">
-                               <string>Day of week</string>
-                              </property>
-                             </column>
-                             <column>
-                              <property name="text">
-                               <string>Type</string>
-                              </property>
-                             </column>
-                            </widget>
+                            <layout class="QHBoxLayout" name="horizontalLayout_16">
+                             <item>
+                              <widget class="QLabel" name="label_26">
+                               <property name="text">
+                                <string>Days of week (0-6 or SUN-SAT)</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <widget class="QLineEdit" name="days_of_week_le"/>
+                             </item>
+                             <item>
+                              <widget class="QLabel" name="label_27">
+                               <property name="text">
+                                <string>Days of month (1-31)</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <widget class="QLineEdit" name="days_of_month_le"/>
+                             </item>
+                             <item>
+                              <widget class="QLabel" name="label_28">
+                               <property name="text">
+                                <string>Month(s)</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <widget class="QLineEdit" name="months_le"/>
+                             </item>
+                             <item>
+                              <spacer name="horizontalSpacer_7">
+                               <property name="orientation">
+                                <enum>Qt::Horizontal</enum>
+                               </property>
+                               <property name="sizeHint" stdset="0">
+                                <size>
+                                 <width>40</width>
+                                 <height>20</height>
+                                </size>
+                               </property>
+                              </spacer>
+                             </item>
+                            </layout>
+                           </item>
+                           <item>
+                            <layout class="QHBoxLayout" name="horizontalLayout_23">
+                             <item>
+                              <widget class="QPushButton" name="configure_video_recording_pb">
+                               <property name="text">
+                                <string>Add schedule to Raspberry Pi</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <spacer name="horizontalSpacer_15">
+                               <property name="orientation">
+                                <enum>Qt::Horizontal</enum>
+                               </property>
+                               <property name="sizeHint" stdset="0">
+                                <size>
+                                 <width>40</width>
+                                 <height>20</height>
+                                </size>
+                               </property>
+                              </spacer>
+                             </item>
+                            </layout>
                            </item>
                           </layout>
-                         </item>
-                        </layout>
-                       </widget>
-                      </widget>
-                     </item>
-                     <item>
-                      <spacer name="verticalSpacer_6">
-                       <property name="orientation">
-                        <enum>Qt::Vertical</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>20</width>
-                         <height>40</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                    </layout>
-                   </widget>
-                  </item>
-                  <item>
-                   <layout class="QVBoxLayout" name="verticalLayout_21">
+                         </widget>
+                         <widget class="QWidget" name="view_video_rec_schedule">
+                          <attribute name="title">
+                           <string>Video recording schedule</string>
+                          </attribute>
+                          <layout class="QVBoxLayout" name="verticalLayout_15">
+                           <item>
+                            <layout class="QVBoxLayout" name="verticalLayout_14">
+                             <item>
+                              <layout class="QHBoxLayout" name="horizontalLayout_21">
+                               <item>
+                                <widget class="QPushButton" name="view_video_recording_schedule_pb">
+                                 <property name="text">
+                                  <string>View schedule on Raspberry Pi</string>
+                                 </property>
+                                </widget>
+                               </item>
+                               <item>
+                                <widget class="QPushButton" name="delete_video_recording_schedule_pb">
+                                 <property name="text">
+                                  <string>Delete schedule on Raspberry Pi</string>
+                                 </property>
+                                </widget>
+                               </item>
+                               <item>
+                                <spacer name="horizontalSpacer_13">
+                                 <property name="orientation">
+                                  <enum>Qt::Horizontal</enum>
+                                 </property>
+                                 <property name="sizeHint" stdset="0">
+                                  <size>
+                                   <width>40</width>
+                                   <height>20</height>
+                                  </size>
+                                 </property>
+                                </spacer>
+                               </item>
+                              </layout>
+                             </item>
+                             <item>
+                              <widget class="QTableWidget" name="video_rec_schedule_table">
+                               <property name="selectionMode">
+                                <enum>QAbstractItemView::SingleSelection</enum>
+                               </property>
+                               <property name="selectionBehavior">
+                                <enum>QAbstractItemView::SelectRows</enum>
+                               </property>
+                               <column>
+                                <property name="text">
+                                 <string>Minute</string>
+                                </property>
+                               </column>
+                               <column>
+                                <property name="text">
+                                 <string>Hour</string>
+                                </property>
+                               </column>
+                               <column>
+                                <property name="text">
+                                 <string>Day of month</string>
+                                </property>
+                               </column>
+                               <column>
+                                <property name="text">
+                                 <string>Month</string>
+                                </property>
+                               </column>
+                               <column>
+                                <property name="text">
+                                 <string>Day of week</string>
+                                </property>
+                               </column>
+                               <column>
+                                <property name="text">
+                                 <string>Type</string>
+                                </property>
+                               </column>
+                              </widget>
+                             </item>
+                            </layout>
+                           </item>
+                          </layout>
+                         </widget>
+                        </widget>
+                       </item>
+                      </layout>
+                     </widget>
+                    </item>
                     <item>
                      <layout class="QHBoxLayout" name="horizontalLayout_19">
                       <item>
@@ -1796,25 +1808,11 @@
                      </layout>
                     </item>
                    </layout>
-                  </item>
-                 </layout>
+                  </widget>
+                 </widget>
                 </item>
                </layout>
               </widget>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="raspberry_id_lb">
-              <property name="font">
-               <font>
-                <pointsize>13</pointsize>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
              </widget>
             </item>
             <item>
@@ -1851,7 +1849,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1375</width>
+     <width>1114</width>
      <height>22</height>
     </rect>
    </property>
