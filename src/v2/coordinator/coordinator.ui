@@ -673,6 +673,13 @@
                              </property>
                             </widget>
                            </item>
+                           <item>
+                            <widget class="QPushButton" name="pb_delete_live_pictures">
+                             <property name="text">
+                              <string>Delete live pictures</string>
+                             </property>
+                            </widget>
+                           </item>
                           </layout>
                          </item>
                         </layout>
@@ -1147,8 +1154,8 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>1390</width>
-                     <height>893</height>
+                     <width>626</width>
+                     <height>845</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_22">

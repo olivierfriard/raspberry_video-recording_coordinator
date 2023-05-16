@@ -264,6 +264,8 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         self.download_live_pictures_pb.clicked.connect(self.download_live_pictures_clicked)
         self.download_pictures_pb.clicked.connect(self.download_timelapse_pictures_clicked)
 
+        self.pb_delete_live_pictures.clicked.connect(self.delete_live_pictures_clicked)
+
         # video streaming
         self.pb_start_video_streaming.clicked.connect(partial(self.video_streaming_clicked, "start"))
         self.pb_stop_video_streaming.clicked.connect(partial(self.video_streaming_clicked, "stop"))
@@ -638,6 +640,21 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         )
 
         time_lapse.download_live_pictures(self, self.current_raspberry_id, directory_path)
+
+    @verif
+    def delete_live_pictures_clicked(self):
+        """
+        delete all live pictures from current raspberry pi
+        """
+        text, ok = QInputDialog.getText(
+            self,
+            f"Delete all live pictures from Rasperry Pi {self.current_raspberry_id}",
+            "Please confirm writing 'yes'",
+        )
+        if not ok or text != "yes":
+            return
+
+        time_lapse.delete_live_pictures(self, self.current_raspberry_id)
 
     '''
     def download_all_video_from_all(self):

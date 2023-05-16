@@ -1112,6 +1112,23 @@ def delete_video():
 
 
 @app.route(
+    "/delete_live_pictures",
+    methods=(
+        "GET",
+        "POST",
+    ),
+)
+@security_key_required
+def delete_live_pictures():
+    """
+    Delete the live pictures
+    """
+    for file_path in pl.Path(cfg.LIVE_PICTURES_ARCHIVE).glob("*"):
+        file_path.unlink(missing_ok=True)
+    return {"error": False, "msg": "All live pictures deleted"}
+
+
+@app.route(
     "/get_mac",
     methods=(
         "GET",

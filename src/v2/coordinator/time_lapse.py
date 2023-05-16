@@ -532,3 +532,16 @@ def download_live_pictures(self, raspberry_id, download_dir):
     self.pict_download_worker.progress.connect(thread_progress)
     self.pict_download_worker.finished.connect(thread_finished)
     self.pict_download_worker.start.emit(raspberry_id, remote_pictures_list, download_dir, remote_pictures_archive_dir)
+
+
+def delete_live_pictures(self, raspberry_id):
+    """
+    delete
+    """
+
+    response = self.request(raspberry_id, "/delete_live_pictures")
+    if response == None:
+        return
+    if response.status_code != 200:
+        self.rasp_output_lb.setText(f"Error deleteing the live pictures (status code: {response.status_code})")
+        return
