@@ -265,7 +265,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         self.download_pictures_pb.clicked.connect(self.download_timelapse_pictures_clicked)
 
         self.pb_delete_live_pictures.clicked.connect(self.delete_live_pictures_clicked)
-        self.pb_delete_timestamp_pictures.clicked.connect(self.delete_timestamp_pictures_clicked)
+        self.pb_delete_timelapse_pictures.clicked.connect(self.delete_timestamp_pictures_clicked)
 
         # video streaming
         self.pb_start_video_streaming.clicked.connect(partial(self.video_streaming_clicked, "start"))
