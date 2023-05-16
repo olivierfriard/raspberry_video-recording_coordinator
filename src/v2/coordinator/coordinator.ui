@@ -660,9 +660,16 @@
                             </widget>
                            </item>
                            <item>
+                            <widget class="QPushButton" name="download_live_pictures_pb">
+                             <property name="text">
+                              <string>Download live pictures</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
                             <widget class="QPushButton" name="download_pictures_pb">
                              <property name="text">
-                              <string>Download pictures</string>
+                              <string>Download time lapse pictures</string>
                              </property>
                             </widget>
                            </item>

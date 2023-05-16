@@ -78,7 +78,7 @@ def take_picture(self, raspberry_id: str, mode: str):
 
         try:
             response2 = requests.get(
-                f"{cfg.PROTOCOL}{self.raspberry_ip[raspberry_id]}{cfg.SERVER_PORT}/static/live_pictures/{data['file_name']}.jpg",
+                f"{cfg.PROTOCOL}{self.raspberry_ip[raspberry_id]}{cfg.SERVER_PORT}/static/live_pictures/{data['file_name']}",
                 stream=True,
                 verify=False,
             )
@@ -427,9 +427,9 @@ class Download_pict_worker(QObject):
         self.finished.emit(downloaded_pictures)
 
 
-def download_pictures(self, raspberry_id, download_dir):
+def download_timelapse_pictures(self, raspberry_id, download_dir):
     """
-    Download pictures from Raspberry Pi
+    Download the time lapse pictures from Raspberry Pi
     """
 
     def thread_progress(output):
@@ -446,7 +446,50 @@ def download_pictures(self, raspberry_id, download_dir):
         return
 
     # get pictures archive directory
-    response = self.request(raspberry_id, "/pictures_archive_dir")
+    response = self.request(raspberry_id, "/timelapse_pictures_archive_dir")
+    if response == None:
+        return
+    if response.status_code != 200:
+        self.rasp_output_lb.setText(
+            f"Error requiring the pictures archive directory (status code: {response.status_code})"
+        )
+        return
+    if response.json().get("error", True):
+        self.rasp_output_lb.setText(f"Error requiring the pictures archive directory")
+        return
+    remote_pictures_archive_dir = response.json().get("msg", "")
+
+    self.pict_download_thread = QThread(parent=self)
+    self.pict_download_thread.start()
+    self.pict_download_worker = Download_pict_worker(self.raspberry_ip)
+    self.pict_download_worker.moveToThread(self.pict_download_thread)
+
+    self.pict_download_worker.start.connect(self.pict_download_worker.run)
+    self.pict_download_worker.progress.connect(thread_progress)
+    self.pict_download_worker.finished.connect(thread_finished)
+    self.pict_download_worker.start.emit(raspberry_id, remote_pictures_list, download_dir, remote_pictures_archive_dir)
+
+
+def download_live_pictures(self, raspberry_id, download_dir):
+    """
+    Download the live pictures from Raspberry Pi
+    """
+
+    def thread_progress(output):
+        self.rasp_output_lb.setText(output)
+
+    def thread_finished(downloaded_pictures_list):
+        self.rasp_output_lb.setText(f"{len(downloaded_pictures_list)} pictures downloaded in <b>{download_dir}</b>")
+        self.video_list_clicked()
+        self.pict_download_thread.quit
+
+    remote_pictures_list = get_pictures_list(self, raspberry_id)
+    if len(remote_pictures_list) == 0:
+        self.rasp_output_lb.setText(f"No pictures to download")
+        return
+
+    # get pictures archive directory
+    response = self.request(raspberry_id, "/live_pictures_archive_dir")
     if response == None:
         return
     if response.status_code != 200:

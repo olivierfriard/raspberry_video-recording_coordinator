@@ -1039,16 +1039,31 @@ def video_archive_dir():
         return {"error": True}
 
 
-@app.route("/pictures_archive_dir")
+@app.route("/timelapse_pictures_archive_dir")
 @security_key_required
-def pictures_archive_dir():
+def timelapse_pictures_archive_dir():
     """
-    return the pictures archive directory
+    return the time lapse pictures archive directory
     """
     try:
         return {
             "error": False,
             "msg": str(pl.Path("/") / pl.Path(cfg.STATIC_DIR) / pl.Path(cfg.TIME_LAPSE_ARCHIVE_DIR)),
+        }
+    except Exception:
+        return {"error": True}
+
+
+@app.route("/live_pictures_archive_dir")
+@security_key_required
+def live_pictures_archive_dir():
+    """
+    return the live pictures archive directory
+    """
+    try:
+        return {
+            "error": False,
+            "msg": str(pl.Path("/") / pl.Path(cfg.STATIC_DIR) / pl.Path(cfg.LIVE_PICTURES_ARCHIVE)),
         }
     except Exception:
         return {"error": True}

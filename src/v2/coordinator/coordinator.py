@@ -261,7 +261,8 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         self.view_picture_schedule_pb.clicked.connect(self.view_time_lapse_schedule_clicked)
         self.delete_picture_schedule_pb.clicked.connect(self.delete_time_lapse_schedule_clicked)
 
-        self.download_pictures_pb.clicked.connect(self.download_pictures_clicked)
+        self.download_live_pictures_pb.clicked.connect(self.download_live_pictures_clicked)
+        self.download_pictures_pb.clicked.connect(self.download_timelapse_pictures_clicked)
 
         # video streaming
         self.pb_start_video_streaming.clicked.connect(partial(self.video_streaming_clicked, "start"))
@@ -603,19 +604,40 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         video_recording.download_videos(self, self.current_raspberry_id, download_dir=directory_path)
 
     @verif
-    def download_pictures_clicked(self):
+    def download_timelapse_pictures_clicked(self):
         """
-        Download pictures on current Raspberry Pi
+        Download time lapse pictures on current Raspberry Pi
         """
 
         # select a directory to save pictures
         directory_path = str(
             QFileDialog.getExistingDirectory(
-                self, "Select Directory", str(pathlib.Path.home()), options=QFileDialog.ShowDirsOnly
+                self,
+                "Select a directory to save the time lapse pictures",
+                str(pathlib.Path.home()),
+                options=QFileDialog.ShowDirsOnly,
             )
         )
 
-        time_lapse.download_pictures(self, self.current_raspberry_id, directory_path)
+        time_lapse.download_timelapse_pictures(self, self.current_raspberry_id, directory_path)
+
+    @verif
+    def download_live_pictures_clicked(self):
+        """
+        Download live pictures on current Raspberry Pi
+        """
+
+        # select a directory to save the live pictures
+        directory_path = str(
+            QFileDialog.getExistingDirectory(
+                self,
+                "Select a directory to save the live pictures",
+                str(pathlib.Path.home()),
+                options=QFileDialog.ShowDirsOnly,
+            )
+        )
+
+        time_lapse.download_live_pictures(self, self.current_raspberry_id, directory_path)
 
     '''
     def download_all_video_from_all(self):
