@@ -1124,6 +1124,8 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         get Raspberry Pi status
         """
 
+        self.rasp_output_lb.setText("")
+
         response = self.request(raspberry_id, "/status", time_out=cfg.TIME_OUT)
         if response == None:
             if raspberry_id in self.raspberry_info:
