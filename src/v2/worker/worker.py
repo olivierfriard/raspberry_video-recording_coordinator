@@ -6,7 +6,7 @@ to enable the service at boot:
 sudo systemctl enable worker
 """
 
-__version__ = "33"
+__version__ = "34"
 __version_date__ = "2023-05-16"
 
 
