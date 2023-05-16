@@ -521,7 +521,7 @@ def download_live_pictures(self, raspberry_id, download_dir):
         return
     remote_pictures_archive_dir = response.json().get("msg", "")
 
-    logging.info(f"Remote live picture directory: {remote_pictures_archive_dir}")
+    logging.info(f"Remote live pictures directory: {remote_pictures_archive_dir}")
 
     self.pict_download_thread = QThread(parent=self)
     self.pict_download_thread.start()
@@ -536,8 +536,10 @@ def download_live_pictures(self, raspberry_id, download_dir):
 
 def delete_live_pictures(self, raspberry_id):
     """
-    delete
+    ask to delete the live pictures from current raspberry pi
     """
+
+    logging.info(f"Ask to delete the live pictures from Raspberry Pi {raspberry_id}")
 
     response = self.request(raspberry_id, "/delete_live_pictures")
     if response == None:
@@ -551,8 +553,10 @@ def delete_live_pictures(self, raspberry_id):
 
 def delete_timelapse_pictures(self, raspberry_id):
     """
-    delete
+    ask to delete the time lapse pictures from current raspberry pi
     """
+
+    logging.info(f"Ask to delete the time lapse pictures from Raspberry Pi {raspberry_id}")
 
     response = self.request(raspberry_id, "/delete_timelapse_pictures")
     if response == None:

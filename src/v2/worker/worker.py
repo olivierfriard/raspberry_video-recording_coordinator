@@ -1123,6 +1123,9 @@ def delete_live_pictures():
     """
     Delete the live pictures
     """
+
+    logging.debug(f"Delete all the live pictures")
+
     for file_path in pl.Path(cfg.LIVE_PICTURES_ARCHIVE).glob("*"):
         file_path.unlink(missing_ok=True)
     return {"error": False, "msg": "All live pictures deleted"}
@@ -1140,6 +1143,9 @@ def delete_timelapse_pictures():
     """
     Delete the time lapse pictures
     """
+
+    logging.debug(f"Delete all the time lapse pictures")
+
     for file_path in pl.Path(cfg.TIME_LAPSE_ARCHIVE).glob("*"):
         file_path.unlink(missing_ok=True)
     return {"error": False, "msg": "All time lapse pictures deleted"}
