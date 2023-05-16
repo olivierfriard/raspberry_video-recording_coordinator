@@ -27,7 +27,7 @@ def take_picture(self, raspberry_id: str, mode: str):
 
     if raspberry_id not in self.raspberry_ip:
         return
-    
+
     if self.raspberry_info[raspberry_id]["status"]["status"] == "OK":  # and self.raspberry_status[raspberry_id]:
 
         width, height = self.raspberry_info[raspberry_id]["picture resolution"].split("x")
@@ -90,6 +90,7 @@ def take_picture(self, raspberry_id: str, mode: str):
             response2.raw.decode_content = True
             shutil.copyfileobj(response2.raw, f)
 
+        self.tw_picture.setCurrentIndex(2)
         self.picture_lb.setPixmap(
             QPixmap(f"live_{raspberry_id}.jpg").scaled(self.picture_lb.size(), Qt.KeepAspectRatio)
         )
@@ -298,7 +299,7 @@ def schedule_time_lapse(self, raspberry_id):
         "rotation": self.raspberry_info[raspberry_id]["picture rotation"],
         "hflip": self.raspberry_info[raspberry_id]["picture hflip"],
         "vflip": self.raspberry_info[raspberry_id]["picture vflip"],
-        #"annotate": self.raspberry_info[raspberry_id]["picture annotation"],
+        # "annotate": self.raspberry_info[raspberry_id]["picture annotation"],
     }
 
     response = self.request(raspberry_id, f"/schedule_time_lapse", type="POST", data=data)
