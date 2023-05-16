@@ -141,7 +141,7 @@ def time_lapse_active():
     """
     process = subprocess.run(["ps", "auxwg"], stdout=subprocess.PIPE)
     processes_list = process.stdout.decode("utf-8").split("\n")
-    return len([x for x in processes_list if "libcamera-still" in x]) > 0
+    return len([x for x in processes_list if "libcamera-still" in x and "<defunct>" not in x]) > 0
 
 
 def get_cpu_temperature() -> str:
@@ -841,7 +841,7 @@ def stop_time_lapse():
     """
 
     subprocess.run(["sudo", "killall", "libcamera-still"])
-    time.sleep(2)
+    time.sleep(5)
 
     if not time_lapse_active():
         return {"msg": "Time lapse stopped"}
