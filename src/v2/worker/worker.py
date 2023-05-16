@@ -6,7 +6,7 @@ to enable the service at boot:
 sudo systemctl enable worker
 """
 
-__version__ = "32"
+__version__ = "33"
 __version_date__ = "2023-05-16"
 
 
@@ -935,7 +935,7 @@ def take_picture():
 
     for key in request.values:
 
-        if key in ("timelapse", "timeout", "annotate", "key"):
+        if key in ("timelapse", "timeout", "annotate", "key", "file_name"):
             continue
         if request.values[key] == "True":
             command_line.extend([f"--{key}"])
