@@ -93,7 +93,7 @@ class Ui_MainWindow(object):
         self.raspberry_id_lb.setObjectName("raspberry_id_lb")
         self.verticalLayout_3.addWidget(self.raspberry_id_lb)
         self.rpi_tw = QtWidgets.QTabWidget(self.layoutWidget1)
-        self.rpi_tw.setEnabled(True)
+        self.rpi_tw.setEnabled(False)
         self.rpi_tw.setObjectName("rpi_tw")
         self.status_tab = QtWidgets.QWidget()
         self.status_tab.setObjectName("status_tab")
