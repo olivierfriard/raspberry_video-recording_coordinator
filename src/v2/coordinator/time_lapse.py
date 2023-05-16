@@ -543,5 +543,22 @@ def delete_live_pictures(self, raspberry_id):
     if response == None:
         return
     if response.status_code != 200:
-        self.rasp_output_lb.setText(f"Error deleteing the live pictures (status code: {response.status_code})")
+        self.rasp_output_lb.setText(f"Error deleting the live pictures (status code: {response.status_code})")
         return
+
+    self.rasp_output_lb.setText(response.json().get("msg", ""))
+
+
+def delete_timelapse_pictures(self, raspberry_id):
+    """
+    delete
+    """
+
+    response = self.request(raspberry_id, "/delete_timelapse_pictures")
+    if response == None:
+        return
+    if response.status_code != 200:
+        self.rasp_output_lb.setText(f"Error deleting the time lapse pictures (status code: {response.status_code})")
+        return
+
+    self.rasp_output_lb.setText(response.json().get("msg", ""))

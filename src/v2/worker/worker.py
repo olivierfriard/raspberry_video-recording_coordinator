@@ -1129,6 +1129,23 @@ def delete_live_pictures():
 
 
 @app.route(
+    "/delete_timelapse_pictures",
+    methods=(
+        "GET",
+        "POST",
+    ),
+)
+@security_key_required
+def delete_timelapse_pictures():
+    """
+    Delete the time lapse pictures
+    """
+    for file_path in pl.Path(cfg.TIME_LAPSE_ARCHIVE).glob("*"):
+        file_path.unlink(missing_ok=True)
+    return {"error": False, "msg": "All time lapse pictures deleted"}
+
+
+@app.route(
     "/get_mac",
     methods=(
         "GET",
