@@ -6,8 +6,8 @@ to enable the service at boot:
 sudo systemctl enable worker
 """
 
-__version__ = "30"
-__version_date__ = "2022-10-18"
+__version__ = "31"
+__version_date__ = "2023-05-16"
 
 
 VCGENCMD_PATH = "/usr/bin/vcgencmd"
@@ -840,7 +840,7 @@ def stop_time_lapse():
     Stop the time lapse
     """
 
-    subprocess.run(["sudo", "killall", "raspistill"])
+    subprocess.run(["sudo", "killall", "libcamera-still"])
     time.sleep(2)
 
     if not time_lapse_active():
