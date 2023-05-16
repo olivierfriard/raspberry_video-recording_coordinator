@@ -9,8 +9,8 @@ TODO:
 
 """
 
-__version__ = "20"
-__version_date__ = "2021-10-20"
+__version__ = "21"
+__version_date__ = "2023-05-16"
 
 from PyQt5.QtWidgets import (
     QApplication,
@@ -166,7 +166,7 @@ def get_wifi_ssid():
     return ""
 
 
-from coordinator_ui import Ui_MainWindow
+from coordinator_ui2 import Ui_MainWindow
 
 
 class RPI_coordinator(QMainWindow, Ui_MainWindow):
@@ -182,7 +182,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         # super(MainWindow, self).__init__(parent)
         self.setupUi(self)
 
-        self.showMaximized()
+        # self.showMaximized()
         # .showFullScreen()
 
         connections.connect(self)

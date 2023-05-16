@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1502</width>
-    <height>850</height>
+    <width>1366</width>
+    <height>740</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -85,17 +85,11 @@
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
          <widget class="QSplitter" name="splitter">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
-          <widget class="QWidget" name="layoutWidget">
-           <layout class="QVBoxLayout" name="verticalLayout">
+          <widget class="QWidget" name="">
+           <layout class="QVBoxLayout" name="verticalLayout_5">
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout">
               <item>
@@ -157,256 +151,254 @@
                <attribute name="title">
                 <string>Status</string>
                </attribute>
-               <layout class="QVBoxLayout" name="verticalLayout_5">
-                <item>
-                 <layout class="QVBoxLayout" name="verticalLayout_4">
-                  <item>
-                   <layout class="QGridLayout" name="gridLayout">
-                    <item row="11" column="0">
-                     <widget class="QLabel" name="label_22">
-                      <property name="text">
-                       <string>Time lapse active</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="6" column="1">
-                     <widget class="QLabel" name="free_sd_space_lb">
-                      <property name="text">
-                       <string/>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="4" column="1">
-                     <widget class="QLabel" name="wifi_essid_lb">
-                      <property name="text">
-                       <string/>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="11" column="1">
-                     <widget class="QLabel" name="time_lapse_active_lb">
-                      <property name="text">
-                       <string/>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="0">
-                     <widget class="QLabel" name="label_2">
-                      <property name="text">
-                       <string>Date/time</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="9" column="1">
-                     <widget class="QLabel" name="video_recording_active_lb">
-                      <property name="text">
-                       <string/>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="1">
-                     <widget class="QLabel" name="datetime_lb">
-                      <property name="text">
-                       <string/>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="0">
-                     <widget class="QLabel" name="label">
-                      <property name="text">
-                       <string>Status</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="3" column="0">
-                     <widget class="QLabel" name="label_3">
-                      <property name="text">
-                       <string>CPU temperature</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="4" column="0">
-                     <widget class="QLabel" name="label_8">
-                      <property name="text">
-                       <string>WiFi ESSID</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="7" column="1">
-                     <widget class="QLabel" name="camera_detected_lb">
-                      <property name="text">
-                       <string/>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="1">
-                     <widget class="QLabel" name="ip_address_lb">
-                      <property name="text">
-                       <string/>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="3" column="1">
-                     <widget class="QLabel" name="cpu_temp_lb">
-                      <property name="text">
-                       <string/>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="0">
-                     <widget class="QLabel" name="label_12">
-                      <property name="text">
-                       <string>IP address</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="7" column="0">
-                     <widget class="QLabel" name="label_10">
-                      <property name="text">
-                       <string>Camera detected</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="10" column="0">
-                     <widget class="QLabel" name="label_14">
-                      <property name="text">
-                       <string>Video streaming active</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="6" column="0">
-                     <widget class="QLabel" name="label_9">
-                      <property name="text">
-                       <string>Free SD space</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="9" column="0">
-                     <widget class="QLabel" name="label_13">
-                      <property name="text">
-                       <string>Video recording active</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="8" column="0">
-                     <widget class="QLabel" name="label_11">
-                      <property name="text">
-                       <string>Uptime</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="8" column="1">
-                     <widget class="QLabel" name="uptime_lb">
-                      <property name="text">
-                       <string/>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="10" column="1">
-                     <widget class="QLabel" name="video_streaming_active_lb">
-                      <property name="text">
-                       <string/>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="1">
-                     <widget class="QLabel" name="status_lb">
-                      <property name="text">
-                       <string/>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="5" column="0">
-                     <widget class="QLabel" name="label_23">
-                      <property name="text">
-                       <string>Server version</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="5" column="1">
-                     <widget class="QLabel" name="server_version_lb">
-                      <property name="text">
-                       <string/>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item>
-                   <spacer name="verticalSpacer">
-                    <property name="orientation">
-                     <enum>Qt::Vertical</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>20</width>
-                      <height>40</height>
-                     </size>
-                    </property>
-                   </spacer>
-                  </item>
-                  <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_4">
-                    <item>
-                     <widget class="QPushButton" name="status_update_pb">
-                      <property name="text">
-                       <string>Update status</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QPushButton" name="time_synchro_pb">
-                      <property name="text">
-                       <string>Time synchronization</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QPushButton" name="get_log_pb">
-                      <property name="text">
-                       <string>Get log</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QPushButton" name="blink_pb">
-                      <property name="text">
-                       <string>Blink</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QPushButton" name="reboot_pb">
-                      <property name="text">
-                       <string>Reboot</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QPushButton" name="shutdown_pb">
-                      <property name="text">
-                       <string>Shutdown</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <spacer name="horizontalSpacer">
-                      <property name="orientation">
-                       <enum>Qt::Horizontal</enum>
-                      </property>
-                      <property name="sizeHint" stdset="0">
-                       <size>
-                        <width>40</width>
-                        <height>20</height>
-                       </size>
-                      </property>
-                     </spacer>
-                    </item>
-                   </layout>
-                  </item>
-                 </layout>
-                </item>
-               </layout>
+               <widget class="QWidget" name="">
+                <layout class="QVBoxLayout" name="verticalLayout_4">
+                 <item>
+                  <layout class="QGridLayout" name="gridLayout">
+                   <item row="11" column="0">
+                    <widget class="QLabel" name="label_22">
+                     <property name="text">
+                      <string>Time lapse active</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="6" column="1">
+                    <widget class="QLabel" name="free_sd_space_lb">
+                     <property name="text">
+                      <string/>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="4" column="1">
+                    <widget class="QLabel" name="wifi_essid_lb">
+                     <property name="text">
+                      <string/>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="11" column="1">
+                    <widget class="QLabel" name="time_lapse_active_lb">
+                     <property name="text">
+                      <string/>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="2" column="0">
+                    <widget class="QLabel" name="label_2">
+                     <property name="text">
+                      <string>Date/time</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="9" column="1">
+                    <widget class="QLabel" name="video_recording_active_lb">
+                     <property name="text">
+                      <string/>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="2" column="1">
+                    <widget class="QLabel" name="datetime_lb">
+                     <property name="text">
+                      <string/>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="0">
+                    <widget class="QLabel" name="label">
+                     <property name="text">
+                      <string>Status</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="3" column="0">
+                    <widget class="QLabel" name="label_3">
+                     <property name="text">
+                      <string>CPU temperature</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="4" column="0">
+                    <widget class="QLabel" name="label_8">
+                     <property name="text">
+                      <string>WiFi ESSID</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="7" column="1">
+                    <widget class="QLabel" name="camera_detected_lb">
+                     <property name="text">
+                      <string/>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="1">
+                    <widget class="QLabel" name="ip_address_lb">
+                     <property name="text">
+                      <string/>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="3" column="1">
+                    <widget class="QLabel" name="cpu_temp_lb">
+                     <property name="text">
+                      <string/>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="0">
+                    <widget class="QLabel" name="label_12">
+                     <property name="text">
+                      <string>IP address</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="7" column="0">
+                    <widget class="QLabel" name="label_10">
+                     <property name="text">
+                      <string>Camera detected</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="10" column="0">
+                    <widget class="QLabel" name="label_14">
+                     <property name="text">
+                      <string>Video streaming active</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="6" column="0">
+                    <widget class="QLabel" name="label_9">
+                     <property name="text">
+                      <string>Free SD space</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="9" column="0">
+                    <widget class="QLabel" name="label_13">
+                     <property name="text">
+                      <string>Video recording active</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="8" column="0">
+                    <widget class="QLabel" name="label_11">
+                     <property name="text">
+                      <string>Uptime</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="8" column="1">
+                    <widget class="QLabel" name="uptime_lb">
+                     <property name="text">
+                      <string/>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="10" column="1">
+                    <widget class="QLabel" name="video_streaming_active_lb">
+                     <property name="text">
+                      <string/>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="1">
+                    <widget class="QLabel" name="status_lb">
+                     <property name="text">
+                      <string/>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="5" column="0">
+                    <widget class="QLabel" name="label_23">
+                     <property name="text">
+                      <string>Server version</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="5" column="1">
+                    <widget class="QLabel" name="server_version_lb">
+                     <property name="text">
+                      <string/>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <spacer name="verticalSpacer">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_4">
+                   <item>
+                    <widget class="QPushButton" name="status_update_pb">
+                     <property name="text">
+                      <string>Update status</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="time_synchro_pb">
+                     <property name="text">
+                      <string>Time synchronization</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="get_log_pb">
+                     <property name="text">
+                      <string>Get log</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="blink_pb">
+                     <property name="text">
+                      <string>Blink</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="reboot_pb">
+                     <property name="text">
+                      <string>Reboot</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="shutdown_pb">
+                     <property name="text">
+                      <string>Shutdown</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </widget>
               </widget>
               <widget class="QWidget" name="picture_tab">
                <attribute name="title">
@@ -1116,7 +1108,7 @@
                <attribute name="title">
                 <string>Video recording</string>
                </attribute>
-               <layout class="QVBoxLayout" name="verticalLayout_12">
+               <layout class="QVBoxLayout" name="verticalLayout">
                 <item>
                  <widget class="QGroupBox" name="groupBox_3">
                   <property name="title">
@@ -1830,7 +1822,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1502</width>
+     <width>1366</width>
      <height>22</height>
     </rect>
    </property>
