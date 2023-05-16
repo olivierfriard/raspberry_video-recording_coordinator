@@ -182,7 +182,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         # super(MainWindow, self).__init__(parent)
         self.setupUi(self)
 
-        # self.showMaximized()
+        self.showMaximized()
         # .showFullScreen()
 
         connections.connect(self)
