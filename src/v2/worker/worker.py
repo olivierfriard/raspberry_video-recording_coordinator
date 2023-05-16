@@ -21,13 +21,13 @@ import time
 import subprocess
 import socket
 import logging
+import base64
 
 # required by get_hw_addr function
 import fcntl
 import socket
 import struct
 
-# import base64
 import pathlib as pl
 import shutil
 import hashlib
@@ -417,72 +417,6 @@ def video_streaming(action):
             return {"msg": "video streaming started"}
         except Exception:
             return {"msg": "video streaming not started"}
-
-        """
-        try:
-            subprocess.run(
-                [
-                    "sudo",
-                    "uv4l",
-                    "-nopreview",
-                    "--auto-video_nr",
-                    "--driver",
-                    "raspicam",
-                    "--encoding",
-                    "mjpeg",
-                    "--width",
-                    str(width),
-                    "--height",
-                    str(height),
-                    "--framerate",
-                    "5",
-                    "--server-option",
-                    "--port=9090",
-                    "--server-option",
-                    "--max-queued-connections=30",
-                    "--server-option",
-                    "--max-streams=25",
-                    "--server-option",
-                    "--max-threads=29",
-                ]
-            )
-            return {"msg": "video streaming started"}
-        except Exception:
-            return {"msg": "video streaming not started"}
-        """
-
-
-'''
-@app.route("/set_hostname/<hostname>")
-def set_hostname(hostname):
-    """
-    set client hostname
-    """
-    subprocess.run(["sudo", "hostnamectl", "set-hostname", hostname])
-    return str({"new_hostname": socket.gethostname()})
-'''
-
-'''
-@app.route("/add_key/<key>")
-def add_key(key):
-    """
-    add coordinator public key to ~/.ssh/authorized_keys
-    """
-    try:
-        file_content = base64.b64decode(key).decode("utf-8")
-        dir_exists = (pathlib.Path.home() / pathlib.Path(".ssh")).is_dir()
-        logging.info(f"dir .ssh exists? {dir_exists}")
-        if not (pathlib.Path.home() / pathlib.Path(".ssh")).is_dir():
-            subprocess.run(["mkdir", str(pathlib.Path.home() / pathlib.Path(".ssh"))])
-            logging.info(f".ssh directory created")
-
-        with open(pathlib.Path.home() / pathlib.Path(".ssh") / pathlib.Path("authorized_keys"), "w") as f_out:
-            f_out.write(file_content)
-            logging.info(f"Coordinator public key written in .ssh/authorized_keys")
-        return {"msg": "file authorized_keys created"}
-    except:
-        return {"msg": "error"}
-'''
 
 
 @app.route(
@@ -1016,7 +950,6 @@ def take_picture():
             return {"error": completed.returncode, "msg": "Picture not taken"}
 
 
-'''
 @app.route("/command/<command_to_run>")
 def command(command_to_run):
     """
@@ -1024,12 +957,11 @@ def command(command_to_run):
     """
     try:
         cmd = base64.b64decode(command_to_run).decode("utf-8")
-        process = subprocess.run(cmd.split(" "), stdout=subprocess.PIPE)
-        results = {"return_code": process.returncode, "output": process.stdout.decode("utf-8")}
-        return str(results)
+        process = subprocess.Popen(cmd.split(" "), stdout=subprocess.PIPE)
+        # results = {"return_code": process.returncode, "output": process.stdout.decode("utf-8")}
+        return {"error": False}
     except Exception:
-        return str({"status": "error"})
-'''
+        return {"error": True, "msg": "Command error"}
 
 
 @app.route("/get_log")

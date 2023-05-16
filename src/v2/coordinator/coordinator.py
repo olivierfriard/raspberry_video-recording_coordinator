@@ -37,6 +37,7 @@ import datetime
 import subprocess
 from functools import partial
 import urllib3
+import base64
 
 urllib3.disable_warnings()
 import requests
@@ -107,6 +108,26 @@ def ping(host):
     command = ["ping", "-W", "1", "-c", "1", host]
 
     return subprocess.call(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) == 0
+
+
+def send_command(self):
+    """
+    send command to current rasberry pi
+    """
+
+    text, ok = QInputDialog.getText(self, "Send a command", "Command:")
+    if not ok:
+        return
+
+    cmd = base64.b64encode(text.encode("utf-8")).decode("utf-8")
+
+    response = self.request(self.current_raspberry_id, f"/command/{cmd}", type="GET")
+    if response == None:
+        return
+
+    if response.status_code != HTTPStatus.OK:
+        self.rasp_output_lb.setText(f"Error sending command (status code: {response.status_code})")
+        return
 
 
 def get_ip():
@@ -241,6 +262,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
         self.time_synchro_pb.clicked.connect(self.time_synchro_clicked)
         self.get_log_pb.clicked.connect(self.get_log_clicked)
         self.blink_pb.clicked.connect(self.blink)
+        self.pb_send_command.clicked.connect(self.send_command)
         self.reboot_pb.clicked.connect(self.reboot_clicked)
         self.shutdown_pb.clicked.connect(self.shutdown_clicked)
 

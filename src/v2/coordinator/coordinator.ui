@@ -145,7 +145,7 @@
                <bool>false</bool>
               </property>
               <property name="currentIndex">
-               <number>1</number>
+               <number>0</number>
               </property>
               <widget class="QWidget" name="status_tab">
                <attribute name="title">
@@ -366,6 +366,13 @@
                      <widget class="QPushButton" name="blink_pb">
                       <property name="text">
                        <string>Blink</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pb_send_command">
+                      <property name="text">
+                       <string>Send command</string>
                       </property>
                      </widget>
                     </item>
