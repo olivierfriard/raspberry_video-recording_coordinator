@@ -957,6 +957,9 @@ def command(command_to_run):
     """
     try:
         cmd = base64.b64decode(command_to_run).decode("utf-8")
+
+        logging.info(f"command: {cmd}")
+
         process = subprocess.Popen(cmd.split(" "), stdout=subprocess.PIPE)
         # results = {"return_code": process.returncode, "output": process.stdout.decode("utf-8")}
         return {"error": False}

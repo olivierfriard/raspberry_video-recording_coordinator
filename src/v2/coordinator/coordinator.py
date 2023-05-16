@@ -110,26 +110,6 @@ def ping(host):
     return subprocess.call(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) == 0
 
 
-def send_command(self):
-    """
-    send command to current rasberry pi
-    """
-
-    text, ok = QInputDialog.getText(self, "Send a command", "Command:")
-    if not ok:
-        return
-
-    cmd = base64.b64encode(text.encode("utf-8")).decode("utf-8")
-
-    response = self.request(self.current_raspberry_id, f"/command/{cmd}", type="GET")
-    if response == None:
-        return
-
-    if response.status_code != HTTPStatus.OK:
-        self.rasp_output_lb.setText(f"Error sending command (status code: {response.status_code})")
-        return
-
-
 def get_ip():
     """
     return IP address. Does not need to be connected to internet
@@ -1197,6 +1177,25 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             self.rasp_output_lb.setText("Error during blinking")
             return
         self.rasp_output_lb.setText(response.json().get("msg", "Error during blinking"))
+
+    def send_command(self):
+        """
+        send command to current rasberry pi
+        """
+
+        text, ok = QInputDialog.getText(self, "Send a command", "Command:")
+        if not ok:
+            return
+
+        cmd = base64.b64encode(text.encode("utf-8")).decode("utf-8")
+
+        response = self.request(self.current_raspberry_id, f"/command/{cmd}", type="GET")
+        if response == None:
+            return
+
+        if response.status_code != HTTPStatus.OK:
+            self.rasp_output_lb.setText(f"Error sending command (status code: {response.status_code})")
+            return
 
     def get_raspberry_status(self, raspberry_id):
         """
