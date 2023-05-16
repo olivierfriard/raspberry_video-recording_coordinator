@@ -702,7 +702,13 @@
                                 <string>time lapse duration</string>
                                </property>
                                <property name="maximum">
-                                <number>99999</number>
+                                <number>31536000</number>
+                               </property>
+                               <property name="singleStep">
+                                <number>3600</number>
+                               </property>
+                               <property name="value">
+                                <number>3600</number>
                                </property>
                               </widget>
                              </item>
@@ -717,6 +723,12 @@
                               <widget class="QSpinBox" name="time_lapse_wait_sb">
                                <property name="accessibleName">
                                 <string>time lapse wait</string>
+                               </property>
+                               <property name="minimum">
+                                <number>10</number>
+                               </property>
+                               <property name="maximum">
+                                <number>86400</number>
                                </property>
                               </widget>
                              </item>
