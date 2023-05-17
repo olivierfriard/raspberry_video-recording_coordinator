@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# https://raspberrypi.stackexchange.com/questions/70013/raspberry-pi-3-model-b-system-leds
+
 echo gpio | sudo tee /sys/class/leds/led1/trigger
 
 # (Optional) Turn on (1) or off (0) the PWR LED.
