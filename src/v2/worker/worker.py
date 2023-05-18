@@ -744,6 +744,7 @@ def timelapse_pictures_list():
     }
 
 
+'''
 @app.route(
     "/live_pictures_list",
     methods=(
@@ -762,6 +763,7 @@ def live_pictures_list():
             for x in glob.glob(cfg.LIVE_PICTURES_ARCHIVE + "/*.jpg")
         ]
     }
+'''
 
 
 @app.route(
@@ -1026,10 +1028,14 @@ def live_pictures_archive_dir():
     """
     return the live pictures archive directory
     """
+
+    if not pl.Path(cfg.LIVE_PICTURES_ARCHIVE).is_dir():
+        pl.Path(cfg.LIVE_PICTURES_ARCHIVE).mkdir(parents=True, exist_ok=True)
+
     try:
         return {
             "error": False,
-            "msg": str(pl.Path("/") / pl.Path(cfg.STATIC_DIR) / pl.Path(cfg.LIVE_PICTURES_ARCHIVE)),
+            "msg": str(pl.Path(cfg.LIVE_PICTURES_ARCHIVE)),
         }
     except Exception:
         return {"error": True}
@@ -1071,6 +1077,9 @@ def delete_live_pictures():
     """
 
     logging.debug(f"Delete all the live pictures")
+
+    if not pl.Path(cfg.LIVE_PICTURES_ARCHIVE).is_dir():
+        pl.Path(cfg.LIVE_PICTURES_ARCHIVE).mkdir(parents=True, exist_ok=True)
 
     for file_path in pl.Path(cfg.LIVE_PICTURES_ARCHIVE).glob("*"):
         file_path.unlink(missing_ok=True)
