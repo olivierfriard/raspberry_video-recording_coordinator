@@ -834,7 +834,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
 
     def connect(self, ip_address):
         """
-        try to connect to https://{ip_address}/status
+        ask status to raspberry pi using protocol and port number
         """
         try:
             response = requests.get(

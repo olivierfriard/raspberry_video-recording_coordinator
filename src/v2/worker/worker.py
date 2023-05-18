@@ -765,6 +765,24 @@ def live_pictures_list():
 
 
 @app.route(
+    "/live_pictures_list",
+    methods=(
+        "GET",
+        "POST",
+    ),
+)
+@security_key_required
+def live_pictures_list():
+    """
+    Return the list of live pictures
+    """
+    if not pl.Path(cfg.LIVE_PICTURES_ARCHIVE).is_dir():
+        pl.Path(cfg.LIVE_PICTURES_ARCHIVE).mkdir(parents=True, exist_ok=True)
+
+    return {"pictures_list": [(x.name, x.stat().st_size) for x in pl.Path(cfg.LIVE_PICTURES_ARCHIVE).glob("*.jpg")]}
+
+
+@app.route(
     "/get_video/<file_name>",
     methods=(
         "GET",
