@@ -148,6 +148,8 @@ def get_cpu_temperature() -> str:
     """
     get temperature of the CPU
     """
+    if not pl.Path(VCGENCMD_PATH).is_file():
+        return "not determined"
     process = subprocess.run([VCGENCMD_PATH, "measure_temp"], stdout=subprocess.PIPE)
     output = process.stdout.decode("utf-8").strip()
     if output:
@@ -194,7 +196,6 @@ class Libcamera_vid_thread(threading.Thread):
         ]
 
         for key in self.parameters:
-
             if key in ["prefix", "annotate", "key"]:
                 continue
             if self.parameters[key] == "True":
@@ -293,7 +294,6 @@ def security_key_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if security_key_sha256:
-
             if not request.values.get("key", ""):
                 status_code = Response(status=204)
                 return status_code
@@ -352,7 +352,6 @@ Uptime: <b>{get_uptime()}</b><br>
 )
 @security_key_required
 def status():
-
     # global thread
     try:
         # logging.info(f"thread is alive: {thread.is_alive()}")
@@ -410,7 +409,6 @@ def video_streaming(action):
         return {"msg": "video streaming stopped"}
 
     if action == "start":
-
         try:
             thread = Video_streaming_thread()
             thread.start()
@@ -446,7 +444,6 @@ def schedule_time_lapse():
     ]
 
     for key in request.values:
-
         if key in ["timelapse", "timeout", "prefix", "annotate", "key", "crontab"]:
             continue
         if request.values[key] == "True":
@@ -628,7 +625,6 @@ def schedule_video_recording():
     ]
 
     for key in request.values:
-
         if key in ["prefix", "annotate", "key", "crontab"]:
             continue
         if request.values[key] == "True":
@@ -777,7 +773,6 @@ def live_pictures_list():
 )
 @security_key_required
 def get_video(file_name):
-
     return send_from_directory(cfg.VIDEO_ARCHIVE, file_name, as_attachment=True)
 
 
@@ -888,7 +883,6 @@ def take_picture():
         logging.info(f"{key}: {request.values[key]}")
 
     for key in request.values:
-
         if key in ("timelapse", "timeout", "annotate", "key", "file_name"):
             continue
         if request.values[key] == "True":
@@ -920,7 +914,6 @@ def take_picture():
         )
         logging.info("command: " + (" ".join(command_line)))
         try:
-
             subprocess.Popen(command_line)
         except:
             logging.warning("Error running time lapse (wrong command line option)")
