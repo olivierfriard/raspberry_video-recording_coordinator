@@ -635,7 +635,7 @@ def schedule_video_recording():
         return {"error": True, "msg": "Video recording NOT configured. Crontab event not found"}
 
     command_line = [
-        "libcamera-vid",
+        "killall libcamera-vid;libcamera-vid",
     ]
 
     for key in request.values:
