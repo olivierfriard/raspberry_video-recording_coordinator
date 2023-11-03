@@ -193,7 +193,7 @@ class Libcamera_vid_thread(threading.Thread):
         logging.info("start libcamera-vid thread")
 
         command_line = [
-            "/usr/bin/libcamera-vid",
+            "libcamera-vid",
         ]
 
         for key in self.parameters:
@@ -635,7 +635,7 @@ def schedule_video_recording():
         return {"error": True, "msg": "Video recording NOT configured. Crontab event not found"}
 
     command_line = [
-        "/usr/bin/libcamera-vid",
+        "libcamera-vid",
     ]
 
     for key in request.values:
@@ -648,9 +648,15 @@ def schedule_video_recording():
 
     prefix = (request.values["prefix"] + "_") if request.values.get("prefix", "") else ""
 
+    """
     file_path = (
         str(pl.Path(cfg.STATIC_DIR) / pl.Path(cfg.VIDEO_ARCHIVE_DIR) / pl.Path(f"{socket.gethostname()}_{prefix}"))
         + "$(/usr/bin/date_crontab_helper).h264"
+    )
+    """
+    file_path = (
+        f"{pl.Path(cfg.STATIC_DIR) / pl.Path(cfg.VIDEO_ARCHIVE_DIR) / pl.Path(f'{socket.gethostname()}_{prefix}')}"
+        f"$({pl.Path(__file__).resolve().parent / 'date_crontab_helper'}).h264"
     )
 
     command_line.extend(["-o", file_path])
