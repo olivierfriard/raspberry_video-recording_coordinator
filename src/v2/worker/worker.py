@@ -628,6 +628,8 @@ def schedule_video_recording():
     see https://pypi.org/project/crontab/
     """
 
+    print(f'{request.values.get("crontab", "")=}')
+
     crontab_event = request.values.get("crontab", "")
     if not crontab_event:
         return {"error": True, "msg": "Video recording NOT configured. Crontab event not found"}

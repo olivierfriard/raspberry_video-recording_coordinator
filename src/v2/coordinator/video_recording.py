@@ -276,6 +276,8 @@ def schedule_video_recording(self, raspberry_id):
 
     crontab_event = f"{minutes_str} {hours_str} {dom_str} {month_str} {dow_str}"
 
+    print(f"{crontab_event=}")
+
     width, height = self.raspberry_info[raspberry_id]["video mode"].split("x")
 
     data = {
@@ -296,6 +298,8 @@ def schedule_video_recording(self, raspberry_id):
         "vflip": self.raspberry_info[raspberry_id]["video vflip"],
     }
 
+    print(f"{data=}")
+
     response = self.request(raspberry_id, "/schedule_video_recording", data=data)
     if response is None:
         return
@@ -314,8 +318,8 @@ def view_video_recording_schedule(self, raspberry_id):
     """
     view schedule on Raspberry Pi
     """
-    response = self.request(raspberry_id, f"/view_video_recording_schedule")
-    if response == None:
+    response = self.request(raspberry_id, "/view_video_recording_schedule")
+    if response is None:
         return
 
     if response.status_code != 200:
