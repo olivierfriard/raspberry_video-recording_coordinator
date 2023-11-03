@@ -344,7 +344,7 @@ def delete_video_recording_schedule(self, raspberry_id):
     delete all video recording schedule
     """
 
-    response = self.request(raspberry_id, f"/delete_video_recording_schedule")
+    response = self.request(raspberry_id, "/delete_video_recording_schedule")
     if response == None:
         return
 

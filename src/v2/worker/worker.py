@@ -687,13 +687,13 @@ def view_video_recording_schedule():
     output = []
     try:
         for job in cron:
-            if "/usr/bin/raspivid" in job.command:
+            if "libcamera-vid" in job.command:
                 output.append(
                     [str(job.minutes), str(job.hours), str(job.dom), str(job.month), str(job.dow), job.comment]
                 )
 
     except Exception:
-        return {"error": True, "msg": f"Error during video recording view."}
+        return {"error": True, "msg": "Error during video recording view."}
 
     return {"error": False, "msg": output}
 
@@ -713,13 +713,13 @@ def delete_video_recording_schedule():
     cron = CronTab(user="pi")
     try:
         for job in cron:
-            if "/usr/bin/raspivid" in job.command:
+            if "libcamera-vid" in job.command:
                 cron.remove(job)
         cron.write()
     except Exception:
-        return {"error": True, "msg": f"Video recording schedule NOT deleted."}
+        return {"error": True, "msg": "Video recording schedule NOT deleted."}
 
-    return {"error": False, "msg": f"Video recording schedule deleted."}
+    return {"error": False, "msg": "Video recording schedule deleted."}
 
 
 @app.route(
