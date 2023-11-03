@@ -481,10 +481,15 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
                     QUrl(f"tcp://{self.raspberry_ip[raspberry_id]}:6000")
                 )
             )
-            self.media_list.play()
+
+            os.system(
+                f'ffplay tcp://{self.raspberry_ip[raspberry_id]}:6000 -vf "setpts=N/30" -fflags nobuffer -flags low_delay -framedrop'
+            )
+
+            # self.media_list.play()
             self.rasp_output_lb.setText("Video streaming active")
 
-            self.media_list.play()
+            # self.media_list.play()
 
             # generate QR code
             """
