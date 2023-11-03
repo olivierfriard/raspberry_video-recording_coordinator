@@ -459,7 +459,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             data = {"width": width, "height": height}
 
             response = self.request(raspberry_id, "/video_streaming/start", type="POST", data=data)
-            if response == None:
+            if response is None:
                 return
 
             if response.status_code != HTTPStatus.OK:
@@ -467,7 +467,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
                 return
 
             if self.rasp_output_lb.setText(response.json().get("error", "")):
-                self.rasp_output_lb.setText(f"Error starting streaming")
+                self.rasp_output_lb.setText("Error starting streaming")
                 return
             self.rasp_output_lb.setText(response.json().get("msg", "Error starting streaming"))
 
@@ -476,13 +476,13 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
             self.media_list.setMedia(
                 # QMediaContent(QUrl(f"http://{self.raspberry_ip[raspberry_id]}:9090/stream/video.mjpeg")
                 QMediaContent(
-                    QUrl(f"rtsp://{self.raspberry_ip[raspberry_id]}:8554/stream")
+                    # QUrl(f"rtsp://{self.raspberry_ip[raspberry_id]}:8554/stream")
                     # QUrl(f"udp://{self.raspberry_ip[raspberry_id]}:6000")
-                    # QUrl(f"tcp://{self.raspberry_ip[raspberry_id]}:6000")
+                    QUrl(f"tcp://{self.raspberry_ip[raspberry_id]}:6000")
                 )
             )
             self.media_list.play()
-            self.rasp_output_lb.setText(f"Video streaming active")
+            self.rasp_output_lb.setText("Video streaming active")
 
             self.media_list.play()
 

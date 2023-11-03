@@ -5,7 +5,7 @@ SERVER_PORT = ":5000"
 DEBUG = True
 PROTOCOL = "http://"
 
-IP_RANGES = (("192.168.1.1", [164, 164]),)
+IP_RANGES = (("192.168.1.1", [22, 22]),)
 
 
 # path for receiving video from raspberries

@@ -6,17 +6,12 @@ to enable the service at boot:
 sudo systemctl enable worker
 """
 
-__version__ = "34"
-__version_date__ = "2023-05-16"
 
-
-VCGENCMD_PATH = "/usr/bin/vcgencmd"
-
+from flask import Flask, request, send_from_directory, Response
 from crontab import CronTab  # from python-crontab (not crontab)
 
 import threading
 import datetime
-import glob
 import time
 import subprocess
 import socket
@@ -36,6 +31,12 @@ import json
 from functools import wraps
 
 import config as cfg
+
+__version__ = "34"
+__version_date__ = "2023-05-16"
+
+
+VCGENCMD_PATH = "/usr/bin/vcgencmd"
 
 
 def is_camera_detected():
@@ -71,7 +72,7 @@ def get_hw_addr(ifname):
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         info = fcntl.ioctl(s.fileno(), 0x8927, struct.pack("256s", bytes(ifname, "utf-8")[:15]))
         return ":".join("%02x" % b for b in info[18:24])
-    except:
+    except Exception:
         return "Not determined"
 
 
@@ -96,7 +97,7 @@ def get_ip():
 def get_timezone():
     try:
         return str(datetime.datetime.now().astimezone().tzinfo.utcoffset(None).seconds / 3600)
-    except:
+    except Exception:
         return "Not determined"
 
 
@@ -110,7 +111,7 @@ def get_wifi_ssid():
     if output:
         try:
             return output.split('"')[1]
-        except:
+        except Exception:
             return output
     else:
         return "not connected to wifi"
@@ -155,7 +156,7 @@ def get_cpu_temperature() -> str:
     if output:
         try:
             return output.split("=")[1].replace("'", "°")
-        except:
+        except Exception:
             return "not determined"
     else:
         return "not determined"
@@ -252,8 +253,6 @@ class Video_streaming_thread(threading.Thread):
         logging.info("start video streaming")
         subprocess.run(["bash", "stream_video.bash"])
 
-
-from flask import Flask, request, send_from_directory, Response
 
 while True:
     try:
