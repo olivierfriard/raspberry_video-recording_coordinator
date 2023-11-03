@@ -655,7 +655,7 @@ def schedule_video_recording():
     )
     """
     file_path = (
-        f"{pl.Path(cfg.STATIC_DIR) / pl.Path(cfg.VIDEO_ARCHIVE_DIR) / pl.Path(f'{socket.gethostname()}_{prefix}')}"
+        f"{pl.Path(__file__).resolve().parent / pl.Path(cfg.STATIC_DIR) / pl.Path(cfg.VIDEO_ARCHIVE_DIR) / pl.Path(f'{socket.gethostname()}_{prefix}')}"
         f"$({pl.Path(__file__).resolve().parent / 'date_crontab_helper'}).h264"
     )
 
