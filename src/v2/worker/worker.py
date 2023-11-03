@@ -468,8 +468,8 @@ def schedule_time_lapse():
         and "timelapse" in request.values
         and request.values["timelapse"] != "0"
     ):
-        command_line.extend([f"--timeout", str(int(request.values["timeout"]) * 1000)])
-        command_line.extend([f"--timelapse", str(int(request.values["timelapse"]) * 1000)])
+        command_line.extend(["--timeout", str(int(request.values["timeout"]) * 1000)])
+        command_line.extend(["--timelapse", str(int(request.values["timelapse"]) * 1000)])
         comment = f'time-lapse for {request.values["timeout"]} s (every {request.values["timelapse"]} s)'
 
     command_line.extend(
