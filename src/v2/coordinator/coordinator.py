@@ -414,7 +414,7 @@ class RPI_coordinator(QMainWindow, Ui_MainWindow):
 
             return response
         except requests.exceptions.ConnectionError:
-            self.rasp_output_lb.setText(f"Failed to establish a connection")
+            self.rasp_output_lb.setText("Failed to establish a connection")
             # self.get_raspberry_status(raspberry_id)
             self.scan_network()
             # self.update_raspberry_display(raspberry_id)

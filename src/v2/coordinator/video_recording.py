@@ -79,7 +79,7 @@ def start_video_recording(self, raspberry_id):
 
     self.rasp_output_lb.setText("start video recording requested")
     response = self.request(raspberry_id, "/start_video", type="POST", data=data)
-    if response == None:
+    if response is None:
         return
 
     if response.status_code != 200:
@@ -100,7 +100,7 @@ def stop_video_recording(self, raspberry_id):
 
     self.rasp_output_lb.setText("stop video recording requested")
     response = self.request(raspberry_id, "/stop_video")
-    if response == None:
+    if response is None:
         return
 
     if response.status_code != 200:
@@ -300,7 +300,7 @@ def schedule_video_recording(self, raspberry_id):
 
     print(f"{data=}")
 
-    response = self.request(raspberry_id, "/schedule_video_recording", data=data)
+    response = self.request(raspberry_id, "/schedule_video_recording", type="POST", data=data)
     if response is None:
         return
 
