@@ -1,9 +1,9 @@
 """
-Raspberry Pi coordinator
+Raspberry Cam System
 
 Configuration of Worker on Raspberry Pi
 
-(c) 2021 Olivier Friard
+(c) 2021-2023 Olivier Friard
 """
 
 PORT = 5000
@@ -25,6 +25,6 @@ DEFAULT_VIDEO_WIDTH = 640
 DEFAULT_VIDEO_HEIGHT = 480
 DEFAULT_VIDEO_QUALITY = 1  # Mb/s
 
-LOG_PATH = "/home/pi/worker/worker.log"
+LOG_PATH = "worker.log"
 
 WIFI_INTERFACE = "wlan0"
