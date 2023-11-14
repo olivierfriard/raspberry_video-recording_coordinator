@@ -20,7 +20,6 @@ import base64
 
 # required by get_hw_addr function
 import fcntl
-import socket
 import struct
 
 import pathlib as pl
@@ -526,7 +525,7 @@ def view_time_lapse_schedule():
                 output.append([str(job.minutes), str(job.hours), str(job.dom), str(job.month), str(job.dow), job.comment])
 
     except Exception:
-        return {"error": True, "msg": f"Error during time lapse schedule view."}
+        return {"error": True, "msg": "Error during time lapse schedule view."}
 
     return {"error": False, "msg": output}
 
@@ -927,8 +926,8 @@ def take_picture():
         and "timelapse" in request.values
         and request.values["timelapse"] != "0"
     ):
-        command_line.extend([f"--timeout", str(int(request.values["timeout"]) * 1000)])
-        command_line.extend([f"--timelapse", str(int(request.values["timelapse"]) * 1000)])
+        command_line.extend(["--timeout", str(int(request.values["timeout"]) * 1000)])
+        command_line.extend(["--timelapse", str(int(request.values["timelapse"]) * 1000)])
         # command_line.extend(["--timestamp"])
 
         command_line.extend(
