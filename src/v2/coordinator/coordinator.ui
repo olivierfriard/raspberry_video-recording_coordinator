@@ -424,8 +424,8 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>1390</width>
-                     <height>893</height>
+                     <width>1103</width>
+                     <height>455</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_23">
@@ -1214,8 +1214,8 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>1390</width>
-                     <height>893</height>
+                     <width>606</width>
+                     <height>845</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_22">
@@ -1950,6 +1950,7 @@
      <string>Tools</string>
     </property>
     <addaction name="actionShow_IP_address"/>
+    <addaction name="action_convert_h264_video_files"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTools"/>
@@ -1966,6 +1967,11 @@
   <action name="actionShow_IP_address">
    <property name="text">
     <string>Show IP address for all Raspberries Pi</string>
+   </property>
+  </action>
+  <action name="action_convert_h264_video_files">
+   <property name="text">
+    <string>Convert h264 video files to MP4</string>
    </property>
   </action>
  </widget>
